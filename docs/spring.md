@@ -2,5 +2,7 @@
 
 Tasks in the current "sprint".
 
-1. Complete `/docs`.
-2. 
+2. Implement currency.
+3. Implement expense category.
+4. Implement expense.
+5. 
