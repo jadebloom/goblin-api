@@ -1,4 +1,4 @@
-package com.jadebloom.goblin_api.currency.dto;
+package com.jadebloom.goblin_api.currency.error;
 
 public class InvalidCurrencyException extends RuntimeException {
 

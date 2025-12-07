@@ -8,7 +8,7 @@ import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
 import com.jadebloom.goblin_api.shared.mapper.Mapper;
 
 @Component
-public class CurrencyMapperImpl implements Mapper<CurrencyEntity, CurrencyDto> {
+public class CurrencyMapperImpl implements Mapper<CurrencyDto, CurrencyEntity> {
 
     private final ModelMapper modelMapper;
 
@@ -17,13 +17,13 @@ public class CurrencyMapperImpl implements Mapper<CurrencyEntity, CurrencyDto> {
     }
 
     @Override
-    public CurrencyDto mapTo(CurrencyEntity t) {
-        return modelMapper.map(t, CurrencyDto.class);
+    public CurrencyEntity mapTo(CurrencyDto t) {
+        return modelMapper.map(t, CurrencyEntity.class);
     }
 
     @Override
-    public CurrencyEntity mapFrom(CurrencyDto s) {
-        return modelMapper.map(s, CurrencyEntity.class);
+    public CurrencyDto mapFrom(CurrencyEntity s) {
+        return modelMapper.map(s, CurrencyDto.class);
     }
 
 }

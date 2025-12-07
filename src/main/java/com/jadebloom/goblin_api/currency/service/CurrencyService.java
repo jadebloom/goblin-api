@@ -1,26 +1,26 @@
 package com.jadebloom.goblin_api.currency.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.jadebloom.goblin_api.currency.dto.InvalidCurrencyException;
-import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
+import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
+import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
+import com.jadebloom.goblin_api.currency.error.InvalidCurrencyException;
 
 public interface CurrencyService {
 
-    CurrencyEntity save(CurrencyEntity currencyEntity);
+    CurrencyDto save(CurrencyDto currencyDto) throws InvalidCurrencyException;
 
-    Page<CurrencyEntity> findAll(Pageable pageable);
+    Page<CurrencyDto> findAll(Pageable pageable);
 
-    Optional<CurrencyEntity> findById(Long currencyId);
+    CurrencyDto findById(Long currencyId) throws CurrencyNotFoundException;
 
-    // boolean existsById(Long id);
+    boolean existsById(Long currencyId);
 
-    // void deleteAll(List<CurrencyEntity> currencyEntities);
+    // void deleteAll(List<CurrencyDto> currencyDtos);
 
-    // void deleteById(Long id);
+    // void deleteById(Long currencyId);
 
 }

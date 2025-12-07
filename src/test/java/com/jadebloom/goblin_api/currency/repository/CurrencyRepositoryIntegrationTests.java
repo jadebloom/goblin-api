@@ -8,19 +8,16 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
 
-@DataJpaTest
-@ExtendWith(SpringExtension.class)
+@DataJpaTest(showSql = false)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class CurrencyRepositoryIntegrationTests {
 
@@ -65,6 +62,17 @@ public class CurrencyRepositoryIntegrationTests {
                 "Assert that a currency can be created and found",
                 () -> assertTrue(foundEntity.isPresent()),
                 () -> assertEquals(savedEntity, foundEntity.get()));
+    }
+
+    @Test
+    public void canCreateAndCheckTheExistenceOfCurrency() {
+        CurrencyEntity entity = new CurrencyEntity("Dollar");
+
+        CurrencyEntity savedEntity = underTest.save(entity);
+
+        boolean isExists = underTest.existsById(savedEntity.getId());
+
+        assertTrue(isExists);
     }
 
 }

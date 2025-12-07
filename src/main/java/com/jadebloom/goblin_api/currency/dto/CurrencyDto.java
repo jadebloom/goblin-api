@@ -1,11 +1,21 @@
 package com.jadebloom.goblin_api.currency.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 public class CurrencyDto {
 
     private Long id;
 
+    @NotBlank(message = "The currency's name must not be null or empty")
+    @Size(min = 1, max = 64, message = "The currency's name must be 1 - 64 characters long")
     private String name;
 
+    @Pattern(regexp = "[A-Z][A-Z][A-Z]", message = "The currency's alphabetical code must conform to ISO 4217")
+    @JsonProperty("alphabetical_code")
     private String alphabeticalCode;
 
     public CurrencyDto() {
@@ -47,7 +57,7 @@ public class CurrencyDto {
 
     @Override
     public String toString() {
-        String f = "CurrencyDto(id=%d, name=%s, alphabeticalCode=%s";
+        String f = "CurrencyDto(id=%d, name=%s, alphabeticalCode=%s)";
 
         return String.format(f, id, name, alphabeticalCode);
     }
