@@ -5,12 +5,12 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 
 import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
 import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
+import com.jadebloom.goblin_api.currency.error.InvalidCurrencyException;
 import com.jadebloom.goblin_api.currency.repository.CurrencyRepository;
 import com.jadebloom.goblin_api.currency.service.CurrencyService;
 import com.jadebloom.goblin_api.currency.util.CurrencyValidators;
@@ -32,7 +32,15 @@ public class CurrencyServiceImpl implements CurrencyService {
     }
 
     @Override
-    public CurrencyDto save(CurrencyDto currencyDto) {
+    public CurrencyDto save(CurrencyDto currencyDto) throws InvalidCurrencyException, CurrencyNotFoundException {
+        Long id = currencyDto.getId();
+
+        if (id != null && !currencyRepository.existsById(currencyDto.getId())) {
+            String f = "Currency with ID=%d doesn't exist";
+
+            throw new CurrencyNotFoundException(String.format(f, currencyDto.getId()));
+        }
+
         CurrencyValidators.validate(currencyDto);
 
         return mapper.mapFrom(currencyRepository.save(mapper.mapTo(currencyDto)));
@@ -46,7 +54,7 @@ public class CurrencyServiceImpl implements CurrencyService {
     }
 
     @Override
-    public CurrencyDto findById(Long currencyId) {
+    public CurrencyDto findById(Long currencyId) throws CurrencyNotFoundException {
         Optional<CurrencyEntity> entity = currencyRepository.findById(currencyId);
 
         if (entity.isEmpty()) {
@@ -61,6 +69,16 @@ public class CurrencyServiceImpl implements CurrencyService {
     @Override
     public boolean existsById(Long currencyId) {
         return currencyRepository.existsById(currencyId);
+    }
+
+    @Override
+    public void deleteAll() {
+        currencyRepository.deleteAll();
+    }
+
+    @Override
+    public void deleteById(Long currencyId) {
+        currencyRepository.deleteById(currencyId);
     }
 
 }

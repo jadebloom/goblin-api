@@ -104,11 +104,83 @@ public class CurrencyControllerIntegrationTests {
 	}
 
 	@Test
-	public void canReturnHttp404WhenCurrencyDoesNotExist() throws Exception {
+	public void canReturnHttp404WhenFindingNonExistingById() throws Exception {
 		mockMvc.perform(
 				MockMvcRequestBuilders.get("/api/v1/currencies/1")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(MockMvcResultMatchers.status().isNotFound());
+	}
+
+	@Test
+	public void canReturnCurrencyAndHttp200WhenFullUpdatingCurrency() throws Exception {
+		CurrencyEntity entity = new CurrencyEntity("Dollar");
+		CurrencyEntity savedEntity = currencyRepository.save(entity);
+		savedEntity.setName("Yen");
+
+		String json = objectMapper.writeValueAsString(savedEntity);
+
+		mockMvc.perform(
+				MockMvcRequestBuilders.put("/api/v1/currencies")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(json))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(savedEntity.getId()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(savedEntity.getName()));
+	}
+
+	@Test
+	public void canReturnHttp400WhenFullUpdatingCurrencyWithInvalidName() throws Exception {
+		CurrencyEntity entity = new CurrencyEntity("Valid name");
+		CurrencyEntity savedEntity = currencyRepository.save(entity);
+
+		savedEntity.setName(" ");
+
+		String json = objectMapper.writeValueAsString(savedEntity);
+
+		mockMvc.perform(
+				MockMvcRequestBuilders.put("/api/v1/currencies")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(json))
+				.andExpect(MockMvcResultMatchers.status().isBadRequest());
+	}
+
+	@Test
+	public void canReturnHttp404WhenFullUpdatingNotExistingCurrency() throws Exception {
+		CurrencyEntity entity = new CurrencyEntity("Dollar");
+		entity.setId(1L);
+
+		String json = objectMapper.writeValueAsString(entity);
+
+		mockMvc.perform(
+				MockMvcRequestBuilders.put("/api/v1/currencies")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(json))
+				.andExpect(MockMvcResultMatchers.status().isNotFound());
+	}
+
+	@Test
+	public void canReturnHttp204WhenDeletingAllCurrencies() throws Exception {
+		mockMvc.perform(
+				MockMvcRequestBuilders.delete("/api/v1/currencies"))
+				.andExpect(MockMvcResultMatchers.status().isNoContent());
+	}
+
+	@Test
+	public void canReturnHttp204WhenDeletingExistingCurrencyByItsId() throws Exception {
+		CurrencyEntity entity = new CurrencyEntity("Dollar");
+
+		Long id = currencyRepository.save(entity).getId();
+
+		mockMvc.perform(
+				MockMvcRequestBuilders.delete("/api/v1/currencies/" + id))
+				.andExpect(MockMvcResultMatchers.status().isNoContent());
+	}
+
+	@Test
+	public void canReturnHttp204WhenDeletingNonExistingCurrencyByItsId() throws Exception {
+		mockMvc.perform(
+				MockMvcRequestBuilders.delete("/api/v1/currencies/1"))
+				.andExpect(MockMvcResultMatchers.status().isNoContent());
 	}
 
 }

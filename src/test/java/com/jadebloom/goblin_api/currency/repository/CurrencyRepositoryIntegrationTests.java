@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,6 +74,53 @@ public class CurrencyRepositoryIntegrationTests {
         boolean isExists = underTest.existsById(savedEntity.getId());
 
         assertTrue(isExists);
+    }
+
+    @Test
+    public void canUpdateAndFindCurrency() {
+        CurrencyEntity entity = new CurrencyEntity("Ruble");
+        CurrencyEntity savedEntity = underTest.save(entity);
+
+        savedEntity.setName("Dollar");
+        underTest.save(savedEntity);
+
+        Optional<CurrencyEntity> foundEntity = underTest.findById(savedEntity.getId());
+
+        assertAll(
+                "Assert that a currency can be updated and found",
+                () -> assertTrue(foundEntity.isPresent()),
+                () -> assertEquals(savedEntity, foundEntity.get()));
+    }
+
+    @Test
+    public void canDeleteAllCurrencies() {
+        CurrencyEntity e1 = new CurrencyEntity("Dollar");
+        CurrencyEntity e2 = new CurrencyEntity("Ruble");
+
+        underTest.save(e1);
+        underTest.save(e2);
+
+        underTest.deleteAll();
+
+        List<CurrencyEntity> entities = new ArrayList<>();
+
+        Iterable<CurrencyEntity> iterable = underTest.findAll();
+        iterable.forEach(entities::add);
+
+        assertTrue(entities.isEmpty());
+    }
+
+    @Test
+    public void canDeleteCurrencyById() {
+        CurrencyEntity entity = new CurrencyEntity("Dollar");
+
+        Long id = underTest.save(entity).getId();
+
+        underTest.deleteById(id);
+
+        Optional<CurrencyEntity> foundEntity = underTest.findById(id);
+
+        assertTrue(foundEntity.isEmpty());
     }
 
 }
