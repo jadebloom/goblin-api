@@ -1,8 +1,11 @@
 spring:
+  mvc:
+    problemdetails:
+      enabled: true
   application:
     name: goblin-api
   datasource:
-      url: jdbc:h2:file:flashcards;DATABASE_TO_UPPER=false
+      url: jdbc:h2:mem:flashcards;DATABASE_TO_UPPER=false
       driverClassname: org.h2.Driver
       username: sa
       password: password

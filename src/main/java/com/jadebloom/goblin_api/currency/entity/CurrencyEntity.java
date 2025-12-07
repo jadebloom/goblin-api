@@ -6,9 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "currency")
@@ -19,12 +16,9 @@ public class CurrencyEntity {
     private Long id;
 
     @Column(unique = true, nullable = false, length = 64)
-    @Size(min = 1, max = 64, message = "The currency's name must be 1 - 64 characters long")
-    @NotBlank
     private String name;
 
     @Column(name = "alphabetical_code", unique = true, length = 3)
-    @Pattern(regexp = "[A-Z][A-Z][A-Z]", message = "The currency's alphabetical code must conform to ISO 4217")
     private String alphabeticalCode;
 
     public CurrencyEntity() {
