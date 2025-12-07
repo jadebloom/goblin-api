@@ -1,7 +1,5 @@
 package com.jadebloom.goblin_api.currency.service;
 
-import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -11,7 +9,7 @@ import com.jadebloom.goblin_api.currency.error.InvalidCurrencyException;
 
 public interface CurrencyService {
 
-    CurrencyDto save(CurrencyDto currencyDto) throws InvalidCurrencyException;
+    CurrencyDto save(CurrencyDto currencyDto) throws InvalidCurrencyException, CurrencyNotFoundException;
 
     Page<CurrencyDto> findAll(Pageable pageable);
 
@@ -19,8 +17,8 @@ public interface CurrencyService {
 
     boolean existsById(Long currencyId);
 
-    // void deleteAll(List<CurrencyDto> currencyDtos);
+    void deleteAll();
 
-    // void deleteById(Long currencyId);
+    void deleteById(Long currencyId);
 
 }

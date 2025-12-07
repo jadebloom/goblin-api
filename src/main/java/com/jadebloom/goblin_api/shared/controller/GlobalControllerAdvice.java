@@ -20,7 +20,7 @@ public class GlobalControllerAdvice {
     public ErrorResponse handleGenericException(Exception ex, WebRequest req) {
         ErrorResponse errorResponse = ErrorResponse
                 .builder(ex, HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong")
-                .type(URI.create(Links.API_DOCS_URI + "#"))
+                .type(URI.create(Links.API_DOCS_URI + "#exception-error"))
                 .title("Something went wrong")
                 .instance(URI.create(req.getContextPath()))
                 .property("timestamp", Instant.now())
