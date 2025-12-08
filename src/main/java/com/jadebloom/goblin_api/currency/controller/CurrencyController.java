@@ -49,13 +49,13 @@ public class CurrencyController {
     }
 
     @PutMapping
-    public ResponseEntity<CurrencyDto> fullUpdateCurrencyById(@RequestBody CurrencyDto currencyDto) {
+    public ResponseEntity<CurrencyDto> fullUpdateCurrency(@RequestBody CurrencyDto currencyDto) {
         CurrencyDto dto = currencyService.save(currencyDto);
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/all")
     public ResponseEntity<Void> deleteAllCurrencies() {
         currencyService.deleteAll();
 

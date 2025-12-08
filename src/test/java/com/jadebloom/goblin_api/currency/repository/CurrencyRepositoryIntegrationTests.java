@@ -77,7 +77,7 @@ public class CurrencyRepositoryIntegrationTests {
     }
 
     @Test
-    public void canUpdateAndFindCurrency() {
+    public void canFullUpdateAndFindCurrency() {
         CurrencyEntity entity = new CurrencyEntity("Ruble");
         CurrencyEntity savedEntity = underTest.save(entity);
 

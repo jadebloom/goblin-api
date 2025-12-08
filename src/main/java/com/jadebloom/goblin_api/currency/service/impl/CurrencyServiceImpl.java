@@ -13,7 +13,7 @@ import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
 import com.jadebloom.goblin_api.currency.error.InvalidCurrencyException;
 import com.jadebloom.goblin_api.currency.repository.CurrencyRepository;
 import com.jadebloom.goblin_api.currency.service.CurrencyService;
-import com.jadebloom.goblin_api.currency.util.CurrencyValidators;
+import com.jadebloom.goblin_api.currency.validation.CurrencyValidators;
 import com.jadebloom.goblin_api.shared.mapper.Mapper;
 
 @Service

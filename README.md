@@ -18,6 +18,17 @@ This error can be returned when currency's name or alphabetical code are invalid
 Currency's name must exist and be 1 - 64 characters long.
 Currency's alphabetical code is optional, but if included, it must conform to ISO 4217.
 
+### Expense Category Not Found Error
+
+This error can be returned when expense category wasn't found.
+
+### Invalid Expense Category Error
+
+This error can be returned when expense category's name or description are invalid.
+
+Expense category's name must exist and be 1 - 64 characters long.
+Expense category's description is optional, but if included, it must be 1 - 256 characters long.
+
 ### Exception Error
 
 This error is a propagated generic error that is returned as HTTP 500.
