@@ -1,4 +1,4 @@
-package com.jadebloom.goblin_api.currency.util;
+package com.jadebloom.goblin_api.currency.validation;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
@@ -16,7 +16,7 @@ import com.jadebloom.goblin_api.currency.error.InvalidCurrencyException;
 public class CurrencyValidatorsUnitTests {
 
     @Test
-    public void canInvalidateInvalidCurrencyNames() {
+    public void canInvalidateCurrencyNames() {
         CurrencyDto dto1 = new CurrencyDto(null);
         CurrencyDto dto2 = new CurrencyDto("");
         CurrencyDto dto3 = new CurrencyDto("   ");
@@ -40,7 +40,7 @@ public class CurrencyValidatorsUnitTests {
     }
 
     @Test
-    public void canInvalidateInvalidCurrencyAlphabeticalCodes() {
+    public void canInvalidateCurrencyAlphabeticalCodes() {
         CurrencyDto dto1 = new CurrencyDto("Dollar", "AB");
         CurrencyDto dto2 = new CurrencyDto("Dollar", "!AB");
         CurrencyDto dto3 = new CurrencyDto("Dollar", "A%B");

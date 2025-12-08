@@ -1,4 +1,4 @@
-package com.jadebloom.goblin_api.currency.util;
+package com.jadebloom.goblin_api.currency.validation;
 
 import java.util.Set;
 
@@ -26,9 +26,9 @@ public class CurrencyValidators {
 
         StringBuilder sb = new StringBuilder();
 
-        violations.forEach(v -> sb.append(v.getMessage()));
+        violations.forEach(v -> sb.append(v.getMessage() + ". "));
 
-        throw new InvalidCurrencyException(sb.toString());
+        throw new InvalidCurrencyException(sb.toString().trim());
     }
 
 }

@@ -115,17 +115,19 @@ public class CurrencyControllerIntegrationTests {
 	public void canReturnCurrencyAndHttp200WhenFullUpdatingCurrency() throws Exception {
 		CurrencyEntity entity = new CurrencyEntity("Dollar");
 		CurrencyEntity savedEntity = currencyRepository.save(entity);
-		savedEntity.setName("Yen");
 
-		String json = objectMapper.writeValueAsString(savedEntity);
+		CurrencyDto dto = new CurrencyDto("Ruble");
+		dto.setId(savedEntity.getId());
+
+		String json = objectMapper.writeValueAsString(dto);
 
 		mockMvc.perform(
 				MockMvcRequestBuilders.put("/api/v1/currencies")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(json))
 				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(savedEntity.getId()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(savedEntity.getName()));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(dto.getId()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(dto.getName()));
 	}
 
 	@Test
@@ -133,9 +135,10 @@ public class CurrencyControllerIntegrationTests {
 		CurrencyEntity entity = new CurrencyEntity("Valid name");
 		CurrencyEntity savedEntity = currencyRepository.save(entity);
 
-		savedEntity.setName(" ");
+		CurrencyDto dto = new CurrencyDto("  ");
+		dto.setId(savedEntity.getId());
 
-		String json = objectMapper.writeValueAsString(savedEntity);
+		String json = objectMapper.writeValueAsString(dto);
 
 		mockMvc.perform(
 				MockMvcRequestBuilders.put("/api/v1/currencies")
@@ -146,10 +149,10 @@ public class CurrencyControllerIntegrationTests {
 
 	@Test
 	public void canReturnHttp404WhenFullUpdatingNotExistingCurrency() throws Exception {
-		CurrencyEntity entity = new CurrencyEntity("Dollar");
-		entity.setId(1L);
+		CurrencyDto dto = new CurrencyDto("Dollar");
+		dto.setId(1L);
 
-		String json = objectMapper.writeValueAsString(entity);
+		String json = objectMapper.writeValueAsString(dto);
 
 		mockMvc.perform(
 				MockMvcRequestBuilders.put("/api/v1/currencies")
@@ -161,7 +164,7 @@ public class CurrencyControllerIntegrationTests {
 	@Test
 	public void canReturnHttp204WhenDeletingAllCurrencies() throws Exception {
 		mockMvc.perform(
-				MockMvcRequestBuilders.delete("/api/v1/currencies"))
+				MockMvcRequestBuilders.delete("/api/v1/currencies/all"))
 				.andExpect(MockMvcResultMatchers.status().isNoContent());
 	}
 
