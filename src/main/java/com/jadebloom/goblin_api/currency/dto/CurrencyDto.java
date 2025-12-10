@@ -3,11 +3,13 @@ package com.jadebloom.goblin_api.currency.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class CurrencyDto {
 
+    @NotNull
     private Long id;
 
     @NotBlank(message = "The currency's name must not be null or empty")

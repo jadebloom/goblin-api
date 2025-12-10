@@ -1,10 +1,12 @@
 package com.jadebloom.goblin_api.expense.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class ExpenseCategoryDto {
 
+    @NotNull
     private Long id;
 
     @NotBlank(message = "The expense category's name must not be null or empty")

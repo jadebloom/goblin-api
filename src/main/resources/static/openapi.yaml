@@ -1,0 +1,490 @@
+openapi: 3.0.0
+
+info:
+  title: Goblin API
+  version: 0.0.1
+  description: Goblin API - is a REST API application for expense tracking and analyzing. Dedicated for Goblin desktop application, built on Spring Boot.
+  # termsOfService: ?
+  contact:
+    name: jadebloom
+    # email: ?
+    url: https://github.com/jadebloom
+  license:
+    name: MIT License
+    # url: ?
+
+externalDocs:
+  url: https://github.com/jadebloom/goblin-api?tab=readme-ov-file
+  description: GitHub README documentation.
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server.
+
+paths:
+  /currencies:
+    post:
+      summary: Create a currency
+      requestBody:
+        description: A JSON currency object with a name and optional alphabetical_code.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCurrency"
+            examples:
+              gold:
+                summary: An example of "gold" currency
+                value:
+                  name: Gold
+              dollar:
+                summary: An example of "dollar" currency
+                value:
+                  name: American dollar
+                  alphabetical_code: USD
+      responses:
+        "201":
+          description: Created new currency.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Currency"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: Get paged currencies
+      parameters:
+        - $ref: "#/components/parameters/pageIndex"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/sort"
+      responses:
+        "200":
+          description: Returned a page with a list of Currency objects.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Currency"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      summary: Update a currency
+      requestBody:
+        description: A JSON currency object with id, name and optional alphabetical_code.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Currency"
+            examples:
+              gold:
+                summary: An example of "gold" currency
+                value:
+                  id: 1
+                  name: Gold
+              dollar:
+                summary: An example of "dollar" currency
+                value:
+                  id: 2
+                  name: American dollar
+                  alphabetical_code: USD
+      responses:
+        "200":
+          description: Updated the currency.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Currency"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /currencies/{id}:
+    get:
+      summary: Get a currency by its ID
+      responses:
+        "200":
+          description: Returned the currency.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Currency"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Delete a currency by ID, regardless whether it exists or not
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /currencies/all:
+    delete:
+      summary: Delete all currencies
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  # EXPENSES API ROUTE MUST GO BEFORE EXPENSES-CATEGORIES
+
+  /expenses/categories:
+    post:
+      summary: Create an expense category
+      requestBody:
+        description: A JSON currency object with a name and optional description.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateExpenseCategory"
+            examples:
+              daily:
+                summary: An example of "daily" expense category
+                value:
+                  name: Daily
+              debt:
+                summary: An example of "debt" expense category
+                value:
+                  name: Debt
+                  description: Daily debt payments
+      responses:
+        "201":
+          description: Created new expense category.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpenseCategory"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: Get paged expense categories
+      parameters:
+        - $ref: "#/components/parameters/pageIndex"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/sort"
+      responses:
+        "200":
+          description: Returned a page with a list of ExpenseCategory objects.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpenseCategory"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      summary: Update an expense category
+      requestBody:
+        description: A JSON expense category object with id, name and optional description.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpenseCategory"
+            examples:
+              daily:
+                summary: An example of "daily" expense category
+                value:
+                  id: 1
+                  name: Daily
+              debt:
+                summary: An example of "debt" expense category
+                value:
+                  id: 2
+                  name: Debt
+                  description: Daily debt payments
+      responses:
+        "200":
+          description: Updated the expense category.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpenseCategory"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /expenses/categories/{id}:
+    get:
+      summary: Get an expense category by its ID
+      responses:
+        "200":
+          description: Returned the expense category.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpenseCategory"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      summary: Deletes an expense category by ID, regardless whether it exists or not
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /expenses/categories/all:
+    delete:
+      summary: Delete all expense categories
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  schemas:
+    PagedResponse:
+      type: object
+      required:
+        - content
+        - page
+      properties:
+        content:
+          type: array
+          items:
+            type: object
+        page:
+          type: object
+          properties:
+            size:
+              type: integer
+            number:
+              type: integer
+            totalElement:
+              type: integer
+            totalPages:
+              type: integer
+
+    ErrorResponse:
+      type: object
+      required:
+        - detail
+        - status
+        - title
+      properties:
+        detail:
+          type: string
+        status:
+          type: integer
+        title:
+          type: string
+        type:
+          type: string
+          format: uri
+        instance:
+          type: string
+          format: uri
+        timestamp:
+          type: string
+          format: date-time
+
+    CreateCurrency:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 64
+        alphabetical_code:
+          type: string
+          pattern: "[A-Z][A-Z][A-Z]"
+          nullable: true
+          format: iso4217
+
+    Currency:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          minLength: 1
+          maxLength: 64
+        alphabetical_code:
+          type: string
+          pattern: "[A-Z][A-Z][A-Z]"
+          nullable: true
+          format: iso4217
+
+    CreateExpense:
+      type: object
+      required:
+        - name
+        - amount
+        - expense_category_id
+        - currency_id
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 64
+        description:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 256
+        amount:
+          type: integer
+          minLength: 1
+        labels:
+          type: array
+          nullable: true
+          items:
+            type: string
+            minLength: 1
+            maxLength: 16
+        expense_category_id:
+          type: integer
+        currency_id:
+          type: integer
+
+    Expense:
+      type: object
+      required:
+        - id
+        - name
+        - amount
+        - expense_category_id
+        - currency_id
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          minLength: 1
+          maxLength: 64
+        description:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 256
+        amount:
+          type: integer
+          minLength: 1
+        labels:
+          type: array
+          nullable: true
+          items:
+            type: string
+            minLength: 1
+            maxLength: 16
+        expense_category_id:
+          type: integer
+        currency_id:
+          type: integer
+
+    CreateExpenseCategory:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 64
+        description:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 256
+
+    ExpenseCategory:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          minLength: 1
+          maxLength: 64
+        description:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 256
+
+  parameters:
+    pageIndex:
+      in: query
+      name: page
+      description: Optional zero-indexed page number (default 0).
+      schema:
+        type: integer
+        default: 0
+
+    pageSize:
+      in: query
+      name: size
+      description: Optional size of a page (default 20).
+      schema:
+        type: integer
+        default: 20
+
+    sort:
+      in: query
+      name: sort
+      description: Optional sorting parameters (e.g. ?sort=name,desc).
+      schema:
+        type: array
+        items:
+          type: string
+
+  # securitySchemes:
+  #   ?
+
+  # requestBodies:
+  #   ?
+
+  responses:
+    NoContent:
+      description: No content.
+
+    BadRequestError:
+      description: Bad request.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    NotFoundError:
+      description: A resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    InternalServerError:
+      description: Something went wrong.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+  # headers:
+  #   ?
+
+  # examples:
+  #   ?
+
+  # links:
+  #   ?
+
+  # callbacks:
+  #   ?
