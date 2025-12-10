@@ -2,11 +2,11 @@ package com.jadebloom.goblin_api.currency.service.impl;
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.jadebloom.goblin_api.currency.dto.CreateCurrencyDto;
 import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
 import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
@@ -21,36 +21,28 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     private final CurrencyRepository currencyRepository;
 
-    private final Mapper<CurrencyDto, CurrencyEntity> mapper;
+    private final Mapper mapper;
 
-    public CurrencyServiceImpl(
-            CurrencyRepository currencyRepository,
-            @Qualifier("currencyMapperImpl") Mapper<CurrencyDto, CurrencyEntity> mapper) {
+    public CurrencyServiceImpl(CurrencyRepository currencyRepository, Mapper mapper) {
         this.currencyRepository = currencyRepository;
 
         this.mapper = mapper;
     }
 
     @Override
-    public CurrencyDto save(CurrencyDto currencyDto) throws InvalidCurrencyException, CurrencyNotFoundException {
-        Long id = currencyDto.getId();
+    public CurrencyDto create(CreateCurrencyDto createCurrencyDto) throws InvalidCurrencyException {
+        CurrencyValidators.validate(createCurrencyDto);
 
-        if (id != null && !currencyRepository.existsById(currencyDto.getId())) {
-            String f = "Currency with ID=%d doesn't exist";
+        CurrencyEntity entity = mapper.map(createCurrencyDto, CurrencyEntity.class);
 
-            throw new CurrencyNotFoundException(String.format(f, currencyDto.getId()));
-        }
-
-        CurrencyValidators.validate(currencyDto);
-
-        return mapper.mapFrom(currencyRepository.save(mapper.mapTo(currencyDto)));
+        return mapper.map(currencyRepository.save(entity), CurrencyDto.class);
     }
 
     @Override
     public Page<CurrencyDto> findAll(Pageable pageable) {
         Page<CurrencyEntity> page = currencyRepository.findAll(pageable);
 
-        return page.map(mapper::mapFrom);
+        return page.map(e -> mapper.map(e, CurrencyDto.class));
     }
 
     @Override
@@ -63,12 +55,27 @@ public class CurrencyServiceImpl implements CurrencyService {
             throw new CurrencyNotFoundException(String.format(f, currencyId));
         }
 
-        return entity.map(mapper::mapFrom).get();
+        return mapper.map(entity.get(), CurrencyDto.class);
     }
 
     @Override
     public boolean existsById(Long currencyId) {
         return currencyRepository.existsById(currencyId);
+    }
+
+    @Override
+    public CurrencyDto update(CurrencyDto currencyDto) throws InvalidCurrencyException, CurrencyNotFoundException {
+        if (!currencyRepository.existsById(currencyDto.getId())) {
+            String f = "Currency with ID=%d doesn't exist";
+
+            throw new CurrencyNotFoundException(String.format(f, currencyDto.getId()));
+        }
+
+        CurrencyValidators.validate(currencyDto);
+
+        CurrencyEntity entity = mapper.map(currencyDto, CurrencyEntity.class);
+
+        return mapper.map(currencyRepository.save(entity), CurrencyDto.class);
     }
 
     @Override

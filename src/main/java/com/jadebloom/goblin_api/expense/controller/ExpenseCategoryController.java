@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.service.ExpenseCategoryService;
 
@@ -30,8 +31,8 @@ public class ExpenseCategoryController {
 
     @PostMapping
     public ResponseEntity<ExpenseCategoryDto> createExpenseCategory(
-            @RequestBody ExpenseCategoryDto expenseCategoryDto) {
-        ExpenseCategoryDto result = expenseCategoryService.save(expenseCategoryDto);
+            @RequestBody CreateExpenseCategoryDto createDto) {
+        ExpenseCategoryDto result = expenseCategoryService.create(createDto);
 
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
@@ -52,9 +53,9 @@ public class ExpenseCategoryController {
     }
 
     @PutMapping
-    public ResponseEntity<ExpenseCategoryDto> fullUpdateExpenseCategory(
+    public ResponseEntity<ExpenseCategoryDto> updateExpenseCategory(
             @RequestBody ExpenseCategoryDto expenseCategoryDto) {
-        ExpenseCategoryDto result = expenseCategoryService.save(expenseCategoryDto);
+        ExpenseCategoryDto result = expenseCategoryService.update(expenseCategoryDto);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

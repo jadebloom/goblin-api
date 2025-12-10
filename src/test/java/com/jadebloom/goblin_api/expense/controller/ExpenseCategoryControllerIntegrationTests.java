@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
 import com.jadebloom.goblin_api.expense.repository.ExpenseCategoryRepository;
@@ -44,7 +45,7 @@ public class ExpenseCategoryControllerIntegrationTests {
 
 	@Test
 	public void canReturnExpenseCategoryAndHttp201WhenCreatingExpenseCategory() throws Exception {
-		ExpenseCategoryDto dto = new ExpenseCategoryDto("Daily");
+		CreateExpenseCategoryDto dto = new CreateExpenseCategoryDto("Daily");
 
 		String json = objectMapper.writeValueAsString(dto);
 
@@ -59,7 +60,7 @@ public class ExpenseCategoryControllerIntegrationTests {
 
 	@Test
 	public void canReturnHttp400WhenCreatingInvalidExpenseCategory() throws Exception {
-		ExpenseCategoryDto dto = new ExpenseCategoryDto(null, "");
+		CreateExpenseCategoryDto dto = new CreateExpenseCategoryDto(null, "");
 
 		String json = objectMapper.writeValueAsString(dto);
 
@@ -98,7 +99,7 @@ public class ExpenseCategoryControllerIntegrationTests {
 	}
 
 	@Test
-	public void canReturnHttp200WhenFullUpdatingExistingExpenseCategory() throws Exception {
+	public void canReturnHttp200WhenUpdatingExistingExpenseCategory() throws Exception {
 		ExpenseCategoryEntity entity = new ExpenseCategoryEntity("Daily");
 		ExpenseCategoryEntity savedEntity = expenseCategoryRepository.save(entity);
 
@@ -117,7 +118,7 @@ public class ExpenseCategoryControllerIntegrationTests {
 	}
 
 	@Test
-	public void canReturnHttp400WhenFullUpdatingExpenseCategoryWithInvalidName() throws Exception {
+	public void canReturnHttp400WhenUpdatingExpenseCategoryWithInvalidName() throws Exception {
 		ExpenseCategoryEntity entity = new ExpenseCategoryEntity("Daily");
 		ExpenseCategoryEntity savedEntity = expenseCategoryRepository.save(entity);
 

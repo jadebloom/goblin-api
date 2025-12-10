@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.jadebloom.goblin_api.currency.dto.CreateCurrencyDto;
 import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
 import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
 import com.jadebloom.goblin_api.currency.repository.CurrencyRepository;
@@ -42,9 +43,9 @@ public class CurrencyControllerIntegrationTests {
 
 	@Test
 	public void canCreateAndReturnCurrencyAndHttp201() throws Exception {
-		CurrencyDto dto = new CurrencyDto("Dollar", "USD");
+		CreateCurrencyDto createDto = new CreateCurrencyDto("Dollar", "USD");
 
-		String json = objectMapper.writeValueAsString(dto);
+		String json = objectMapper.writeValueAsString(createDto);
 
 		mockMvc.perform(
 				MockMvcRequestBuilders.post("/api/v1/currencies")
@@ -52,12 +53,12 @@ public class CurrencyControllerIntegrationTests {
 						.content(json))
 				.andExpect(MockMvcResultMatchers.status().isCreated())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(dto.getName()));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(createDto.getName()));
 	}
 
 	@Test
 	public void canReturnHttp400WhenCurrencyHasInvalidName() throws Exception {
-		CurrencyDto dto = new CurrencyDto("   ");
+		CreateCurrencyDto dto = new CreateCurrencyDto("   ");
 
 		String json = objectMapper.writeValueAsString(dto);
 
@@ -70,7 +71,7 @@ public class CurrencyControllerIntegrationTests {
 
 	@Test
 	public void canReturnHttp400WhenCurrencyHasInvalidAlphabeticalCode() throws Exception {
-		CurrencyDto dto = new CurrencyDto("Dollar", "DO");
+		CreateCurrencyDto dto = new CreateCurrencyDto("Dollar", "DO");
 
 		String json = objectMapper.writeValueAsString(dto);
 
@@ -112,7 +113,7 @@ public class CurrencyControllerIntegrationTests {
 	}
 
 	@Test
-	public void canReturnCurrencyAndHttp200WhenFullUpdatingCurrency() throws Exception {
+	public void canReturnCurrencyAndHttp200WhenUpdatingCurrency() throws Exception {
 		CurrencyEntity entity = new CurrencyEntity("Dollar");
 		CurrencyEntity savedEntity = currencyRepository.save(entity);
 
@@ -131,7 +132,7 @@ public class CurrencyControllerIntegrationTests {
 	}
 
 	@Test
-	public void canReturnHttp400WhenFullUpdatingCurrencyWithInvalidName() throws Exception {
+	public void canReturnHttp400WhenUpdatingCurrencyWithInvalidName() throws Exception {
 		CurrencyEntity entity = new CurrencyEntity("Valid name");
 		CurrencyEntity savedEntity = currencyRepository.save(entity);
 
@@ -148,7 +149,7 @@ public class CurrencyControllerIntegrationTests {
 	}
 
 	@Test
-	public void canReturnHttp404WhenFullUpdatingNotExistingCurrency() throws Exception {
+	public void canReturnHttp404WhenUpdatingNotExistingCurrency() throws Exception {
 		CurrencyDto dto = new CurrencyDto("Dollar");
 		dto.setId(1L);
 
