@@ -2,7 +2,6 @@ package com.jadebloom.goblin_api.currency.validation;
 
 import java.util.Set;
 
-import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
 import com.jadebloom.goblin_api.currency.error.InvalidCurrencyException;
 
 import jakarta.validation.ConstraintViolation;
@@ -17,8 +16,8 @@ public class CurrencyValidators {
         validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
 
-    public static void validate(CurrencyDto currencyDto) {
-        Set<ConstraintViolation<CurrencyDto>> violations = validator.validate(currencyDto);
+    public static <T> void validate(T target) {
+        Set<ConstraintViolation<T>> violations = validator.validate(target);
 
         if (violations.isEmpty()) {
             return;

@@ -2,11 +2,11 @@ package com.jadebloom.goblin_api.expense.service.impl;
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
@@ -21,39 +21,35 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 
     private final ExpenseCategoryRepository expenseCategoryRepository;
 
-    private final Mapper<ExpenseCategoryDto, ExpenseCategoryEntity> mapper;
+    private final Mapper mapper;
 
     public ExpenseCategoryServiceImpl(
             ExpenseCategoryRepository expenseCategoryRepository,
-            @Qualifier("expenseCategoryMapperImpl") Mapper<ExpenseCategoryDto, ExpenseCategoryEntity> mapper) {
+            Mapper mapper) {
         this.expenseCategoryRepository = expenseCategoryRepository;
 
         this.mapper = mapper;
     }
 
     @Override
-    public ExpenseCategoryDto save(ExpenseCategoryDto expenseCategoryDto)
+    public ExpenseCategoryDto create(CreateExpenseCategoryDto createExpenseCategoryDto)
             throws InvalidExpenseCategoryException, ExpenseCategoryNotFoundException {
-        Long id = expenseCategoryDto.getId();
+        ExpenseCategoryValidators.validate(createExpenseCategoryDto);
 
-        if (id != null && !expenseCategoryRepository.existsById(id)) {
-            String f = "Expense category with ID=%d doesn't exist";
+        ExpenseCategoryEntity entity = mapper.map(
+                createExpenseCategoryDto,
+                ExpenseCategoryEntity.class);
 
-            throw new ExpenseCategoryNotFoundException(String.format(f, id));
-        }
+        ExpenseCategoryEntity savedEntity = expenseCategoryRepository.save(entity);
 
-        ExpenseCategoryValidators.validate(expenseCategoryDto);
-
-        ExpenseCategoryEntity entity = mapper.mapTo(expenseCategoryDto);
-
-        return mapper.mapFrom(expenseCategoryRepository.save(entity));
+        return mapper.map(savedEntity, ExpenseCategoryDto.class);
     }
 
     @Override
     public Page<ExpenseCategoryDto> findAll(Pageable pageable) {
         Page<ExpenseCategoryEntity> page = expenseCategoryRepository.findAll(pageable);
 
-        return page.map(mapper::mapFrom);
+        return page.map(e -> mapper.map(e, ExpenseCategoryDto.class));
     }
 
     @Override
@@ -66,12 +62,31 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
             throw new ExpenseCategoryNotFoundException(String.format(f, expenseCategoryId));
         }
 
-        return mapper.mapFrom(entity.get());
+        return mapper.map(entity.get(), ExpenseCategoryDto.class);
     }
 
     @Override
     public boolean existsById(Long expenseCategoryId) {
         return expenseCategoryRepository.existsById(expenseCategoryId);
+    }
+
+    @Override
+    public ExpenseCategoryDto update(ExpenseCategoryDto expenseCategoryDto)
+            throws InvalidExpenseCategoryException, ExpenseCategoryNotFoundException {
+        Long id = expenseCategoryDto.getId();
+
+        if (!expenseCategoryRepository.existsById(id)) {
+            String f = "Expense category with ID=%d doesn't exist";
+
+            throw new ExpenseCategoryNotFoundException(String.format(f, id));
+        }
+
+        ExpenseCategoryValidators.validate(expenseCategoryDto);
+
+        ExpenseCategoryEntity entity = mapper.map(
+                expenseCategoryDto, ExpenseCategoryEntity.class);
+
+        return mapper.map(expenseCategoryRepository.save(entity), ExpenseCategoryDto.class);
     }
 
     @Override

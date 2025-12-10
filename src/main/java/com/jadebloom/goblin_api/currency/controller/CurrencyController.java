@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jadebloom.goblin_api.currency.dto.CreateCurrencyDto;
 import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
 import com.jadebloom.goblin_api.currency.service.CurrencyService;
 
@@ -28,8 +29,9 @@ public class CurrencyController {
     }
 
     @PostMapping
-    public ResponseEntity<CurrencyDto> createCurrency(@RequestBody CurrencyDto currencyDto) {
-        CurrencyDto dto = currencyService.save(currencyDto);
+    public ResponseEntity<CurrencyDto> createCurrency(
+            @RequestBody CreateCurrencyDto createCurrencyDto) {
+        CurrencyDto dto = currencyService.create(createCurrencyDto);
 
         return new ResponseEntity<>(dto, HttpStatus.CREATED);
     }
@@ -49,8 +51,8 @@ public class CurrencyController {
     }
 
     @PutMapping
-    public ResponseEntity<CurrencyDto> fullUpdateCurrency(@RequestBody CurrencyDto currencyDto) {
-        CurrencyDto dto = currencyService.save(currencyDto);
+    public ResponseEntity<CurrencyDto> updateCurrency(@RequestBody CurrencyDto currencyDto) {
+        CurrencyDto dto = currencyService.update(currencyDto);
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }

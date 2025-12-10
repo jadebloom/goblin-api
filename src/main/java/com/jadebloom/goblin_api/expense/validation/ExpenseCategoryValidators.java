@@ -2,7 +2,6 @@ package com.jadebloom.goblin_api.expense.validation;
 
 import java.util.Set;
 
-import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.error.InvalidExpenseCategoryException;
 
 import jakarta.validation.ConstraintViolation;
@@ -17,9 +16,8 @@ public class ExpenseCategoryValidators {
         validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
 
-    public static void validate(ExpenseCategoryDto expenseCategoryDto) {
-        Set<ConstraintViolation<ExpenseCategoryDto>> violations = validator.validate(
-                expenseCategoryDto);
+    public static <T> void validate(T target) {
+        Set<ConstraintViolation<T>> violations = validator.validate(target);
 
         if (violations.isEmpty()) {
             return;

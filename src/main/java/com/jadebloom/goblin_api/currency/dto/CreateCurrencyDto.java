@@ -6,9 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public class CurrencyDto {
-
-    private Long id;
+public class CreateCurrencyDto {
 
     @NotBlank(message = "The currency's name must not be null or empty")
     @Size(min = 1, max = 64, message = "The currency's name must be 1 - 64 characters long")
@@ -18,21 +16,17 @@ public class CurrencyDto {
     @JsonProperty("alphabetical_code")
     private String alphabeticalCode;
 
-    public CurrencyDto() {
+    public CreateCurrencyDto() {
     }
 
-    public CurrencyDto(String name) {
+    public CreateCurrencyDto(String name) {
         this.name = name;
     }
 
-    public CurrencyDto(String name, String alphabeticalCode) {
+    public CreateCurrencyDto(String name, String alphabeticalCode) {
         this.name = name;
 
         this.alphabeticalCode = alphabeticalCode;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getName() {
@@ -41,10 +35,6 @@ public class CurrencyDto {
 
     public String getAlphabeticalCode() {
         return alphabeticalCode;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public void setName(String name) {
