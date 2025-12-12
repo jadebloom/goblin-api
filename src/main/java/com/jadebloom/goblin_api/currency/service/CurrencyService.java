@@ -18,7 +18,8 @@ public interface CurrencyService {
 
     boolean existsById(Long currencyId);
 
-    CurrencyDto update(CurrencyDto currencyDto) throws InvalidCurrencyException, CurrencyNotFoundException;
+    CurrencyDto update(CurrencyDto currencyDto)
+            throws CurrencyNotFoundException, InvalidCurrencyException;
 
     void deleteAll();
 

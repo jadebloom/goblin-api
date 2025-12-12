@@ -1,0 +1,77 @@
+package com.jadebloom.goblin_api.expense.controller;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.jadebloom.goblin_api.expense.dto.CreateExpenseDto;
+import com.jadebloom.goblin_api.expense.dto.ExpenseDto;
+import com.jadebloom.goblin_api.expense.service.ExpenseService;
+
+@RestController
+@RequestMapping("/api/v1/expenses")
+public class ExpenseController {
+
+    private final ExpenseService expenseService;
+
+    public ExpenseController(@Qualifier("expenseServiceImpl") ExpenseService expenseService) {
+        this.expenseService = expenseService;
+    }
+
+    @PostMapping
+    public ResponseEntity<ExpenseDto> createExpense(
+            @RequestBody CreateExpenseDto createDto) {
+        ExpenseDto dto = expenseService.create(createDto);
+
+        return new ResponseEntity<>(dto, HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<ExpenseDto>> findExpenses(Pageable pageable) {
+        Page<ExpenseDto> page = expenseService.findAll(pageable);
+
+        return new ResponseEntity<>(page, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ExpenseDto> findExpenseById(
+            @PathVariable(name = "id") Long expenseId) {
+        ExpenseDto dto = expenseService.findById(expenseId);
+
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @PutMapping
+    public ResponseEntity<ExpenseDto> updateExpense(
+            @RequestBody ExpenseDto expenseDto) {
+        ExpenseDto result = expenseService.update(expenseDto);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/all")
+    public ResponseEntity<Void> deleteAllExpenses() {
+        expenseService.deleteAll();
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteExpenseById(
+            @PathVariable(name = "id") Long expenseCategoryId) {
+        expenseService.deleteById(expenseCategoryId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+}

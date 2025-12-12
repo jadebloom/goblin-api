@@ -45,4 +45,11 @@ public class CreateCurrencyDto {
         this.alphabeticalCode = alphabeticalCode;
     }
 
+    @Override
+    public String toString() {
+        String f = "CreateCurrencyDto(name=%s, alphabeticalCode=%s)";
+
+        return String.format(f, name, alphabeticalCode);
+    }
+
 }

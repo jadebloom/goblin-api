@@ -343,10 +343,11 @@ components:
         labels:
           type: array
           nullable: true
+          maxItems: 16
           items:
             type: string
             minLength: 1
-            maxLength: 16
+            maxLength: 32
         expense_category_id:
           type: integer
         currency_id:
@@ -378,10 +379,11 @@ components:
         labels:
           type: array
           nullable: true
+          maxItems: 16
           items:
             type: string
             minLength: 1
-            maxLength: 16
+            maxLength: 32
         expense_category_id:
           type: integer
         currency_id:

@@ -1,4 +1,4 @@
-package com.jadebloom.goblin_api.expense.validation;
+package com.jadebloom.goblin_api.expense.service;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
@@ -10,10 +10,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.error.InvalidExpenseCategoryException;
+import com.jadebloom.goblin_api.shared.validation.GenericValidator;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
-public class ExpenseCategoryValidatorsUnitTests {
+public class ExpenseCategoryValidationUnitTests {
 
     @Test
     public void canInvalidateExpenseCategoryName() {
@@ -25,13 +26,13 @@ public class ExpenseCategoryValidatorsUnitTests {
         assertAll(
                 "Assert that expense category name can be invalidated",
                 () -> assertThrowsExactly(InvalidExpenseCategoryException.class, () -> {
-                    ExpenseCategoryValidators.validate(dto1);
+                    validate(dto1);
                 }),
                 () -> assertThrowsExactly(InvalidExpenseCategoryException.class, () -> {
-                    ExpenseCategoryValidators.validate(dto2);
+                    validate(dto2);
                 }),
                 () -> assertThrowsExactly(InvalidExpenseCategoryException.class, () -> {
-                    ExpenseCategoryValidators.validate(dto3);
+                    validate(dto3);
                 }));
     }
 
@@ -44,11 +45,19 @@ public class ExpenseCategoryValidatorsUnitTests {
         assertAll(
                 "Assert that expense category description can be invalidated",
                 () -> assertThrowsExactly(InvalidExpenseCategoryException.class, () -> {
-                    ExpenseCategoryValidators.validate(dto1);
+                    validate(dto1);
                 }),
                 () -> assertThrowsExactly(InvalidExpenseCategoryException.class, () -> {
-                    ExpenseCategoryValidators.validate(dto2);
+                    validate(dto2);
                 }));
+    }
+
+    private <T> void validate(T target) {
+        if (!GenericValidator.isValid(target)) {
+            String message = GenericValidator.getValidationErrorMessage(target);
+
+            throw new InvalidExpenseCategoryException(message);
+        }
     }
 
 }

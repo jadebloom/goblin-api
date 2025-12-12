@@ -70,7 +70,18 @@ public class ExpenseCategoryEntity {
 
         ExpenseCategoryEntity expenseCategory = (ExpenseCategoryEntity) o;
 
-        return id == expenseCategory.getId();
+        if (id != expenseCategory.getId() || name != expenseCategory.getName()) {
+            return false;
+        }
+
+        return description == expenseCategory.getDescription();
+    }
+
+    @Override
+    public String toString() {
+        String f = "ExpenseCategoryEntity(id=%d, name=%s, description=%s)";
+
+        return String.format(f, id, name, description);
     }
 
 }

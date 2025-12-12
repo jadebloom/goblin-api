@@ -11,21 +11,21 @@ import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
 import com.jadebloom.goblin_api.expense.error.InvalidExpenseCategoryException;
+import com.jadebloom.goblin_api.expense.mapper.ExpenseCategoryMapper;
 import com.jadebloom.goblin_api.expense.repository.ExpenseCategoryRepository;
 import com.jadebloom.goblin_api.expense.service.ExpenseCategoryService;
-import com.jadebloom.goblin_api.expense.validation.ExpenseCategoryValidators;
-import com.jadebloom.goblin_api.shared.mapper.Mapper;
+import com.jadebloom.goblin_api.shared.validation.GenericValidator;
 
 @Service
 public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 
     private final ExpenseCategoryRepository expenseCategoryRepository;
 
-    private final Mapper mapper;
+    private final ExpenseCategoryMapper mapper;
 
     public ExpenseCategoryServiceImpl(
             ExpenseCategoryRepository expenseCategoryRepository,
-            Mapper mapper) {
+            ExpenseCategoryMapper mapper) {
         this.expenseCategoryRepository = expenseCategoryRepository;
 
         this.mapper = mapper;
@@ -34,22 +34,23 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
     @Override
     public ExpenseCategoryDto create(CreateExpenseCategoryDto createExpenseCategoryDto)
             throws InvalidExpenseCategoryException, ExpenseCategoryNotFoundException {
-        ExpenseCategoryValidators.validate(createExpenseCategoryDto);
+        if (!GenericValidator.isValid(createExpenseCategoryDto)) {
+            String message = GenericValidator.getValidationErrorMessage(createExpenseCategoryDto);
 
-        ExpenseCategoryEntity entity = mapper.map(
-                createExpenseCategoryDto,
-                ExpenseCategoryEntity.class);
+            throw new InvalidExpenseCategoryException(message);
+        }
 
+        ExpenseCategoryEntity entity = mapper.map(createExpenseCategoryDto);
         ExpenseCategoryEntity savedEntity = expenseCategoryRepository.save(entity);
 
-        return mapper.map(savedEntity, ExpenseCategoryDto.class);
+        return mapper.map(savedEntity);
     }
 
     @Override
     public Page<ExpenseCategoryDto> findAll(Pageable pageable) {
         Page<ExpenseCategoryEntity> page = expenseCategoryRepository.findAll(pageable);
 
-        return page.map(e -> mapper.map(e, ExpenseCategoryDto.class));
+        return page.map(mapper::map);
     }
 
     @Override
@@ -62,7 +63,7 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
             throw new ExpenseCategoryNotFoundException(String.format(f, expenseCategoryId));
         }
 
-        return mapper.map(entity.get(), ExpenseCategoryDto.class);
+        return mapper.map(entity.get());
     }
 
     @Override
@@ -81,12 +82,15 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
             throw new ExpenseCategoryNotFoundException(String.format(f, id));
         }
 
-        ExpenseCategoryValidators.validate(expenseCategoryDto);
+        if (!GenericValidator.isValid(expenseCategoryDto)) {
+            String message = GenericValidator.getValidationErrorMessage(expenseCategoryDto);
 
-        ExpenseCategoryEntity entity = mapper.map(
-                expenseCategoryDto, ExpenseCategoryEntity.class);
+            throw new InvalidExpenseCategoryException(message);
+        }
 
-        return mapper.map(expenseCategoryRepository.save(entity), ExpenseCategoryDto.class);
+        ExpenseCategoryEntity entity = mapper.map(expenseCategoryDto);
+
+        return mapper.map(expenseCategoryRepository.save(entity));
     }
 
     @Override
