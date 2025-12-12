@@ -1,5 +1,9 @@
 package com.jadebloom.goblin_api.currency.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.jadebloom.goblin_api.currency.validation.ValidCurrencyAlphabeticalCode;
+import com.jadebloom.goblin_api.currency.validation.ValidCurrencyName;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,9 +20,12 @@ public class CurrencyEntity {
     private Long id;
 
     @Column(unique = true, nullable = false, length = 64)
+    @ValidCurrencyName
     private String name;
 
-    @Column(name = "alphabetical_code", unique = true, length = 3)
+    @Column(name = "alphabetical_code", length = 3)
+    @ValidCurrencyAlphabeticalCode
+    @JsonProperty("alphabetical_code")
     private String alphabeticalCode;
 
     public CurrencyEntity() {

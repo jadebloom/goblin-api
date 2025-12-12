@@ -1,22 +1,20 @@
 package com.jadebloom.goblin_api.currency.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.jadebloom.goblin_api.currency.validation.ValidCurrencyAlphabeticalCode;
+import com.jadebloom.goblin_api.currency.validation.ValidCurrencyName;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 
 public class CurrencyDto {
 
     @NotNull
     private Long id;
 
-    @NotBlank(message = "The currency's name must not be null or empty")
-    @Size(min = 1, max = 64, message = "The currency's name must be 1 - 64 characters long")
+    @ValidCurrencyName
     private String name;
 
-    @Pattern(regexp = "[A-Z][A-Z][A-Z]", message = "The currency's alphabetical code must conform to ISO 4217")
+    @ValidCurrencyAlphabeticalCode
     @JsonProperty("alphabetical_code")
     private String alphabeticalCode;
 
