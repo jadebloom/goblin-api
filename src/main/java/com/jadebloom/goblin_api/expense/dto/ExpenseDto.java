@@ -3,32 +3,30 @@ package com.jadebloom.goblin_api.expense.dto;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.jadebloom.goblin_api.expense.validation.CheckLabel;
+import com.jadebloom.goblin_api.expense.validation.ValidExpenseAmount;
+import com.jadebloom.goblin_api.expense.validation.ValidExpenseDescription;
+import com.jadebloom.goblin_api.expense.validation.ValidExpenseLabel;
+import com.jadebloom.goblin_api.expense.validation.ValidExpenseLabelsList;
+import com.jadebloom.goblin_api.expense.validation.ValidExpenseName;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 public class ExpenseDto {
 
     @NotNull
     private Long id;
 
-    @NotBlank(message = "The expense's name must not be null or empty")
-    @Size(min = 1, max = 64, message = "The expense's name must be 1 - 64 characters long")
+    @ValidExpenseName
     private String name;
 
-    @Size(min = 1, max = 256, message = "The expense's name must be 1 - 256 characters long")
+    @ValidExpenseDescription
     private String description;
 
-    @Min(value = 1, message = "The expense's amount must be at least 1")
-    @Max(value = Integer.MAX_VALUE, message = "The expense's amount must be at most 2147483647")
+    @ValidExpenseAmount
     private Integer amount;
 
-    @Size(max = 16, message = "The maximum amount of labels is 16")
-    private List<@CheckLabel String> labels;
+    @ValidExpenseLabelsList
+    private List<@ValidExpenseLabel String> labels;
 
     @NotNull
     @JsonProperty("expense_category_id")

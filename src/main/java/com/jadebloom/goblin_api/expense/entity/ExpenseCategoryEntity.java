@@ -1,5 +1,8 @@
 package com.jadebloom.goblin_api.expense.entity;
 
+import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryDescription;
+import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryName;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,9 +19,11 @@ public class ExpenseCategoryEntity {
     private Long id;
 
     @Column(unique = true, nullable = false, length = 64)
+    @ValidExpenseCategoryName
     private String name;
 
     @Column(length = 256)
+    @ValidExpenseCategoryDescription
     private String description;
 
     public ExpenseCategoryEntity() {
@@ -26,12 +31,6 @@ public class ExpenseCategoryEntity {
 
     public ExpenseCategoryEntity(String name) {
         this.name = name;
-    }
-
-    public ExpenseCategoryEntity(String name, String description) {
-        this.name = name;
-
-        this.description = description;
     }
 
     public Long getId() {

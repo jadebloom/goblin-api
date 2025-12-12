@@ -38,8 +38,11 @@ public class ExpenseCategoryValidationUnitTests {
 
     @Test
     public void canInvalidateExpenseCategoryDescription() {
-        ExpenseCategoryDto dto1 = new ExpenseCategoryDto("1", "");
-        ExpenseCategoryDto dto2 = new ExpenseCategoryDto("1",
+        ExpenseCategoryDto dto1 = new ExpenseCategoryDto("1");
+        dto1.setDescription("   ");
+
+        ExpenseCategoryDto dto2 = new ExpenseCategoryDto("1");
+        dto2.setDescription(
                 ".]%$fZR!Yh%rt{qyeYiBjdXb!bGtHtM$t&J].CYUWxdQBDzL=FN-i=3GL8=D(kvBUq-XExgn{}{!-ahZ-ubp*RVcJ+[+Gp}!Au#{%J4y?(F)/((fu&t[G-0DAqvGEz-L,)u6zjA08.q+C#3J6gcQ+RZ/;:{tB6KZ.@j,KmEKD{--z@(*na7bNz?5VX#hfh?qx09iuf+/3+RkkAjBq5w]:C8dMz[xdAmY{L6-jqrvi)g:Tfh(Mj8TPZK[2?{-5u_[e");
 
         assertAll(

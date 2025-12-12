@@ -43,7 +43,7 @@ public class CurrencyControllerIntegrationTests {
 
 	@Test
 	public void canCreateAndReturnCurrencyAndHttp201() throws Exception {
-		CreateCurrencyDto createDto = new CreateCurrencyDto("Dollar", "USD");
+		CreateCurrencyDto createDto = new CreateCurrencyDto("Dollar");
 
 		String json = objectMapper.writeValueAsString(createDto);
 
@@ -71,7 +71,8 @@ public class CurrencyControllerIntegrationTests {
 
 	@Test
 	public void canReturnHttp400WhenCurrencyHasInvalidAlphabeticalCode() throws Exception {
-		CreateCurrencyDto dto = new CreateCurrencyDto("Dollar", "DO");
+		CreateCurrencyDto dto = new CreateCurrencyDto("Dollar");
+		dto.setAlphabeticalCode("D");
 
 		String json = objectMapper.writeValueAsString(dto);
 

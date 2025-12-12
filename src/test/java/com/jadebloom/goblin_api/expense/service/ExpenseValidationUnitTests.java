@@ -127,6 +127,8 @@ public class ExpenseValidationUnitTests {
     }
 
     private <T> void validate(T target) {
+        System.out.println(target);
+
         if (!GenericValidator.isValid(target)) {
             String message = GenericValidator.getValidationErrorMessage(target);
 

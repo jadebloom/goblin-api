@@ -1,15 +1,14 @@
 package com.jadebloom.goblin_api.expense.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryDescription;
+import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryName;
 
 public class CreateExpenseCategoryDto {
 
-    @NotBlank(message = "The expense category's name must not be null or empty")
-    @Size(min = 1, max = 64, message = "The expense category's name must be 1 - 64 characters long")
+    @ValidExpenseCategoryName
     private String name;
 
-    @Size(min = 1, max = 256, message = "The expense category's name must be 1 - 256 characters long")
+    @ValidExpenseCategoryDescription
     private String description;
 
     public CreateExpenseCategoryDto() {
@@ -17,12 +16,6 @@ public class CreateExpenseCategoryDto {
 
     public CreateExpenseCategoryDto(String name) {
         this.name = name;
-    }
-
-    public CreateExpenseCategoryDto(String name, String description) {
-        this.name = name;
-
-        this.description = description;
     }
 
     public String getName() {

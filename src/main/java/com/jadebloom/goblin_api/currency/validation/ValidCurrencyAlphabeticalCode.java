@@ -10,6 +10,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.hibernate.validator.constraints.ConstraintComposition;
+
+import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import jakarta.validation.ReportAsSingleViolation;
 import jakarta.validation.constraints.Pattern;
@@ -18,9 +21,11 @@ import jakarta.validation.constraints.Pattern;
 @ReportAsSingleViolation
 @Target({ FIELD, METHOD, PARAMETER, ANNOTATION_TYPE, TYPE_USE })
 @Retention(RUNTIME)
+@ConstraintComposition
+@Constraint(validatedBy = {})
 public @interface ValidCurrencyAlphabeticalCode {
 
-    String message() default "The currency's alphabetical code must conform to ISO 4217";
+    String message() default "The currency's optional alphabetical code must conform to ISO 4217";
 
     Class<?>[] groups() default {};
 

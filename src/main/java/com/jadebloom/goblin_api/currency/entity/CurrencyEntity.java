@@ -35,12 +35,6 @@ public class CurrencyEntity {
         this.name = name;
     }
 
-    public CurrencyEntity(String name, String alphabeticalCode) {
-        this.name = name;
-
-        this.alphabeticalCode = alphabeticalCode;
-    }
-
     public Long getId() {
         return id;
     }
