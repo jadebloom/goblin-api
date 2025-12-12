@@ -18,9 +18,11 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleGenericException(Exception ex, WebRequest req) {
+        System.out.println(ex);
+
         ErrorResponse errorResponse = ErrorResponse
                 .builder(ex, HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong")
-                .type(URI.create(Links.API_DOCS_URI + "#exception-error"))
+                .type(URI.create(Links.API_DOCS_URI))
                 .title("Something went wrong")
                 .instance(URI.create(req.getContextPath()))
                 .property("timestamp", Instant.now())

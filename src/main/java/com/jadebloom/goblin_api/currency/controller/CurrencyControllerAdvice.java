@@ -21,7 +21,7 @@ public class CurrencyControllerAdvice {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleCurrencyNotFoundException(CurrencyNotFoundException ex, WebRequest req) {
         ErrorResponse errorResponse = ErrorResponse.builder(ex, HttpStatus.NOT_FOUND, ex.getMessage())
-                .type(URI.create(Links.API_DOCS_URI + "#currency-not-found-error"))
+                .type(URI.create(Links.API_DOCS_URI))
                 .title("Currency not found")
                 .instance(URI.create(req.getContextPath()))
                 .property("timestamp", Instant.now())
@@ -34,7 +34,7 @@ public class CurrencyControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleInvalidCurrencyException(InvalidCurrencyException ex, WebRequest req) {
         ErrorResponse errorResponse = ErrorResponse.builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage())
-                .type(URI.create(Links.API_DOCS_URI + "#invalid-currency-error"))
+                .type(URI.create(Links.API_DOCS_URI))
                 .title("Invalid currency")
                 .instance(URI.create(req.getContextPath()))
                 .property("timestamp", Instant.now())

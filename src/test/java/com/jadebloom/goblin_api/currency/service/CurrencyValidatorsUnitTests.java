@@ -1,4 +1,4 @@
-package com.jadebloom.goblin_api.currency.validation;
+package com.jadebloom.goblin_api.currency.service;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
@@ -10,6 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
 import com.jadebloom.goblin_api.currency.error.InvalidCurrencyException;
+import com.jadebloom.goblin_api.shared.validation.GenericValidator;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -25,18 +26,10 @@ public class CurrencyValidatorsUnitTests {
 
         assertAll(
                 "Assert that currencies with invalid names can be invalidated",
-                () -> assertThrowsExactly(InvalidCurrencyException.class, () -> {
-                    CurrencyValidators.validate(dto1);
-                }),
-                () -> assertThrowsExactly(InvalidCurrencyException.class, () -> {
-                    CurrencyValidators.validate(dto2);
-                }),
-                () -> assertThrowsExactly(InvalidCurrencyException.class, () -> {
-                    CurrencyValidators.validate(dto3);
-                }),
-                () -> assertThrowsExactly(InvalidCurrencyException.class, () -> {
-                    CurrencyValidators.validate(dto4);
-                }));
+                () -> assertThrowsExactly(InvalidCurrencyException.class, () -> validate(dto1)),
+                () -> assertThrowsExactly(InvalidCurrencyException.class, () -> validate(dto2)),
+                () -> assertThrowsExactly(InvalidCurrencyException.class, () -> validate(dto3)),
+                () -> assertThrowsExactly(InvalidCurrencyException.class, () -> validate(dto4)));
     }
 
     @Test
@@ -49,21 +42,19 @@ public class CurrencyValidatorsUnitTests {
 
         assertAll(
                 "Assert that currencies with invalid alphabetical codes can be invalidated",
-                () -> assertThrowsExactly(InvalidCurrencyException.class, () -> {
-                    CurrencyValidators.validate(dto1);
-                }),
-                () -> assertThrowsExactly(InvalidCurrencyException.class, () -> {
-                    CurrencyValidators.validate(dto2);
-                }),
-                () -> assertThrowsExactly(InvalidCurrencyException.class, () -> {
-                    CurrencyValidators.validate(dto3);
-                }),
-                () -> assertThrowsExactly(InvalidCurrencyException.class, () -> {
-                    CurrencyValidators.validate(dto4);
-                }),
-                () -> assertThrowsExactly(InvalidCurrencyException.class, () -> {
-                    CurrencyValidators.validate(dto5);
-                }));
+                () -> assertThrowsExactly(InvalidCurrencyException.class, () -> validate(dto1)),
+                () -> assertThrowsExactly(InvalidCurrencyException.class, () -> validate(dto2)),
+                () -> assertThrowsExactly(InvalidCurrencyException.class, () -> validate(dto3)),
+                () -> assertThrowsExactly(InvalidCurrencyException.class, () -> validate(dto4)),
+                () -> assertThrowsExactly(InvalidCurrencyException.class, () -> validate(dto5)));
+    }
+
+    private <T> void validate(T target) {
+        if (!GenericValidator.isValid(target)) {
+            String message = GenericValidator.getValidationErrorMessage(target);
+
+            throw new InvalidCurrencyException(message);
+        }
     }
 
 }

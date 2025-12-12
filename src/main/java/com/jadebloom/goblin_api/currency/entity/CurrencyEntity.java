@@ -70,7 +70,18 @@ public class CurrencyEntity {
 
         CurrencyEntity currencyEntity = (CurrencyEntity) o;
 
-        return id == currencyEntity.getId();
+        if (id != currencyEntity.getId() || name != currencyEntity.getName()) {
+            return false;
+        }
+
+        return alphabeticalCode == currencyEntity.getAlphabeticalCode();
+    }
+
+    @Override
+    public String toString() {
+        String f = "CurrencyEntity(id=%d, name=%s, alphabeticalCode=%s)";
+
+        return String.format(f, id, name, alphabeticalCode);
     }
 
 }

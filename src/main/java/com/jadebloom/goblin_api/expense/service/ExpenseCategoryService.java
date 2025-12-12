@@ -20,7 +20,7 @@ public interface ExpenseCategoryService {
 	boolean existsById(Long expenseCategoryId);
 
 	ExpenseCategoryDto update(ExpenseCategoryDto expenseCategoryDto)
-			throws InvalidExpenseCategoryException, ExpenseCategoryNotFoundException;
+			throws ExpenseCategoryNotFoundException, InvalidExpenseCategoryException;
 
 	void deleteAll();
 

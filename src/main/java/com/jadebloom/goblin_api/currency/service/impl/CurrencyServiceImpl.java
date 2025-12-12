@@ -11,19 +11,19 @@ import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
 import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
 import com.jadebloom.goblin_api.currency.error.InvalidCurrencyException;
+import com.jadebloom.goblin_api.currency.mapper.CurrencyMapper;
 import com.jadebloom.goblin_api.currency.repository.CurrencyRepository;
 import com.jadebloom.goblin_api.currency.service.CurrencyService;
-import com.jadebloom.goblin_api.currency.validation.CurrencyValidators;
-import com.jadebloom.goblin_api.shared.mapper.Mapper;
+import com.jadebloom.goblin_api.shared.validation.GenericValidator;
 
 @Service
 public class CurrencyServiceImpl implements CurrencyService {
 
     private final CurrencyRepository currencyRepository;
 
-    private final Mapper mapper;
+    private final CurrencyMapper mapper;
 
-    public CurrencyServiceImpl(CurrencyRepository currencyRepository, Mapper mapper) {
+    public CurrencyServiceImpl(CurrencyRepository currencyRepository, CurrencyMapper mapper) {
         this.currencyRepository = currencyRepository;
 
         this.mapper = mapper;
@@ -31,18 +31,22 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     @Override
     public CurrencyDto create(CreateCurrencyDto createCurrencyDto) throws InvalidCurrencyException {
-        CurrencyValidators.validate(createCurrencyDto);
+        if (!GenericValidator.isValid(createCurrencyDto)) {
+            String message = GenericValidator.getValidationErrorMessage(createCurrencyDto);
 
-        CurrencyEntity entity = mapper.map(createCurrencyDto, CurrencyEntity.class);
+            throw new InvalidCurrencyException(message);
+        }
 
-        return mapper.map(currencyRepository.save(entity), CurrencyDto.class);
+        CurrencyEntity entity = mapper.map(createCurrencyDto);
+
+        return mapper.map(currencyRepository.save(entity));
     }
 
     @Override
     public Page<CurrencyDto> findAll(Pageable pageable) {
         Page<CurrencyEntity> page = currencyRepository.findAll(pageable);
 
-        return page.map(e -> mapper.map(e, CurrencyDto.class));
+        return page.map(mapper::map);
     }
 
     @Override
@@ -55,7 +59,7 @@ public class CurrencyServiceImpl implements CurrencyService {
             throw new CurrencyNotFoundException(String.format(f, currencyId));
         }
 
-        return mapper.map(entity.get(), CurrencyDto.class);
+        return mapper.map(entity.get());
     }
 
     @Override
@@ -71,11 +75,15 @@ public class CurrencyServiceImpl implements CurrencyService {
             throw new CurrencyNotFoundException(String.format(f, currencyDto.getId()));
         }
 
-        CurrencyValidators.validate(currencyDto);
+        if (!GenericValidator.isValid(currencyDto)) {
+            String message = GenericValidator.getValidationErrorMessage(currencyDto);
 
-        CurrencyEntity entity = mapper.map(currencyDto, CurrencyEntity.class);
+            throw new InvalidCurrencyException(message);
+        }
 
-        return mapper.map(currencyRepository.save(entity), CurrencyDto.class);
+        CurrencyEntity entity = mapper.map(currencyDto);
+
+        return mapper.map(currencyRepository.save(entity));
     }
 
     @Override

@@ -53,4 +53,11 @@ public class ExpenseCategoryDto {
         this.description = description;
     }
 
+    @Override
+    public String toString() {
+        String f = "ExpenseCategoryDto(id=%d, name=%s, description=%s)";
+
+        return String.format(f, id, name, description);
+    }
+
 }
