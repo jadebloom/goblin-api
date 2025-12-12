@@ -2,6 +2,6 @@
 
 Tasks to keep in mind.
 
-1. Think of interfering with Jackson's built-in deserializer in controller. 
-2. Add sort parameter in openapi.yaml.
-3. Implement expense.
+1. Add checks for uniques (or catch SQL error)?
+2. Add deletion block on currency.
+3. Add deletion block on expense category.
