@@ -201,4 +201,18 @@ public class ExpenseControllerIntegrationTests {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()));
 	}
 
+	@Test
+	public void canReturnHttp204WhenDeletingAllExpenses() throws Exception {
+		mockMvc.perform(
+				MockMvcRequestBuilders.delete("/api/v1/expenses/all"))
+				.andExpect(MockMvcResultMatchers.status().isNoContent());
+	}
+
+	@Test
+	public void canReturnHttp204WhenDeletingExpenseById() throws Exception {
+		mockMvc.perform(
+				MockMvcRequestBuilders.delete("/api/v1/expenses/1"))
+				.andExpect(MockMvcResultMatchers.status().isNoContent());
+	}
+
 }

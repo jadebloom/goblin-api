@@ -3,6 +3,11 @@ package com.jadebloom.goblin_api.expense.entity;
 import java.util.List;
 
 import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
+import com.jadebloom.goblin_api.expense.validation.ValidExpenseAmount;
+import com.jadebloom.goblin_api.expense.validation.ValidExpenseDescription;
+import com.jadebloom.goblin_api.expense.validation.ValidExpenseLabel;
+import com.jadebloom.goblin_api.expense.validation.ValidExpenseLabelsList;
+import com.jadebloom.goblin_api.expense.validation.ValidExpenseName;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -14,6 +19,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "expense")
@@ -24,25 +30,31 @@ public class ExpenseEntity {
     private Long id;
 
     @Column(nullable = false, length = 64)
+    @ValidExpenseName
     private String name;
 
     @Column(length = 256)
+    @ValidExpenseDescription
     private String description;
 
     @Column(nullable = false)
+    @ValidExpenseAmount
     private Integer amount;
 
     @ElementCollection
     @CollectionTable(name = "expense_labels", joinColumns = @JoinColumn(name = "expense_id"))
     @Column(name = "label", length = 32)
-    private List<String> labels;
+    @ValidExpenseLabelsList
+    private List<@ValidExpenseLabel String> labels;
 
     @ManyToOne
     @JoinColumn(name = "expense_category_id", referencedColumnName = "id")
+    @NotNull
     private ExpenseCategoryEntity expenseCategory;
 
     @ManyToOne
     @JoinColumn(name = "currency_id", referencedColumnName = "id")
+    @NotNull
     private CurrencyEntity currency;
 
     public ExpenseEntity() {

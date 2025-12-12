@@ -20,12 +20,6 @@ public class CreateCurrencyDto {
         this.name = name;
     }
 
-    public CreateCurrencyDto(String name, String alphabeticalCode) {
-        this.name = name;
-
-        this.alphabeticalCode = alphabeticalCode;
-    }
-
     public String getName() {
         return name;
     }

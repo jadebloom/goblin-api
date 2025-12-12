@@ -60,7 +60,7 @@ public class ExpenseCategoryControllerIntegrationTests {
 
 	@Test
 	public void canReturnHttp400WhenCreatingInvalidExpenseCategory() throws Exception {
-		CreateExpenseCategoryDto dto = new CreateExpenseCategoryDto(null, "");
+		CreateExpenseCategoryDto dto = new CreateExpenseCategoryDto(null);
 
 		String json = objectMapper.writeValueAsString(dto);
 

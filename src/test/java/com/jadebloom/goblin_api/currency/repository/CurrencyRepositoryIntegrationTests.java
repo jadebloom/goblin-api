@@ -31,7 +31,9 @@ public class CurrencyRepositoryIntegrationTests {
 
     @Test
     public void canCreateAndFindMultipleCurrencies() {
-        CurrencyEntity entity1 = new CurrencyEntity("American Dollar", "USD");
+        CurrencyEntity entity1 = new CurrencyEntity("American Dollar");
+        entity1.setAlphabeticalCode("USD");
+
         CurrencyEntity entity2 = new CurrencyEntity("Australian Dollar");
         CurrencyEntity entity3 = new CurrencyEntity("日本の円");
 
@@ -53,7 +55,8 @@ public class CurrencyRepositoryIntegrationTests {
 
     @Test
     public void canCreateAndFindCurrency() {
-        CurrencyEntity entity = new CurrencyEntity("American Dollar", "USD");
+        CurrencyEntity entity = new CurrencyEntity("American Dollar");
+        entity.setAlphabeticalCode("USD");
 
         CurrencyEntity savedEntity = underTest.save(entity);
 

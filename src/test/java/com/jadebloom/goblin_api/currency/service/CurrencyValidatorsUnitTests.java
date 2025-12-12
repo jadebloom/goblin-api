@@ -34,11 +34,20 @@ public class CurrencyValidatorsUnitTests {
 
     @Test
     public void canInvalidateCurrencyAlphabeticalCodes() {
-        CurrencyDto dto1 = new CurrencyDto("Dollar", "AB");
-        CurrencyDto dto2 = new CurrencyDto("Dollar", "!AB");
-        CurrencyDto dto3 = new CurrencyDto("Dollar", "A%B");
-        CurrencyDto dto4 = new CurrencyDto("Dollar", "AB1");
-        CurrencyDto dto5 = new CurrencyDto("Dollar", "ABCD");
+        CurrencyDto dto1 = new CurrencyDto("Dollar");
+        dto1.setAlphabeticalCode("AB");
+
+        CurrencyDto dto2 = new CurrencyDto("Dollar");
+        dto2.setAlphabeticalCode("!AB");
+
+        CurrencyDto dto3 = new CurrencyDto("Dollar");
+        dto3.setAlphabeticalCode("A%B");
+
+        CurrencyDto dto4 = new CurrencyDto("Dollar");
+        dto4.setAlphabeticalCode("AB1");
+
+        CurrencyDto dto5 = new CurrencyDto("Dollar");
+        dto5.setAlphabeticalCode("ABCD");
 
         assertAll(
                 "Assert that currencies with invalid alphabetical codes can be invalidated",

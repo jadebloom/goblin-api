@@ -25,12 +25,6 @@ public class CurrencyDto {
         this.name = name;
     }
 
-    public CurrencyDto(String name, String alphabeticalCode) {
-        this.name = name;
-
-        this.alphabeticalCode = alphabeticalCode;
-    }
-
     public Long getId() {
         return id;
     }

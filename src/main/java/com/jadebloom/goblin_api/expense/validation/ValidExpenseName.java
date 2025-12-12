@@ -1,4 +1,4 @@
-package com.jadebloom.goblin_api.currency.validation;
+package com.jadebloom.goblin_api.expense.validation;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.FIELD;
@@ -25,9 +25,9 @@ import jakarta.validation.constraints.Size;
 @Retention(RUNTIME)
 @ConstraintComposition
 @Constraint(validatedBy = {})
-public @interface ValidCurrencyName {
+public @interface ValidExpenseName {
 
-    String message() default "The currency's name must be 1 - 64 characters long";
+    String message() default "The expense's name must be 1 - 64 characters long";
 
     Class<?>[] groups() default {};
 
