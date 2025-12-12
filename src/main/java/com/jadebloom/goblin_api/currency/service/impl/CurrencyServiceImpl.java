@@ -68,7 +68,8 @@ public class CurrencyServiceImpl implements CurrencyService {
     }
 
     @Override
-    public CurrencyDto update(CurrencyDto currencyDto) throws InvalidCurrencyException, CurrencyNotFoundException {
+    public CurrencyDto update(CurrencyDto currencyDto)
+            throws CurrencyNotFoundException, InvalidCurrencyException {
         if (!currencyRepository.existsById(currencyDto.getId())) {
             String f = "Currency with ID=%d doesn't exist";
 
