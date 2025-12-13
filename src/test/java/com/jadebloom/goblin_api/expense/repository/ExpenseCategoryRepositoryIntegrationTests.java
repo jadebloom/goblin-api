@@ -62,17 +62,32 @@ public class ExpenseCategoryRepositoryIntegrationTests {
     }
 
     @Test
-    public void canReturnTrueWhenCheckingExistenceOfExistingExpenseCategory() {
+    public void canCheckExpenseCategoryForExistenceById() {
         ExpenseCategoryEntity entity = new ExpenseCategoryEntity("Daily");
-
         Long id = underTest.save(entity).getId();
 
-        assertTrue(underTest.existsById(id));
+        assertAll(
+                "Assert that expense categories can be checked for existence by ID",
+                () -> assertTrue(underTest.existsById(id)),
+                () -> assertFalse(underTest.existsById(id + 1)));
     }
 
     @Test
-    public void canReturnFalseWhenCheckingExistenceOfNonExistingExpenseCategory() {
-        assertFalse(underTest.existsById(1L));
+    public void canCheckExpenseCategoryForExistenceByName() {
+        ExpenseCategoryEntity e = new ExpenseCategoryEntity("Daily");
+        underTest.save(e);
+
+        assertAll(
+                "Assert that expense categories can be checked for existence by name",
+                () -> assertTrue(underTest.existsByName(e.getName())),
+                () -> assertFalse(underTest.existsByName(e.getName() + ".")));
+    }
+
+    @Test
+    public void canCheckExpenseCategoryForExistenceByIdNotAndName() {
+        ExpenseCategoryEntity e = underTest.save(new ExpenseCategoryEntity("Daily"));
+
+        assertFalse(underTest.existsByIdNotAndName(e.getId(), e.getName()));
     }
 
     @Test

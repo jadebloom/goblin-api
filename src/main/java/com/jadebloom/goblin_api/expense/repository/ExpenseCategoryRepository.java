@@ -8,5 +8,10 @@ import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
 
 @Repository
 public interface ExpenseCategoryRepository extends CrudRepository<ExpenseCategoryEntity, Long>,
-                PagingAndSortingRepository<ExpenseCategoryEntity, Long> {
+        PagingAndSortingRepository<ExpenseCategoryEntity, Long> {
+
+    public boolean existsByName(String name);
+
+    public boolean existsByIdNotAndName(Long id, String name);
+
 }

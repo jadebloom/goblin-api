@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
+import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNameUnavailableException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
 import com.jadebloom.goblin_api.expense.error.InvalidExpenseCategoryException;
 import com.jadebloom.goblin_api.expense.mapper.ExpenseCategoryMapper;
@@ -33,11 +34,18 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 
     @Override
     public ExpenseCategoryDto create(CreateExpenseCategoryDto createExpenseCategoryDto)
-            throws InvalidExpenseCategoryException, ExpenseCategoryNotFoundException {
+            throws InvalidExpenseCategoryException, ExpenseCategoryNameUnavailableException {
         if (!GenericValidator.isValid(createExpenseCategoryDto)) {
             String message = GenericValidator.getValidationErrorMessage(createExpenseCategoryDto);
 
             throw new InvalidExpenseCategoryException(message);
+        }
+
+        if (expenseCategoryRepository.existsByName(createExpenseCategoryDto.getName())) {
+            String f = "Expense category with name=%s already exists";
+            String errorMessage = String.format(f, createExpenseCategoryDto.getName());
+
+            throw new ExpenseCategoryNameUnavailableException(errorMessage);
         }
 
         ExpenseCategoryEntity entity = mapper.map(createExpenseCategoryDto);
@@ -72,20 +80,40 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
     }
 
     @Override
-    public ExpenseCategoryDto update(ExpenseCategoryDto expenseCategoryDto)
-            throws InvalidExpenseCategoryException, ExpenseCategoryNotFoundException {
-        Long id = expenseCategoryDto.getId();
+    public boolean existsByName(String expenseCategoryName) {
+        return expenseCategoryRepository.existsByName(expenseCategoryName);
+    }
 
-        if (!expenseCategoryRepository.existsById(id)) {
+    @Override
+    public boolean existsByIdNotAndName(Long expenseCategoryId, String expenseCategoryName) {
+        return expenseCategoryRepository.existsByIdNotAndName(expenseCategoryId, expenseCategoryName);
+    }
+
+    @Override
+    public ExpenseCategoryDto update(ExpenseCategoryDto expenseCategoryDto)
+            throws InvalidExpenseCategoryException,
+            ExpenseCategoryNotFoundException,
+            ExpenseCategoryNameUnavailableException {
+        if (!GenericValidator.isValid(expenseCategoryDto)) {
+            String message = GenericValidator.getValidationErrorMessage(expenseCategoryDto);
+
+            throw new InvalidExpenseCategoryException(message);
+        }
+
+        Long id = expenseCategoryDto.getId();
+        String name = expenseCategoryDto.getName();
+
+        if (!existsById(id)) {
             String f = "Expense category with ID=%d doesn't exist";
 
             throw new ExpenseCategoryNotFoundException(String.format(f, id));
         }
 
-        if (!GenericValidator.isValid(expenseCategoryDto)) {
-            String message = GenericValidator.getValidationErrorMessage(expenseCategoryDto);
+        if (expenseCategoryRepository.existsByIdNotAndName(id, name)) {
+            String f = "Expense category with name=%s already exists";
+            String errorMessage = String.format(f, name);
 
-            throw new InvalidExpenseCategoryException(message);
+            throw new ExpenseCategoryNameUnavailableException(errorMessage);
         }
 
         ExpenseCategoryEntity entity = mapper.map(expenseCategoryDto);
