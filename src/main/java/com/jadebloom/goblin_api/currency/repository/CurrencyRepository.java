@@ -8,5 +8,10 @@ import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
 
 @Repository
 public interface CurrencyRepository
-                extends CrudRepository<CurrencyEntity, Long>, PagingAndSortingRepository<CurrencyEntity, Long> {
+        extends CrudRepository<CurrencyEntity, Long>, PagingAndSortingRepository<CurrencyEntity, Long> {
+
+    public boolean existsByName(String name);
+
+    public boolean existsByIdNotAndName(Long id, String name);
+
 }

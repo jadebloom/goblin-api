@@ -68,6 +68,16 @@ public class CurrencyServiceImpl implements CurrencyService {
     }
 
     @Override
+    public boolean existsByName(String name) {
+        return currencyRepository.existsByName(name);
+    }
+
+    @Override
+    public boolean existsByIdNotAndName(Long id, String name) {
+        return currencyRepository.existsByIdNotAndName(id, name);
+    }
+
+    @Override
     public CurrencyDto update(CurrencyDto currencyDto)
             throws CurrencyNotFoundException, InvalidCurrencyException {
         if (!currencyRepository.existsById(currencyDto.getId())) {
