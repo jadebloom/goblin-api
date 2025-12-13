@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.jadebloom.goblin_api.currency.dto.CreateCurrencyDto;
 import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
 import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
+import com.jadebloom.goblin_api.currency.error.CurrencyNameUnavailableException;
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
 import com.jadebloom.goblin_api.currency.error.InvalidCurrencyException;
 import com.jadebloom.goblin_api.currency.mapper.CurrencyMapper;
@@ -30,11 +31,19 @@ public class CurrencyServiceImpl implements CurrencyService {
     }
 
     @Override
-    public CurrencyDto create(CreateCurrencyDto createCurrencyDto) throws InvalidCurrencyException {
+    public CurrencyDto create(CreateCurrencyDto createCurrencyDto)
+            throws InvalidCurrencyException, CurrencyNameUnavailableException {
         if (!GenericValidator.isValid(createCurrencyDto)) {
             String message = GenericValidator.getValidationErrorMessage(createCurrencyDto);
 
             throw new InvalidCurrencyException(message);
+        }
+
+        if (currencyRepository.existsByName(createCurrencyDto.getName())) {
+            String f = "Currency with name=%s already exists";
+            String errorMessage = String.format(f, createCurrencyDto.getName());
+
+            throw new CurrencyNameUnavailableException(errorMessage);
         }
 
         CurrencyEntity entity = mapper.map(createCurrencyDto);
@@ -79,17 +88,27 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     @Override
     public CurrencyDto update(CurrencyDto currencyDto)
-            throws CurrencyNotFoundException, InvalidCurrencyException {
-        if (!currencyRepository.existsById(currencyDto.getId())) {
-            String f = "Currency with ID=%d doesn't exist";
-
-            throw new CurrencyNotFoundException(String.format(f, currencyDto.getId()));
-        }
-
+            throws InvalidCurrencyException, CurrencyNotFoundException, CurrencyNameUnavailableException {
         if (!GenericValidator.isValid(currencyDto)) {
             String message = GenericValidator.getValidationErrorMessage(currencyDto);
 
             throw new InvalidCurrencyException(message);
+        }
+
+        Long id = currencyDto.getId();
+        String name = currencyDto.getName();
+
+        if (!existsById(id)) {
+            String f = "Currency with ID=%d doesn't exist";
+
+            throw new CurrencyNotFoundException(String.format(f, id));
+        }
+
+        if (currencyRepository.existsByIdNotAndName(id, name)) {
+            String f = "Other currency with name=%s already exists";
+            String errorMessage = String.format(f, name);
+
+            throw new CurrencyNameUnavailableException(errorMessage);
         }
 
         CurrencyEntity entity = mapper.map(currencyDto);
