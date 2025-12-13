@@ -2,6 +2,7 @@ package com.jadebloom.goblin_api.currency.repository;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -69,14 +70,35 @@ public class CurrencyRepositoryIntegrationTests {
     }
 
     @Test
-    public void canCreateAndCheckTheExistenceOfCurrency() {
+    public void canCheckCurrencyForExistenceById() {
         CurrencyEntity entity = new CurrencyEntity("Dollar");
-
         CurrencyEntity savedEntity = underTest.save(entity);
 
-        boolean isExists = underTest.existsById(savedEntity.getId());
+        boolean b1 = underTest.existsById(savedEntity.getId());
+        boolean b2 = underTest.existsById(savedEntity.getId() + 1);
 
-        assertTrue(isExists);
+        assertTrue(b1 && !b2);
+    }
+
+    @Test
+    public void canCheckCurrencyForExistenceByName() {
+        CurrencyEntity entity = new CurrencyEntity("Dollar");
+        CurrencyEntity savedEntity = underTest.save(entity);
+
+        boolean b1 = underTest.existsByName(savedEntity.getName());
+        boolean b2 = underTest.existsByName(savedEntity.getName() + ".");
+
+        assertTrue(b1 && !b2);
+    }
+
+    @Test
+    public void canCheckCurrencyForExistenceByIdNotAndName() {
+        CurrencyEntity entity = new CurrencyEntity("Dollar");
+        CurrencyEntity savedEntity = underTest.save(entity);
+
+        boolean b = underTest.existsByIdNotAndName(savedEntity.getId(), savedEntity.getName());
+
+        assertFalse(b);
     }
 
     @Test

@@ -18,6 +18,10 @@ public interface CurrencyService {
 
     boolean existsById(Long currencyId);
 
+    boolean existsByName(String name);
+
+    boolean existsByIdNotAndName(Long id, String name);
+
     CurrencyDto update(CurrencyDto currencyDto)
             throws CurrencyNotFoundException, InvalidCurrencyException;
 

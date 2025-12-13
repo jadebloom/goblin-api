@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 
+import com.jadebloom.goblin_api.currency.error.CurrencyNameUnavailableException;
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
 import com.jadebloom.goblin_api.currency.error.InvalidCurrencyException;
 import com.jadebloom.goblin_api.shared.util.Links;
@@ -17,12 +18,12 @@ import com.jadebloom.goblin_api.shared.util.Links;
 @ControllerAdvice
 public class CurrencyControllerAdvice {
 
-    @ExceptionHandler(CurrencyNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleCurrencyNotFoundException(CurrencyNotFoundException ex, WebRequest req) {
-        ErrorResponse errorResponse = ErrorResponse.builder(ex, HttpStatus.NOT_FOUND, ex.getMessage())
+    @ExceptionHandler(InvalidCurrencyException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleInvalidCurrencyException(InvalidCurrencyException ex, WebRequest req) {
+        ErrorResponse errorResponse = ErrorResponse.builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage())
                 .type(URI.create(Links.API_DOCS_URI))
-                .title("Currency not found")
+                .title("Invalid currency")
                 .instance(URI.create(req.getContextPath()))
                 .property("timestamp", Instant.now())
                 .build();
@@ -30,12 +31,26 @@ public class CurrencyControllerAdvice {
         return errorResponse;
     }
 
-    @ExceptionHandler(InvalidCurrencyException.class)
+    @ExceptionHandler(CurrencyNameUnavailableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleInvalidCurrencyException(InvalidCurrencyException ex, WebRequest req) {
+    public ErrorResponse handleCurrencyNameUnavailableException(
+            CurrencyNameUnavailableException ex, WebRequest req) {
         ErrorResponse errorResponse = ErrorResponse.builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage())
                 .type(URI.create(Links.API_DOCS_URI))
-                .title("Invalid currency")
+                .title("Currency name unavailable")
+                .instance(URI.create(req.getContextPath()))
+                .property("timestamp", Instant.now())
+                .build();
+
+        return errorResponse;
+    }
+
+    @ExceptionHandler(CurrencyNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleCurrencyNotFoundException(CurrencyNotFoundException ex, WebRequest req) {
+        ErrorResponse errorResponse = ErrorResponse.builder(ex, HttpStatus.NOT_FOUND, ex.getMessage())
+                .type(URI.create(Links.API_DOCS_URI))
+                .title("Currency not found")
                 .instance(URI.create(req.getContextPath()))
                 .property("timestamp", Instant.now())
                 .build();
