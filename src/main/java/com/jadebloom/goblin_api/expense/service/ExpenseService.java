@@ -23,7 +23,7 @@ public interface ExpenseService {
 
 	ExpenseDto findById(Long expenseId) throws ExpenseNotFoundException;
 
-	boolean existsById(Long expenseId);
+	boolean existsByCurrencyId(Long currencyId);
 
 	ExpenseDto update(ExpenseDto expenseDto)
 			throws InvalidExpenseException,

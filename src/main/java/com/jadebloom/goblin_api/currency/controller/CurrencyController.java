@@ -34,9 +34,9 @@ public class CurrencyController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CurrencyDto> createCurrency(
             @Valid @RequestBody CreateCurrencyDto createDto) {
-        CurrencyDto dto = currencyService.create(createDto);
+        CurrencyDto created = currencyService.create(createDto);
 
-        return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -48,16 +48,16 @@ public class CurrencyController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CurrencyDto> findCurrencyById(@PathVariable(name = "id") Long currencyId) {
-        CurrencyDto dto = currencyService.findById(currencyId);
+        CurrencyDto found = currencyService.findById(currencyId);
 
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        return new ResponseEntity<>(found, HttpStatus.OK);
     }
 
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CurrencyDto> updateCurrency(@RequestBody CurrencyDto currencyDto) {
-        CurrencyDto dto = currencyService.update(currencyDto);
+    public ResponseEntity<CurrencyDto> updateCurrency(@RequestBody CurrencyDto dto) {
+        CurrencyDto updated = currencyService.update(dto);
 
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
     @DeleteMapping("/all")

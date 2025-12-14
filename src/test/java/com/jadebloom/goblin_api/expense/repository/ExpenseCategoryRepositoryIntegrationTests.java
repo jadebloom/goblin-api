@@ -31,94 +31,87 @@ public class ExpenseCategoryRepositoryIntegrationTests {
 
     @Test
     public void canCreateAndFindExpenseCategory() {
-        ExpenseCategoryEntity entity = new ExpenseCategoryEntity("Daily");
-        ExpenseCategoryEntity savedEntity = underTest.save(entity);
+        ExpenseCategoryEntity e = new ExpenseCategoryEntity("Daily");
+        ExpenseCategoryEntity savedE = underTest.save(e);
 
-        Optional<ExpenseCategoryEntity> foundEntity = underTest.findById(savedEntity.getId());
+        Optional<ExpenseCategoryEntity> foundEntity = underTest.findById(savedE.getId());
 
         assertAll(
                 "Assert that an expense category can be created and found",
                 () -> assertTrue(foundEntity.isPresent()),
-                () -> assertEquals(savedEntity, foundEntity.get()));
+                () -> assertEquals(savedE, foundEntity.get()));
     }
 
     @Test
-    public void canCreateAndFindMultipleExpenseCategories() {
+    public void canCreateAndFindExpenseCategories() {
         ExpenseCategoryEntity e1 = new ExpenseCategoryEntity("Daily");
         ExpenseCategoryEntity e2 = new ExpenseCategoryEntity("Debt");
 
-        ExpenseCategoryEntity se1 = underTest.save(e1);
-        ExpenseCategoryEntity se2 = underTest.save(e2);
+        ExpenseCategoryEntity savedE1 = underTest.save(e1);
+        ExpenseCategoryEntity savedE2 = underTest.save(e2);
 
         Page<ExpenseCategoryEntity> page = underTest.findAll(PageRequest.of(0, 5));
-
         List<ExpenseCategoryEntity> entities = page.getContent();
 
         assertAll(
-                "Assert that multiple expense categories can be created and found",
+                "Assert that expense categories can be created and found",
                 () -> assertEquals(2, entities.size()),
-                () -> assertTrue(entities.contains(se1)),
-                () -> assertTrue(entities.contains(se2)));
-    }
-
-    @Test
-    public void canCheckExpenseCategoryForExistenceById() {
-        ExpenseCategoryEntity entity = new ExpenseCategoryEntity("Daily");
-        Long id = underTest.save(entity).getId();
-
-        assertAll(
-                "Assert that expense categories can be checked for existence by ID",
-                () -> assertTrue(underTest.existsById(id)),
-                () -> assertFalse(underTest.existsById(id + 1)));
+                () -> assertTrue(entities.contains(savedE1)),
+                () -> assertTrue(entities.contains(savedE2)));
     }
 
     @Test
     public void canCheckExpenseCategoryForExistenceByName() {
-        ExpenseCategoryEntity e = new ExpenseCategoryEntity("Daily");
-        underTest.save(e);
+        ExpenseCategoryEntity e = new ExpenseCategoryEntity("Dollar");
+        ExpenseCategoryEntity savedE = underTest.save(e);
 
-        assertAll(
-                "Assert that expense categories can be checked for existence by name",
-                () -> assertTrue(underTest.existsByName(e.getName())),
-                () -> assertFalse(underTest.existsByName(e.getName() + ".")));
+        boolean b1 = underTest.existsByName(savedE.getName());
+        boolean b2 = underTest.existsByName(savedE.getName() + 1);
+
+        assertAll("Assert that expense categories can be checked for existence by name",
+                () -> assertTrue(b1),
+                () -> assertFalse(b2));
     }
 
     @Test
     public void canCheckExpenseCategoryForExistenceByIdNotAndName() {
-        ExpenseCategoryEntity e = underTest.save(new ExpenseCategoryEntity("Daily"));
+        ExpenseCategoryEntity e = new ExpenseCategoryEntity("Daily");
+        ExpenseCategoryEntity savedE = underTest.save(e);
 
-        assertFalse(underTest.existsByIdNotAndName(e.getId(), e.getName()));
+        boolean b1 = underTest.existsByIdNotAndName(savedE.getId(), savedE.getName());
+        boolean b2 = underTest.existsByIdNotAndName(savedE.getId() + 1, savedE.getName());
+
+        assertAll("Assert that expense categories can be checked for existence by name and not id",
+                () -> assertFalse(b1),
+                () -> assertTrue(b2));
     }
 
     @Test
-    public void canFullUpdateAndFindExpenseCategory() {
-        ExpenseCategoryEntity entity = new ExpenseCategoryEntity("Daily");
+    public void canUpdateAndFindExpenseCategory() {
+        ExpenseCategoryEntity e = new ExpenseCategoryEntity("Daily");
+        ExpenseCategoryEntity savedE = underTest.save(e);
 
-        ExpenseCategoryEntity savedEntity = underTest.save(entity);
-        savedEntity.setDescription("Daily necessities");
+        savedE.setDescription("Daily necessities");
+        underTest.save(savedE);
 
-        underTest.save(savedEntity);
-
-        Optional<ExpenseCategoryEntity> foundEntity = underTest.findById(savedEntity.getId());
+        Optional<ExpenseCategoryEntity> foundE = underTest.findById(savedE.getId());
 
         assertAll(
-                "Assert that an expense category can be full updated and found",
-                () -> assertTrue(foundEntity.isPresent()),
-                () -> assertEquals(savedEntity, foundEntity.get()));
+                "Assert that an expense category can be updated and found",
+                () -> assertTrue(foundE.isPresent()),
+                () -> assertEquals(savedE, foundE.get()));
     }
 
     @Test
     public void canDeleteAllExpenseCategories() {
         ExpenseCategoryEntity e1 = new ExpenseCategoryEntity("Daily");
         ExpenseCategoryEntity e2 = new ExpenseCategoryEntity("Debt");
-
         underTest.save(e1);
         underTest.save(e2);
 
         underTest.deleteAll();
 
         Page<ExpenseCategoryEntity> page = underTest.findAll(PageRequest.of(0, 5));
-
         List<ExpenseCategoryEntity> entities = page.getContent();
 
         assertTrue(entities.isEmpty());
@@ -126,15 +119,14 @@ public class ExpenseCategoryRepositoryIntegrationTests {
 
     @Test
     public void canDeleteExpenseCategoryById() {
-        ExpenseCategoryEntity entity = new ExpenseCategoryEntity("Daily");
-
-        Long id = underTest.save(entity).getId();
+        ExpenseCategoryEntity e = new ExpenseCategoryEntity("Daily");
+        Long id = underTest.save(e).getId();
 
         underTest.deleteById(id);
 
-        Optional<ExpenseCategoryEntity> foundEntity = underTest.findById(id);
+        Optional<ExpenseCategoryEntity> foundE = underTest.findById(id);
 
-        assertTrue(foundEntity.isEmpty());
+        assertTrue(foundE.isEmpty());
     }
 
 }

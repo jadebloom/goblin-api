@@ -37,9 +37,9 @@ public class CurrencyServiceImpl implements CurrencyService {
             throw new CurrencyNameUnavailableException(errorMessage);
         }
 
-        CurrencyEntity entity = mapper.map(createDto);
+        CurrencyEntity created = mapper.map(createDto);
 
-        return mapper.map(currencyRepository.save(entity));
+        return mapper.map(currencyRepository.save(created));
     }
 
     @Override
@@ -51,15 +51,15 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     @Override
     public CurrencyDto findById(Long currencyId) throws CurrencyNotFoundException {
-        Optional<CurrencyEntity> entity = currencyRepository.findById(currencyId);
+        Optional<CurrencyEntity> found = currencyRepository.findById(currencyId);
 
-        if (entity.isEmpty()) {
+        if (found.isEmpty()) {
             String f = "Currency with ID=%d wasn't found";
 
             throw new CurrencyNotFoundException(String.format(f, currencyId));
         }
 
-        return mapper.map(entity.get());
+        return mapper.map(found.get());
     }
 
     @Override
@@ -86,9 +86,9 @@ public class CurrencyServiceImpl implements CurrencyService {
             throw new CurrencyNameUnavailableException(errorMessage);
         }
 
-        CurrencyEntity entity = mapper.map(dto);
+        CurrencyEntity updated = mapper.map(dto);
 
-        return mapper.map(currencyRepository.save(entity));
+        return mapper.map(currencyRepository.save(updated));
     }
 
     @Override

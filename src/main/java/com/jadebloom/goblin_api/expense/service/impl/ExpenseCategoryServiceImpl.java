@@ -11,11 +11,9 @@ import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNameUnavailableException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
-import com.jadebloom.goblin_api.expense.error.InvalidExpenseCategoryException;
 import com.jadebloom.goblin_api.expense.mapper.ExpenseCategoryMapper;
 import com.jadebloom.goblin_api.expense.repository.ExpenseCategoryRepository;
 import com.jadebloom.goblin_api.expense.service.ExpenseCategoryService;
-import com.jadebloom.goblin_api.shared.validation.GenericValidator;
 
 @Service
 public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
@@ -33,25 +31,20 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
     }
 
     @Override
-    public ExpenseCategoryDto create(CreateExpenseCategoryDto createExpenseCategoryDto)
-            throws InvalidExpenseCategoryException, ExpenseCategoryNameUnavailableException {
-        if (!GenericValidator.isValid(createExpenseCategoryDto)) {
-            String message = GenericValidator.getValidationErrorMessage(createExpenseCategoryDto);
+    public ExpenseCategoryDto create(CreateExpenseCategoryDto createDto)
+            throws ExpenseCategoryNameUnavailableException {
+        String name = createDto.getName();
 
-            throw new InvalidExpenseCategoryException(message);
-        }
-
-        if (expenseCategoryRepository.existsByName(createExpenseCategoryDto.getName())) {
-            String f = "Expense category with name=%s already exists";
-            String errorMessage = String.format(f, createExpenseCategoryDto.getName());
+        if (expenseCategoryRepository.existsByName(name)) {
+            String f = "Expense category with name \"%s\" already exists";
+            String errorMessage = String.format(f, name);
 
             throw new ExpenseCategoryNameUnavailableException(errorMessage);
         }
 
-        ExpenseCategoryEntity entity = mapper.map(createExpenseCategoryDto);
-        ExpenseCategoryEntity savedEntity = expenseCategoryRepository.save(entity);
+        ExpenseCategoryEntity created = mapper.map(createDto);
 
-        return mapper.map(savedEntity);
+        return mapper.map(expenseCategoryRepository.save(created));
     }
 
     @Override
@@ -62,16 +55,17 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
     }
 
     @Override
-    public ExpenseCategoryDto findById(Long expenseCategoryId) throws ExpenseCategoryNotFoundException {
-        Optional<ExpenseCategoryEntity> entity = expenseCategoryRepository.findById(expenseCategoryId);
+    public ExpenseCategoryDto findById(Long expenseCategoryId)
+            throws ExpenseCategoryNotFoundException {
+        Optional<ExpenseCategoryEntity> found = expenseCategoryRepository.findById(expenseCategoryId);
 
-        if (entity.isEmpty()) {
+        if (found.isEmpty()) {
             String f = "Expense category with ID=%d wasn't found";
 
             throw new ExpenseCategoryNotFoundException(String.format(f, expenseCategoryId));
         }
 
-        return mapper.map(entity.get());
+        return mapper.map(found.get());
     }
 
     @Override
@@ -80,28 +74,11 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
     }
 
     @Override
-    public boolean existsByName(String expenseCategoryName) {
-        return expenseCategoryRepository.existsByName(expenseCategoryName);
-    }
-
-    @Override
-    public boolean existsByIdNotAndName(Long expenseCategoryId, String expenseCategoryName) {
-        return expenseCategoryRepository.existsByIdNotAndName(expenseCategoryId, expenseCategoryName);
-    }
-
-    @Override
-    public ExpenseCategoryDto update(ExpenseCategoryDto expenseCategoryDto)
-            throws InvalidExpenseCategoryException,
-            ExpenseCategoryNotFoundException,
+    public ExpenseCategoryDto update(ExpenseCategoryDto dto)
+            throws ExpenseCategoryNotFoundException,
             ExpenseCategoryNameUnavailableException {
-        if (!GenericValidator.isValid(expenseCategoryDto)) {
-            String message = GenericValidator.getValidationErrorMessage(expenseCategoryDto);
-
-            throw new InvalidExpenseCategoryException(message);
-        }
-
-        Long id = expenseCategoryDto.getId();
-        String name = expenseCategoryDto.getName();
+        Long id = dto.getId();
+        String name = dto.getName();
 
         if (!existsById(id)) {
             String f = "Expense category with ID=%d doesn't exist";
@@ -110,15 +87,15 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
         }
 
         if (expenseCategoryRepository.existsByIdNotAndName(id, name)) {
-            String f = "Expense category with name=%s already exists";
+            String f = "Expense category with name \"%s\" already exists";
             String errorMessage = String.format(f, name);
 
             throw new ExpenseCategoryNameUnavailableException(errorMessage);
         }
 
-        ExpenseCategoryEntity entity = mapper.map(expenseCategoryDto);
+        ExpenseCategoryEntity updated = mapper.map(dto);
 
-        return mapper.map(expenseCategoryRepository.save(entity));
+        return mapper.map(expenseCategoryRepository.save(updated));
     }
 
     @Override

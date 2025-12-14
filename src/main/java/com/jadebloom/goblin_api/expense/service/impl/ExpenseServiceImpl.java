@@ -108,8 +108,8 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public boolean existsById(Long expenseId) {
-        return expenseRepository.existsById(expenseId);
+    public boolean existsByCurrencyId(Long currencyId) {
+        return expenseRepository.existsByCurrency_Id(currencyId);
     }
 
     @Override
@@ -128,7 +128,7 @@ public class ExpenseServiceImpl implements ExpenseService {
             throw new InvalidExpenseException(message);
         }
 
-        if (!existsById(expenseId)) {
+        if (!expenseRepository.existsById(expenseId)) {
             String f = "Expense with ID=%d wasn't found";
 
             throw new ExpenseNotFoundException(String.format(f, expenseId));

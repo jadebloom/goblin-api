@@ -1,14 +1,12 @@
 package com.jadebloom.goblin_api.expense.controller;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -20,8 +18,7 @@ import com.jadebloom.goblin_api.expense.repository.ExpenseCategoryRepository;
 
 import tools.jackson.databind.ObjectMapper;
 
-@SpringBootTest
-@ExtendWith(SpringExtension.class)
+@WebMvcTest(ExpenseCategoryController.class)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 public class ExpenseCategoryControllerIntegrationTests {
@@ -44,9 +41,8 @@ public class ExpenseCategoryControllerIntegrationTests {
 	}
 
 	@Test
-	public void canReturnExpenseCategoryAndHttp201WhenCreatingExpenseCategory() throws Exception {
+	public void canCreateAndReturnExpenseCategoryAndHttp201() throws Exception {
 		CreateExpenseCategoryDto dto = new CreateExpenseCategoryDto("Daily");
-
 		String json = objectMapper.writeValueAsString(dto);
 
 		mockMvc.perform(
@@ -59,9 +55,21 @@ public class ExpenseCategoryControllerIntegrationTests {
 	}
 
 	@Test
-	public void canReturnHttp400WhenCreatingInvalidExpenseCategory() throws Exception {
+	public void canReturnHttp400WhenExpenseCategoryHasInvalidName() throws Exception {
 		CreateExpenseCategoryDto dto = new CreateExpenseCategoryDto(null);
+		String json = objectMapper.writeValueAsString(dto);
 
+		mockMvc.perform(
+				MockMvcRequestBuilders.post("/api/v1/expenses/categories")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(json))
+				.andExpect(MockMvcResultMatchers.status().isBadRequest());
+	}
+
+	@Test
+	public void canReturnHttp400WhenExpenseCategoryHasInvalidDescription() throws Exception {
+		CreateExpenseCategoryDto dto = new CreateExpenseCategoryDto("n");
+		dto.setDescription("");
 		String json = objectMapper.writeValueAsString(dto);
 
 		mockMvc.perform(
@@ -73,22 +81,20 @@ public class ExpenseCategoryControllerIntegrationTests {
 
 	@Test
 	public void canReturnHttp200WhenFindingExpenseCategories() throws Exception {
-		mockMvc.perform(
-				MockMvcRequestBuilders.get("/api/v1/expenses/categories"))
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/expenses/categories"))
 				.andExpect(MockMvcResultMatchers.status().isOk());
 	}
 
 	@Test
-	public void canReturnExpenseCategoryAndHttp200WhenFindingExistingExpenseCategoryById() throws Exception {
-		ExpenseCategoryEntity entity = new ExpenseCategoryEntity("Daily");
-
-		ExpenseCategoryEntity savedEntity = expenseCategoryRepository.save(entity);
+	public void canReturnExpenseCategoryAndHttp200WhenFindingExpenseCategoryById() throws Exception {
+		ExpenseCategoryEntity e = new ExpenseCategoryEntity("Daily");
+		ExpenseCategoryEntity savedE = expenseCategoryRepository.save(e);
 
 		mockMvc.perform(
-				MockMvcRequestBuilders.get("/api/v1/expenses/categories/" + savedEntity.getId()))
+				MockMvcRequestBuilders.get("/api/v1/expenses/categories/" + savedE.getId()))
 				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(savedEntity.getId()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(savedEntity.getName()));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(savedE.getId()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(savedE.getName()));
 	}
 
 	@Test
@@ -99,12 +105,13 @@ public class ExpenseCategoryControllerIntegrationTests {
 	}
 
 	@Test
-	public void canReturnHttp200WhenUpdatingExistingExpenseCategory() throws Exception {
-		ExpenseCategoryEntity entity = new ExpenseCategoryEntity("Daily");
-		ExpenseCategoryEntity savedEntity = expenseCategoryRepository.save(entity);
+	public void canReturnExpenseCategoryAndHttp200WhenUpdatingExpenseCategory() throws Exception {
+		ExpenseCategoryEntity e = new ExpenseCategoryEntity("Daily");
+		ExpenseCategoryEntity savedE = expenseCategoryRepository.save(e);
 
 		ExpenseCategoryDto dto = new ExpenseCategoryDto("Debt");
-		dto.setId(savedEntity.getId());
+		dto.setId(savedE.getId());
+		dto.setName("NewName");
 
 		String json = objectMapper.writeValueAsString(dto);
 
@@ -119,11 +126,12 @@ public class ExpenseCategoryControllerIntegrationTests {
 
 	@Test
 	public void canReturnHttp400WhenUpdatingExpenseCategoryWithInvalidName() throws Exception {
-		ExpenseCategoryEntity entity = new ExpenseCategoryEntity("Daily");
-		ExpenseCategoryEntity savedEntity = expenseCategoryRepository.save(entity);
+		ExpenseCategoryEntity e = new ExpenseCategoryEntity("Daily");
+		ExpenseCategoryEntity savedE = expenseCategoryRepository.save(e);
 
 		ExpenseCategoryDto dto = new ExpenseCategoryDto("  ");
-		dto.setId(savedEntity.getId());
+		dto.setId(savedE.getId());
+		dto.setName(null);
 
 		String json = objectMapper.writeValueAsString(dto);
 
@@ -135,7 +143,25 @@ public class ExpenseCategoryControllerIntegrationTests {
 	}
 
 	@Test
-	public void canReturnHttp404WhenFullUpdatingNotExistingExpenseCategory() throws Exception {
+	public void canReturnHttp400WhenUpdatingExpenseCategoryWithInvalidDescription() throws Exception {
+		ExpenseCategoryEntity e = new ExpenseCategoryEntity("Daily");
+		ExpenseCategoryEntity savedE = expenseCategoryRepository.save(e);
+
+		ExpenseCategoryDto dto = new ExpenseCategoryDto("  ");
+		dto.setId(savedE.getId());
+		dto.setDescription("  ");
+
+		String json = objectMapper.writeValueAsString(dto);
+
+		mockMvc.perform(
+				MockMvcRequestBuilders.put("/api/v1/expenses/categories")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(json))
+				.andExpect(MockMvcResultMatchers.status().isBadRequest());
+	}
+
+	@Test
+	public void canReturnHttp404WhenUpdatingNotExistingExpenseCategory() throws Exception {
 		ExpenseCategoryDto dto = new ExpenseCategoryDto("Daily");
 		dto.setId(1L);
 
@@ -150,15 +176,13 @@ public class ExpenseCategoryControllerIntegrationTests {
 
 	@Test
 	public void canReturnHttp204WhenDeletingAllExpenseCategories() throws Exception {
-		mockMvc.perform(
-				MockMvcRequestBuilders.delete("/api/v1/expenses/categories/all"))
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/all"))
 				.andExpect(MockMvcResultMatchers.status().isNoContent());
 	}
 
 	@Test
 	public void canReturnHttp204WhenDeletingExpenseCategoryById() throws Exception {
-		mockMvc.perform(
-				MockMvcRequestBuilders.delete("/api/v1/expenses/categories/1"))
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/1"))
 				.andExpect(MockMvcResultMatchers.status().isNoContent());
 	}
 
