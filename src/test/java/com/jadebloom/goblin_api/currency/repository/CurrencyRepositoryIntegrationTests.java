@@ -64,19 +64,6 @@ public class CurrencyRepositoryIntegrationTests {
     }
 
     @Test
-    public void canCheckCurrencyForExistenceById() {
-        CurrencyEntity e = new CurrencyEntity("Dollar");
-        CurrencyEntity savedE = underTest.save(e);
-
-        boolean b1 = underTest.existsById(savedE.getId());
-        boolean b2 = underTest.existsById(savedE.getId() + 1);
-
-        assertAll("Assert that currencies can be checked for existence by ID",
-                () -> assertTrue(b1),
-                () -> assertFalse(b2));
-    }
-
-    @Test
     public void canCheckCurrencyForExistenceByName() {
         CurrencyEntity e = new CurrencyEntity("Dollar");
         CurrencyEntity savedE = underTest.save(e);

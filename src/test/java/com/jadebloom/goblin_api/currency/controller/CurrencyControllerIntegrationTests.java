@@ -103,7 +103,7 @@ public class CurrencyControllerIntegrationTests {
 	}
 
 	@Test
-	public void canReturnHttp404WhenFindingNonExistingById() throws Exception {
+	public void canReturnHttp404WhenFindingNonExistingCurrencyById() throws Exception {
 		mockMvc.perform(
 				MockMvcRequestBuilders.get("/api/v1/currencies/1")
 						.contentType(MediaType.APPLICATION_JSON))
@@ -117,6 +117,7 @@ public class CurrencyControllerIntegrationTests {
 
 		CurrencyDto dto = new CurrencyDto("Ruble");
 		dto.setId(savedEntity.getId());
+		dto.setName("NeName");
 
 		String json = objectMapper.writeValueAsString(dto);
 

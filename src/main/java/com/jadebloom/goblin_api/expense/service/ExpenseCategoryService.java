@@ -7,12 +7,11 @@ import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNameUnavailableException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
-import com.jadebloom.goblin_api.expense.error.InvalidExpenseCategoryException;
 
 public interface ExpenseCategoryService {
 
-	ExpenseCategoryDto create(CreateExpenseCategoryDto createExpenseCategoryDto)
-			throws InvalidExpenseCategoryException, ExpenseCategoryNameUnavailableException;
+	ExpenseCategoryDto create(CreateExpenseCategoryDto createDto)
+			throws ExpenseCategoryNameUnavailableException;
 
 	Page<ExpenseCategoryDto> findAll(Pageable pageable);
 
@@ -20,13 +19,8 @@ public interface ExpenseCategoryService {
 
 	boolean existsById(Long expenseCategoryId);
 
-	boolean existsByName(String expenseCategoryName);
-
-	boolean existsByIdNotAndName(Long expenseCategoryId, String expenseCategoryName);
-
-	ExpenseCategoryDto update(ExpenseCategoryDto expenseCategoryDto)
+	ExpenseCategoryDto update(ExpenseCategoryDto dto)
 			throws ExpenseCategoryNotFoundException,
-			InvalidExpenseCategoryException,
 			ExpenseCategoryNameUnavailableException;
 
 	void deleteAll();

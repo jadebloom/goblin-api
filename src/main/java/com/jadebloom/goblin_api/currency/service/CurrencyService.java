@@ -10,7 +10,7 @@ import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
 
 public interface CurrencyService {
 
-	CurrencyDto create(CreateCurrencyDto createCurrencyDto) throws CurrencyNameUnavailableException;
+	CurrencyDto create(CreateCurrencyDto createDto) throws CurrencyNameUnavailableException;
 
 	Page<CurrencyDto> findAll(Pageable pageable);
 
@@ -18,7 +18,7 @@ public interface CurrencyService {
 
 	boolean existsById(Long currencyId);
 
-	CurrencyDto update(CurrencyDto currencyDto)
+	CurrencyDto update(CurrencyDto dto)
 			throws CurrencyNotFoundException, CurrencyNameUnavailableException;
 
 	void deleteAll();

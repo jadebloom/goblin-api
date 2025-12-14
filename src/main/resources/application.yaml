@@ -15,3 +15,6 @@ spring:
 springdoc:
   swagger-ui:
     url: /openapi.yaml
+api:
+  docs:
+    uri: http://localhost:8080/swagger-ui/index.html

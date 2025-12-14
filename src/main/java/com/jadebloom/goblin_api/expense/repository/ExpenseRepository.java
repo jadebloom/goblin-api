@@ -15,4 +15,6 @@ public interface ExpenseRepository
 
 	boolean existsByIdNotAndName(Long id, String name);
 
+	boolean existsByCurrency_Id(Long currencyId);
+
 }
