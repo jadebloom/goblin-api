@@ -11,11 +11,9 @@ import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
 import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
 import com.jadebloom.goblin_api.currency.error.CurrencyNameUnavailableException;
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
-import com.jadebloom.goblin_api.currency.error.InvalidCurrencyException;
 import com.jadebloom.goblin_api.currency.mapper.CurrencyMapper;
 import com.jadebloom.goblin_api.currency.repository.CurrencyRepository;
 import com.jadebloom.goblin_api.currency.service.CurrencyService;
-import com.jadebloom.goblin_api.shared.validation.GenericValidator;
 
 @Service
 public class CurrencyServiceImpl implements CurrencyService {
@@ -31,22 +29,15 @@ public class CurrencyServiceImpl implements CurrencyService {
     }
 
     @Override
-    public CurrencyDto create(CreateCurrencyDto createCurrencyDto)
-            throws InvalidCurrencyException, CurrencyNameUnavailableException {
-        if (!GenericValidator.isValid(createCurrencyDto)) {
-            String message = GenericValidator.getValidationErrorMessage(createCurrencyDto);
-
-            throw new InvalidCurrencyException(message);
-        }
-
-        if (currencyRepository.existsByName(createCurrencyDto.getName())) {
-            String f = "Currency with name=%s already exists";
-            String errorMessage = String.format(f, createCurrencyDto.getName());
+    public CurrencyDto create(CreateCurrencyDto createDto) throws CurrencyNameUnavailableException {
+        if (currencyRepository.existsByName(createDto.getName())) {
+            String f = "Currency with name \"%s\" already exists";
+            String errorMessage = String.format(f, createDto.getName());
 
             throw new CurrencyNameUnavailableException(errorMessage);
         }
 
-        CurrencyEntity entity = mapper.map(createCurrencyDto);
+        CurrencyEntity entity = mapper.map(createDto);
 
         return mapper.map(currencyRepository.save(entity));
     }
@@ -77,26 +68,10 @@ public class CurrencyServiceImpl implements CurrencyService {
     }
 
     @Override
-    public boolean existsByName(String name) {
-        return currencyRepository.existsByName(name);
-    }
-
-    @Override
-    public boolean existsByIdNotAndName(Long id, String name) {
-        return currencyRepository.existsByIdNotAndName(id, name);
-    }
-
-    @Override
-    public CurrencyDto update(CurrencyDto currencyDto)
-            throws InvalidCurrencyException, CurrencyNotFoundException, CurrencyNameUnavailableException {
-        if (!GenericValidator.isValid(currencyDto)) {
-            String message = GenericValidator.getValidationErrorMessage(currencyDto);
-
-            throw new InvalidCurrencyException(message);
-        }
-
-        Long id = currencyDto.getId();
-        String name = currencyDto.getName();
+    public CurrencyDto update(CurrencyDto dto)
+            throws CurrencyNotFoundException, CurrencyNameUnavailableException {
+        Long id = dto.getId();
+        String name = dto.getName();
 
         if (!existsById(id)) {
             String f = "Currency with ID=%d doesn't exist";
@@ -105,13 +80,13 @@ public class CurrencyServiceImpl implements CurrencyService {
         }
 
         if (currencyRepository.existsByIdNotAndName(id, name)) {
-            String f = "Other currency with name=%s already exists";
+            String f = "Other currency with name \"%s\" already exists";
             String errorMessage = String.format(f, name);
 
             throw new CurrencyNameUnavailableException(errorMessage);
         }
 
-        CurrencyEntity entity = mapper.map(currencyDto);
+        CurrencyEntity entity = mapper.map(dto);
 
         return mapper.map(currencyRepository.save(entity));
     }

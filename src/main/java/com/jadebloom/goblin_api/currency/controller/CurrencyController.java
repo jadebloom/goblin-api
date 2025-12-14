@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,8 @@ import com.jadebloom.goblin_api.currency.dto.CreateCurrencyDto;
 import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
 import com.jadebloom.goblin_api.currency.service.CurrencyService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/currencies")
 public class CurrencyController {
@@ -28,29 +31,29 @@ public class CurrencyController {
         this.currencyService = currencyService;
     }
 
-    @PostMapping
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CurrencyDto> createCurrency(
-            @RequestBody CreateCurrencyDto createCurrencyDto) {
-        CurrencyDto dto = currencyService.create(createCurrencyDto);
+            @Valid @RequestBody CreateCurrencyDto createDto) {
+        CurrencyDto dto = currencyService.create(createDto);
 
         return new ResponseEntity<>(dto, HttpStatus.CREATED);
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<CurrencyDto>> findCurrencies(Pageable pageable) {
         Page<CurrencyDto> page = currencyService.findAll(pageable);
 
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CurrencyDto> findCurrencyById(@PathVariable(name = "id") Long currencyId) {
         CurrencyDto dto = currencyService.findById(currencyId);
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-    @PutMapping
+    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CurrencyDto> updateCurrency(@RequestBody CurrencyDto currencyDto) {
         CurrencyDto dto = currencyService.update(currencyDto);
 
