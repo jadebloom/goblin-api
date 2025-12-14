@@ -7,28 +7,22 @@ import com.jadebloom.goblin_api.currency.dto.CreateCurrencyDto;
 import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
 import com.jadebloom.goblin_api.currency.error.CurrencyNameUnavailableException;
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
-import com.jadebloom.goblin_api.currency.error.InvalidCurrencyException;
 
 public interface CurrencyService {
 
-    CurrencyDto create(CreateCurrencyDto createCurrencyDto)
-            throws InvalidCurrencyException, CurrencyNameUnavailableException;
+	CurrencyDto create(CreateCurrencyDto createCurrencyDto) throws CurrencyNameUnavailableException;
 
-    Page<CurrencyDto> findAll(Pageable pageable);
+	Page<CurrencyDto> findAll(Pageable pageable);
 
-    CurrencyDto findById(Long currencyId) throws CurrencyNotFoundException;
+	CurrencyDto findById(Long currencyId) throws CurrencyNotFoundException;
 
-    boolean existsById(Long currencyId);
+	boolean existsById(Long currencyId);
 
-    boolean existsByName(String name);
+	CurrencyDto update(CurrencyDto currencyDto)
+			throws CurrencyNotFoundException, CurrencyNameUnavailableException;
 
-    boolean existsByIdNotAndName(Long id, String name);
+	void deleteAll();
 
-    CurrencyDto update(CurrencyDto currencyDto)
-            throws InvalidCurrencyException, CurrencyNotFoundException, CurrencyNameUnavailableException;
-
-    void deleteAll();
-
-    void deleteById(Long currencyId);
+	void deleteById(Long currencyId);
 
 }
