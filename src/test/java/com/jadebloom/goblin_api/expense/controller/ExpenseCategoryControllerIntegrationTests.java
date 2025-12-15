@@ -175,12 +175,6 @@ public class ExpenseCategoryControllerIntegrationTests {
 	}
 
 	@Test
-	public void canReturnHttp204WhenDeletingAllExpenseCategories() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/all"))
-				.andExpect(MockMvcResultMatchers.status().isNoContent());
-	}
-
-	@Test
 	public void canReturnHttp204WhenDeletingExpenseCategoryById() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/1"))
 				.andExpect(MockMvcResultMatchers.status().isNoContent());

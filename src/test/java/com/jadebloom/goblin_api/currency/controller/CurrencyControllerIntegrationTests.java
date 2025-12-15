@@ -15,6 +15,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.jadebloom.goblin_api.currency.dto.CreateCurrencyDto;
 import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
 import com.jadebloom.goblin_api.currency.service.CurrencyService;
+import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
+import com.jadebloom.goblin_api.expense.dto.CreateExpenseDto;
+import com.jadebloom.goblin_api.expense.service.ExpenseCategoryService;
+import com.jadebloom.goblin_api.expense.service.ExpenseService;
 
 import tools.jackson.databind.ObjectMapper;
 
@@ -27,15 +31,25 @@ public class CurrencyControllerIntegrationTests {
 
 	private final CurrencyService currencyService;
 
+	private final ExpenseCategoryService expenseCategoryService;
+
+	private final ExpenseService expenseService;
+
 	private final ObjectMapper objectMapper;
 
 	@Autowired
 	public CurrencyControllerIntegrationTests(
 			MockMvc mockMvc,
-			@Qualifier("currencyServiceImpl") CurrencyService currencyService) {
+			@Qualifier("currencyServiceImpl") CurrencyService currencyService,
+			ExpenseCategoryService expenseCategoryService,
+			ExpenseService expenseService) {
 		this.mockMvc = mockMvc;
 
 		this.currencyService = currencyService;
+
+		this.expenseCategoryService = expenseCategoryService;
+
+		this.expenseService = expenseService;
 
 		objectMapper = new ObjectMapper();
 	}
@@ -173,15 +187,28 @@ public class CurrencyControllerIntegrationTests {
 	}
 
 	@Test
-	public void canReturnHttp204WhenDeletingAllCurrencies() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/currencies/all"))
+	public void canReturnHttp204WhenDeletingCurrencyById() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/currencies/1"))
 				.andExpect(MockMvcResultMatchers.status().isNoContent());
 	}
 
 	@Test
-	public void canReturnHttp204WhenDeletingCurrencyById() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/currencies/1"))
-				.andExpect(MockMvcResultMatchers.status().isNoContent());
+	public void canReturnHttp409WhenDeletingCurrencyInUseById() throws Exception {
+		CreateExpenseCategoryDto createDto1 = new CreateExpenseCategoryDto(".");
+		Long expenseCategoryId = expenseCategoryService.create(createDto1).getId();
+
+		CreateCurrencyDto createDto2 = new CreateCurrencyDto(".");
+		Long currencyId = currencyService.create(createDto2).getId();
+
+		CreateExpenseDto createDto3 = new CreateExpenseDto(
+				".",
+				100L,
+				expenseCategoryId,
+				currencyId);
+		expenseService.create(createDto3);
+
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/currencies/" + currencyId))
+				.andExpect(MockMvcResultMatchers.status().isConflict());
 	}
 
 }

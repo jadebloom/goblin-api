@@ -2,13 +2,12 @@ package com.jadebloom.goblin_api.expense.service.impl;
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
-import com.jadebloom.goblin_api.currency.service.CurrencyService;
+import com.jadebloom.goblin_api.currency.repository.CurrencyRepository;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseDto;
 import com.jadebloom.goblin_api.expense.entity.ExpenseEntity;
@@ -16,8 +15,8 @@ import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
 import com.jadebloom.goblin_api.expense.error.ExpenseNameUnavailableException;
 import com.jadebloom.goblin_api.expense.error.ExpenseNotFoundException;
 import com.jadebloom.goblin_api.expense.mapper.ExpenseMapper;
+import com.jadebloom.goblin_api.expense.repository.ExpenseCategoryRepository;
 import com.jadebloom.goblin_api.expense.repository.ExpenseRepository;
-import com.jadebloom.goblin_api.expense.service.ExpenseCategoryService;
 import com.jadebloom.goblin_api.expense.service.ExpenseService;
 
 @Service
@@ -25,22 +24,22 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     private final ExpenseRepository expenseRepository;
 
-    private final ExpenseCategoryService expenseCategoryService;
+    private final ExpenseCategoryRepository expenseCategoryRepository;
 
-    private final CurrencyService currencyService;
+    private final CurrencyRepository currencyRepository;
 
     private final ExpenseMapper mapper;
 
     public ExpenseServiceImpl(
             ExpenseRepository expenseRepository,
-            @Qualifier("expenseCategoryServiceImpl") ExpenseCategoryService expenseCategoryService,
-            @Qualifier("currencyServiceImpl") CurrencyService currencyService,
+            ExpenseCategoryRepository expenseCategoryRepository,
+            CurrencyRepository currencyRepository,
             ExpenseMapper mapper) {
         this.expenseRepository = expenseRepository;
 
-        this.expenseCategoryService = expenseCategoryService;
+        this.expenseCategoryRepository = expenseCategoryRepository;
 
-        this.currencyService = currencyService;
+        this.currencyRepository = currencyRepository;
 
         this.mapper = mapper;
     }
@@ -61,13 +60,13 @@ public class ExpenseServiceImpl implements ExpenseService {
             throw new ExpenseNameUnavailableException(errorMessage);
         }
 
-        if (!expenseCategoryService.existsById(expenseCategoryId)) {
+        if (!expenseCategoryRepository.existsById(expenseCategoryId)) {
             String f = "Expense category with the ID '%d' wasn't found";
 
             throw new ExpenseCategoryNotFoundException(String.format(f, expenseCategoryId));
         }
 
-        if (!currencyService.existsById(currencyId)) {
+        if (!currencyRepository.existsById(currencyId)) {
             String f = "Currency with the ID '%d' wasn't found";
 
             throw new CurrencyNotFoundException(String.format(f, currencyId));
@@ -100,11 +99,6 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public boolean existsByCurrencyId(Long currencyId) {
-        return expenseRepository.existsByCurrency_Id(currencyId);
-    }
-
-    @Override
     public ExpenseDto update(ExpenseDto dto)
             throws ExpenseNotFoundException,
             ExpenseNameUnavailableException,
@@ -128,14 +122,14 @@ public class ExpenseServiceImpl implements ExpenseService {
             throw new ExpenseNameUnavailableException(errorMessage);
         }
 
-        if (!expenseCategoryService.existsById(expenseCategoryId)) {
+        if (!expenseCategoryRepository.existsById(expenseCategoryId)) {
             String f = "Expense category with the ID '%d' wasn't found";
             String message = String.format(f, String.format(f, expenseCategoryId));
 
             throw new ExpenseCategoryNotFoundException(message);
         }
 
-        if (!currencyService.existsById(currencyId)) {
+        if (!currencyRepository.existsById(currencyId)) {
             String f = "Currency with the ID '%d' wasn't found";
             String message = String.format(f, String.format(f, currencyId));
 

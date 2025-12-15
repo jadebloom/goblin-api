@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.jadebloom.goblin_api.currency.error.CurrencyInUseException;
 import com.jadebloom.goblin_api.currency.error.CurrencyNameUnavailableException;
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
 
@@ -40,6 +41,18 @@ public class CurrencyControllerAdvice {
                 .builder(ex, HttpStatus.NOT_FOUND, ex.getMessage())
                 .type(URI.create(API_DOCS_URI))
                 .title("Currency not found")
+                .build();
+
+        return errorResponse;
+    }
+
+    @ExceptionHandler(CurrencyInUseException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleCurrencyInUseException(CurrencyInUseException ex) {
+        ErrorResponse errorResponse = ErrorResponse
+                .builder(ex, HttpStatus.CONFLICT, ex.getMessage())
+                .type(URI.create(API_DOCS_URI))
+                .title("Currency is in use")
                 .build();
 
         return errorResponse;

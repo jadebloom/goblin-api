@@ -21,8 +21,6 @@ public interface ExpenseService {
 
 	ExpenseDto findById(Long expenseId) throws ExpenseNotFoundException;
 
-	boolean existsByCurrencyId(Long currencyId);
-
 	ExpenseDto update(ExpenseDto dto)
 			throws ExpenseNotFoundException,
 			ExpenseNameUnavailableException,

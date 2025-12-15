@@ -12,9 +12,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-springdoc:
-  swagger-ui:
-    url: /openapi.yaml
+# springdoc:
+#   swagger-ui:
+#     url: /openapi.yaml
 api:
   docs:
     uri: http://localhost:8080/swagger-ui/index.html
