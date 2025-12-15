@@ -32,6 +32,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CreateCurrency"
+              description: fafas.
             examples:
               gold:
                 summary: An example of "gold" currency
@@ -362,9 +363,6 @@ components:
         instance:
           type: string
           format: uri
-        timestamp:
-          type: string
-          format: date-time
 
     CreateCurrency:
       type: object
