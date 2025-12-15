@@ -61,13 +61,6 @@ public class ExpenseController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @DeleteMapping("/all")
-    public ResponseEntity<Void> deleteAllExpenses() {
-        expenseService.deleteAll();
-
-        return ResponseEntity.noContent().build();
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteExpenseById(
             @PathVariable(name = "id") Long expenseCategoryId) {

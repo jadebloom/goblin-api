@@ -59,13 +59,6 @@ public class CurrencyController {
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
-    @DeleteMapping("/all")
-    public ResponseEntity<Void> deleteAllCurrencies() {
-        currencyService.deleteAll();
-
-        return ResponseEntity.noContent().build();
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCurrencyById(@PathVariable(name = "id") Long currencyId) {
         currencyService.deleteById(currencyId);

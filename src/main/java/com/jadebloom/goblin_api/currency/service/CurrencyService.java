@@ -21,8 +21,6 @@ public interface CurrencyService {
 	CurrencyDto update(CurrencyDto dto)
 			throws CurrencyNotFoundException, CurrencyNameUnavailableException;
 
-	void deleteAll();
-
 	void deleteById(Long currencyId);
 
 }
