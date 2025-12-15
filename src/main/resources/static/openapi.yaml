@@ -65,7 +65,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Currency"
+                $ref: "#/components/schemas/PagedResponse"
         "500":
           $ref: "#/components/responses/InternalServerError"
     put:
@@ -123,17 +123,6 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
-  /currencies/all:
-    delete:
-      summary: Delete all currencies
-      responses:
-        "204":
-          $ref: "#/components/responses/NoContent"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-
-  # EXPENSES API ROUTE MUST GO BEFORE EXPENSES-CATEGORIES
-
   /expenses/categories:
     post:
       summary: Create an expense category
@@ -177,7 +166,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ExpenseCategory"
+                $ref: "#/components/schemas/PagedResponse"
         "500":
           $ref: "#/components/responses/InternalServerError"
     put:
@@ -231,9 +220,99 @@ paths:
           $ref: "#/components/responses/NoContent"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /expenses/categories/all:
+
+  /expenses:
+    post:
+      summary: Create an expense
+      requestBody:
+        description: A JSON currency object with a name, amount, expense category ID, currency ID and optional description and labels.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateExpense"
+            examples:
+              daily:
+                summary: An example of an expense with only required fields
+                # value:
+                #   name: Daily
+              debt:
+                summary: An example of an expense with all fields
+                # value:
+                #   name: Debt
+                #   description: Daily debt payments
+      responses:
+        "201":
+          description: Created new expense.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      summary: Get paged expenses
+      parameters:
+        - $ref: "#/components/parameters/pageIndex"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/sort"
+      responses:
+        "200":
+          description: Returned a page with a list of Expense objects.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagedResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      summary: Update an expense category
+      requestBody:
+        description: A JSON expense category object with id, name and optional description.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpenseCategory"
+            examples:
+              daily:
+                summary: An example of "daily" expense category
+                value:
+                  id: 1
+                  name: Daily
+              debt:
+                summary: An example of "debt" expense category
+                value:
+                  id: 2
+                  name: Debt
+                  description: Daily debt payments
+      responses:
+        "200":
+          description: Updated the expense category.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpenseCategory"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /expenses/{id}:
+    get:
+      summary: Get an expense by its ID
+      responses:
+        "200":
+          description: Returned the expense.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     delete:
-      summary: Delete all expense categories
+      summary: Deletes an expense by ID, regardless whether it exists or not
       responses:
         "204":
           $ref: "#/components/responses/NoContent"
