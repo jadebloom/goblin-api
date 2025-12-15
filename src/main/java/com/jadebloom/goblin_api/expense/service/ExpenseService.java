@@ -9,13 +9,11 @@ import com.jadebloom.goblin_api.expense.dto.ExpenseDto;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
 import com.jadebloom.goblin_api.expense.error.ExpenseNameUnavailableException;
 import com.jadebloom.goblin_api.expense.error.ExpenseNotFoundException;
-import com.jadebloom.goblin_api.expense.error.InvalidExpenseException;
 
 public interface ExpenseService {
 
-	ExpenseDto create(CreateExpenseDto createExpenseDto)
-			throws InvalidExpenseException,
-			ExpenseNameUnavailableException,
+	ExpenseDto create(CreateExpenseDto createDto)
+			throws ExpenseNameUnavailableException,
 			ExpenseCategoryNotFoundException,
 			CurrencyNotFoundException;
 
@@ -23,11 +21,8 @@ public interface ExpenseService {
 
 	ExpenseDto findById(Long expenseId) throws ExpenseNotFoundException;
 
-	boolean existsByCurrencyId(Long currencyId);
-
-	ExpenseDto update(ExpenseDto expenseDto)
-			throws InvalidExpenseException,
-			ExpenseNotFoundException,
+	ExpenseDto update(ExpenseDto dto)
+			throws ExpenseNotFoundException,
 			ExpenseNameUnavailableException,
 			ExpenseCategoryNotFoundException,
 			CurrencyNotFoundException;

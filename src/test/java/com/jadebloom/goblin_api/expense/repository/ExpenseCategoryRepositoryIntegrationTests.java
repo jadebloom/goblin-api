@@ -30,19 +30,6 @@ public class ExpenseCategoryRepositoryIntegrationTests {
     }
 
     @Test
-    public void canCreateAndFindExpenseCategory() {
-        ExpenseCategoryEntity e = new ExpenseCategoryEntity("Daily");
-        ExpenseCategoryEntity savedE = underTest.save(e);
-
-        Optional<ExpenseCategoryEntity> foundEntity = underTest.findById(savedE.getId());
-
-        assertAll(
-                "Assert that an expense category can be created and found",
-                () -> assertTrue(foundEntity.isPresent()),
-                () -> assertEquals(savedE, foundEntity.get()));
-    }
-
-    @Test
     public void canCreateAndFindExpenseCategories() {
         ExpenseCategoryEntity e1 = new ExpenseCategoryEntity("Daily");
         ExpenseCategoryEntity e2 = new ExpenseCategoryEntity("Debt");
@@ -58,6 +45,19 @@ public class ExpenseCategoryRepositoryIntegrationTests {
                 () -> assertEquals(2, entities.size()),
                 () -> assertTrue(entities.contains(savedE1)),
                 () -> assertTrue(entities.contains(savedE2)));
+    }
+
+    @Test
+    public void canCreateExpenseCategoryAndFindItById() {
+        ExpenseCategoryEntity e = new ExpenseCategoryEntity("Daily");
+        ExpenseCategoryEntity savedE = underTest.save(e);
+
+        Optional<ExpenseCategoryEntity> foundEntity = underTest.findById(savedE.getId());
+
+        assertAll(
+                "Assert that an expense category can be created and found",
+                () -> assertTrue(foundEntity.isPresent()),
+                () -> assertEquals(savedE, foundEntity.get()));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class ExpenseCategoryRepositoryIntegrationTests {
     }
 
     @Test
-    public void canUpdateAndFindExpenseCategory() {
+    public void canUpdateExpenseCategoryAndFindItById() {
         ExpenseCategoryEntity e = new ExpenseCategoryEntity("Daily");
         ExpenseCategoryEntity savedE = underTest.save(e);
 

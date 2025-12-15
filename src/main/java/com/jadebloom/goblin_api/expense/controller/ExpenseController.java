@@ -18,6 +18,8 @@ import com.jadebloom.goblin_api.expense.dto.CreateExpenseDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseDto;
 import com.jadebloom.goblin_api.expense.service.ExpenseService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/expenses")
 public class ExpenseController {
@@ -30,7 +32,7 @@ public class ExpenseController {
 
     @PostMapping
     public ResponseEntity<ExpenseDto> createExpense(
-            @RequestBody CreateExpenseDto createDto) {
+            @Valid @RequestBody CreateExpenseDto createDto) {
         ExpenseDto dto = expenseService.create(createDto);
 
         return new ResponseEntity<>(dto, HttpStatus.CREATED);
@@ -53,7 +55,7 @@ public class ExpenseController {
 
     @PutMapping
     public ResponseEntity<ExpenseDto> updateExpense(
-            @RequestBody ExpenseDto expenseDto) {
+            @Valid @RequestBody ExpenseDto expenseDto) {
         ExpenseDto result = expenseService.update(expenseDto);
 
         return new ResponseEntity<>(result, HttpStatus.OK);

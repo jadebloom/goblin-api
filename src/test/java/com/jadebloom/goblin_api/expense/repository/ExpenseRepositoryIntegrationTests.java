@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
@@ -27,8 +28,10 @@ public class ExpenseRepositoryIntegrationTests {
 	private final ExpenseRepository underTest;
 
 	private final ExpenseCategoryRepository expenseCategoryRepository;
-
 	private final CurrencyRepository currencyRepository;
+
+	private ExpenseCategoryEntity expenseCategoryEntity;
+	private CurrencyEntity currencyEntity;
 
 	@Autowired
 	public ExpenseRepositoryIntegrationTests(
@@ -38,43 +41,38 @@ public class ExpenseRepositoryIntegrationTests {
 		this.underTest = underTest;
 
 		this.expenseCategoryRepository = expenseCategoryRepository;
-
 		this.currencyRepository = currencyRepository;
 	}
 
-	@Test
-	public void canCreateAndFindExpenseById() {
-		ExpenseCategoryEntity expenseCategoryEntity = saveExpenseCategoryEntity("Daily");
-		CurrencyEntity currencyEntity = saveCurrencyEntity("Dollar");
+	@BeforeEach
+	public void createExpenseCategoryEntity() {
+		ExpenseCategoryEntity e = new ExpenseCategoryEntity("Gaming Stuff");
 
-		ExpenseEntity entity = createExampleExpenseEntityWithDependencies(
-				expenseCategoryEntity,
-				currencyEntity);
+		expenseCategoryEntity = expenseCategoryRepository.save(e);
+	}
 
-		ExpenseEntity savedEntity = underTest.save(entity);
+	@BeforeEach
+	public void createCurrencyEntity() {
+		CurrencyEntity e = new CurrencyEntity("Gaming Stuff");
 
-		Optional<ExpenseEntity> foundEntity = underTest.findById(savedEntity.getId());
-
-		assertAll(
-				"Assert that an expense can be created and found",
-				() -> assertTrue(foundEntity.isPresent()),
-				() -> assertEquals(savedEntity, foundEntity.get()));
+		currencyEntity = currencyRepository.save(e);
 	}
 
 	@Test
 	public void canCreateAndFindExpenses() {
-		ExpenseCategoryEntity expenseCategoryEntity = saveExpenseCategoryEntity("Daily");
-		CurrencyEntity currencyEntity = saveCurrencyEntity("Dollar");
-
-		ExpenseEntity entity1 = createExampleExpenseEntityWithDependencies(
+		ExpenseEntity e1 = new ExpenseEntity(
+				"Uber Ride",
+				1000L,
 				expenseCategoryEntity,
 				currencyEntity);
-		ExpenseEntity entity2 = createExampleExpenseEntityWithDependencies(
+		ExpenseEntity e2 = new ExpenseEntity(
+				"Uber Ride",
+				1000L,
 				expenseCategoryEntity,
 				currencyEntity);
 
-		ExpenseEntity savedEntity1 = underTest.save(entity1);
-		ExpenseEntity savedEntity2 = underTest.save(entity2);
+		ExpenseEntity savedE1 = underTest.save(e1);
+		ExpenseEntity savedE2 = underTest.save(e2);
 
 		Page<ExpenseEntity> page = underTest.findAll(PageRequest.of(0, 5));
 		List<ExpenseEntity> entities = page.getContent();
@@ -82,44 +80,62 @@ public class ExpenseRepositoryIntegrationTests {
 		assertAll(
 				"Assert that expenses can be created and found",
 				() -> assertEquals(2, entities.size()),
-				() -> assertTrue(entities.contains(savedEntity1)),
-				() -> assertTrue(entities.contains(savedEntity2)));
+				() -> assertTrue(entities.contains(savedE1)),
+				() -> assertTrue(entities.contains(savedE2)));
+	}
+
+	@Test
+	public void canCreateExpenseAndFindItById() {
+		ExpenseEntity e = new ExpenseEntity(
+				"Uber Ride",
+				1000L,
+				expenseCategoryEntity,
+				currencyEntity);
+		ExpenseEntity savedE = underTest.save(e);
+
+		Optional<ExpenseEntity> foundE = underTest.findById(savedE.getId());
+
+		assertAll(
+				"Assert that an expense can be created and found",
+				() -> assertTrue(foundE.isPresent()),
+				() -> assertEquals(savedE, foundE.get()));
 	}
 
 	@Test
 	public void canUpdateAndFindExpenseById() {
-		ExpenseCategoryEntity expenseCategoryEntity = saveExpenseCategoryEntity("Daily");
-		CurrencyEntity currencyEntity = saveCurrencyEntity("Dollar");
-		ExpenseEntity entity = createExampleExpenseEntityWithDependencies(
+		ExpenseEntity e = new ExpenseEntity(
+				"Uber Ride",
+				1000L,
 				expenseCategoryEntity,
 				currencyEntity);
+		ExpenseEntity savedE = underTest.save(e);
 
-		ExpenseEntity savedEntity = underTest.save(entity);
-		savedEntity.setName("New name for the expense");
-		savedEntity.setLabels(List.of("newLabel1", "newLabeL2"));
+		savedE.setName("New name for the expense");
+		savedE.setLabels(List.of("newLabel1", "newLabeL2"));
 
-		Optional<ExpenseEntity> foundEntity = underTest.findById(savedEntity.getId());
+		Optional<ExpenseEntity> foundE = underTest.findById(savedE.getId());
 
 		assertAll(
-				"Assert that an expense can be created, updated and found",
-				() -> assertTrue(foundEntity.isPresent()),
-				() -> assertEquals(savedEntity, foundEntity.get()));
+				"Assert that an expense can be updated and found",
+				() -> assertTrue(foundE.isPresent()),
+				() -> assertEquals(savedE, foundE.get()));
 	}
 
 	@Test
 	public void canDeleteAllExpenses() {
-		ExpenseCategoryEntity expenseCategoryEntity = saveExpenseCategoryEntity("Daily");
-		CurrencyEntity currencyEntity = saveCurrencyEntity("Dollar");
-
-		ExpenseEntity entity1 = createExampleExpenseEntityWithDependencies(
+		ExpenseEntity e1 = new ExpenseEntity(
+				"Uber Ride",
+				1000L,
 				expenseCategoryEntity,
 				currencyEntity);
-		ExpenseEntity entity2 = createExampleExpenseEntityWithDependencies(
+		ExpenseEntity e2 = new ExpenseEntity(
+				"Uber Ride",
+				1000L,
 				expenseCategoryEntity,
 				currencyEntity);
 
-		underTest.save(entity1);
-		underTest.save(entity2);
+		underTest.save(e1);
+		underTest.save(e2);
 
 		underTest.deleteAll();
 
@@ -129,44 +145,19 @@ public class ExpenseRepositoryIntegrationTests {
 	}
 
 	@Test
-	public void canDeleteExpense() {
-		ExpenseCategoryEntity expenseCategoryEntity = saveExpenseCategoryEntity("Daily");
-		CurrencyEntity currencyEntity = saveCurrencyEntity("Dollar");
-
-		ExpenseEntity entity = createExampleExpenseEntityWithDependencies(
+	public void canDeleteExpenseById() {
+		ExpenseEntity e = new ExpenseEntity(
+				"Uber Ride",
+				1000L,
 				expenseCategoryEntity,
 				currencyEntity);
-		Long id = underTest.save(entity).getId();
+		Long id = underTest.save(e).getId();
 
 		underTest.deleteById(id);
 
-		Optional<ExpenseEntity> foundEntity = underTest.findById(id);
+		Optional<ExpenseEntity> foundE = underTest.findById(id);
 
-		assertTrue(foundEntity.isEmpty());
-	}
-
-	private ExpenseEntity createExampleExpenseEntityWithDependencies(
-			ExpenseCategoryEntity expenseCategoryEntity,
-			CurrencyEntity currencyEntity) {
-		ExpenseEntity expenseEntity = new ExpenseEntity(
-				"Uber Ride",
-				1000,
-				expenseCategoryEntity,
-				currencyEntity);
-
-		return expenseEntity;
-	}
-
-	private ExpenseCategoryEntity saveExpenseCategoryEntity(String name) {
-		ExpenseCategoryEntity entity = new ExpenseCategoryEntity(name);
-
-		return expenseCategoryRepository.save(entity);
-	}
-
-	private CurrencyEntity saveCurrencyEntity(String name) {
-		CurrencyEntity entity = new CurrencyEntity(name);
-
-		return currencyRepository.save(entity);
+		assertTrue(foundE.isEmpty());
 	}
 
 }

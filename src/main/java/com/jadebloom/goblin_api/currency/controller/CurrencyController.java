@@ -32,8 +32,7 @@ public class CurrencyController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CurrencyDto> createCurrency(
-            @Valid @RequestBody CreateCurrencyDto createDto) {
+    public ResponseEntity<CurrencyDto> createCurrency(@Valid @RequestBody CreateCurrencyDto createDto) {
         CurrencyDto created = currencyService.create(createDto);
 
         return new ResponseEntity<>(created, HttpStatus.CREATED);
@@ -54,7 +53,7 @@ public class CurrencyController {
     }
 
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CurrencyDto> updateCurrency(@RequestBody CurrencyDto dto) {
+    public ResponseEntity<CurrencyDto> updateCurrency(@Valid @RequestBody CurrencyDto dto) {
         CurrencyDto updated = currencyService.update(dto);
 
         return new ResponseEntity<>(updated, HttpStatus.OK);

@@ -20,7 +20,7 @@ public class CreateExpenseDto {
     private String description;
 
     @ValidExpenseAmount
-    private Integer amount;
+    private Long amount;
 
     @ValidExpenseLabelsList
     private List<@ValidExpenseLabel String> labels;
@@ -36,7 +36,7 @@ public class CreateExpenseDto {
     public CreateExpenseDto() {
     }
 
-    public CreateExpenseDto(String name, Integer amount, Long expenseCategoryId, Long currencyId) {
+    public CreateExpenseDto(String name, Long amount, Long expenseCategoryId, Long currencyId) {
         this.name = name;
 
         this.amount = amount;
@@ -54,7 +54,7 @@ public class CreateExpenseDto {
         return description;
     }
 
-    public Integer getAmount() {
+    public Long getAmount() {
         return amount;
     }
 
@@ -78,7 +78,7 @@ public class CreateExpenseDto {
         this.description = description;
     }
 
-    public void setAmount(Integer amount) {
+    public void setAmount(Long amount) {
         this.amount = amount;
     }
 

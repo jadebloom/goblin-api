@@ -2,8 +2,8 @@ package com.jadebloom.goblin_api.expense.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -18,7 +18,7 @@ import com.jadebloom.goblin_api.expense.repository.ExpenseCategoryRepository;
 
 import tools.jackson.databind.ObjectMapper;
 
-@WebMvcTest(ExpenseCategoryController.class)
+@SpringBootTest
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 public class ExpenseCategoryControllerIntegrationTests {

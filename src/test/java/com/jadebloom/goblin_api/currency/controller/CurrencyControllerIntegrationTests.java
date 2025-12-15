@@ -2,8 +2,9 @@ package com.jadebloom.goblin_api.currency.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -13,29 +14,30 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.jadebloom.goblin_api.currency.dto.CreateCurrencyDto;
 import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
-import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
-import com.jadebloom.goblin_api.currency.repository.CurrencyRepository;
+import com.jadebloom.goblin_api.currency.service.CurrencyService;
 
 import tools.jackson.databind.ObjectMapper;
 
-@WebMvcTest(CurrencyController.class)
+@SpringBootTest
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 public class CurrencyControllerIntegrationTests {
 
 	private final MockMvc mockMvc;
 
+	private final CurrencyService currencyService;
+
 	private final ObjectMapper objectMapper;
 
-	private final CurrencyRepository currencyRepository;
-
 	@Autowired
-	public CurrencyControllerIntegrationTests(MockMvc mockMvc, CurrencyRepository currencyRepository) {
+	public CurrencyControllerIntegrationTests(
+			MockMvc mockMvc,
+			@Qualifier("currencyServiceImpl") CurrencyService currencyService) {
 		this.mockMvc = mockMvc;
 
-		objectMapper = new ObjectMapper();
+		this.currencyService = currencyService;
 
-		this.currencyRepository = currencyRepository;
+		objectMapper = new ObjectMapper();
 	}
 
 	@Test
@@ -54,7 +56,7 @@ public class CurrencyControllerIntegrationTests {
 	}
 
 	@Test
-	public void canReturnHttp400WhenCurrencyHasInvalidName() throws Exception {
+	public void canReturnHttp400WhenCreatingCurrencyWithInvalidName() throws Exception {
 		CreateCurrencyDto dto = new CreateCurrencyDto("   ");
 
 		String json = objectMapper.writeValueAsString(dto);
@@ -67,7 +69,7 @@ public class CurrencyControllerIntegrationTests {
 	}
 
 	@Test
-	public void canReturnHttp400WhenCurrencyHasInvalidAlphabeticalCode() throws Exception {
+	public void canReturnHttp400WhenCreatingCurrencyWithInvalidAlphabeticalCode() throws Exception {
 		CreateCurrencyDto dto = new CreateCurrencyDto("Dollar");
 		dto.setAlphabeticalCode("D");
 
@@ -90,16 +92,15 @@ public class CurrencyControllerIntegrationTests {
 
 	@Test
 	public void canReturnCurrencyAndHttp200WhenFindingCurrencyById() throws Exception {
-		CurrencyEntity entity = new CurrencyEntity("Dollar");
-
-		CurrencyEntity savedEntity = currencyRepository.save(entity);
+		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
+		CurrencyDto currency = currencyService.create(createDto);
 
 		mockMvc.perform(
-				MockMvcRequestBuilders.get("/api/v1/currencies/" + savedEntity.getId())
+				MockMvcRequestBuilders.get("/api/v1/currencies/" + currency.getId())
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(savedEntity.getName()));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(currency.getName()));
 	}
 
 	@Test
@@ -112,33 +113,43 @@ public class CurrencyControllerIntegrationTests {
 
 	@Test
 	public void canReturnCurrencyAndHttp200WhenUpdatingCurrency() throws Exception {
-		CurrencyEntity entity = new CurrencyEntity("Dollar");
-		CurrencyEntity savedEntity = currencyRepository.save(entity);
+		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
+		CurrencyDto currency = currencyService.create(createDto);
+		currency.setName("NeName");
 
-		CurrencyDto dto = new CurrencyDto("Ruble");
-		dto.setId(savedEntity.getId());
-		dto.setName("NeName");
-
-		String json = objectMapper.writeValueAsString(dto);
+		String json = objectMapper.writeValueAsString(currency);
 
 		mockMvc.perform(
 				MockMvcRequestBuilders.put("/api/v1/currencies")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(json))
 				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(dto.getId()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(dto.getName()));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(currency.getId()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(currency.getName()));
 	}
 
 	@Test
 	public void canReturnHttp400WhenUpdatingCurrencyWithInvalidName() throws Exception {
-		CurrencyEntity entity = new CurrencyEntity("Valid name");
-		CurrencyEntity savedEntity = currencyRepository.save(entity);
+		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
+		CurrencyDto currency = currencyService.create(createDto);
+		currency.setName(null);
 
-		CurrencyDto dto = new CurrencyDto("  ");
-		dto.setId(savedEntity.getId());
+		String json = objectMapper.writeValueAsString(currency);
 
-		String json = objectMapper.writeValueAsString(dto);
+		mockMvc.perform(
+				MockMvcRequestBuilders.put("/api/v1/currencies")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(json))
+				.andExpect(MockMvcResultMatchers.status().isBadRequest());
+	}
+
+	@Test
+	public void canReturnHttp400WhenUpdatingCurrencyWithInvalidAlphabeticalCode() throws Exception {
+		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
+		CurrencyDto currency = currencyService.create(createDto);
+		currency.setAlphabeticalCode("AB");
+
+		String json = objectMapper.writeValueAsString(currency);
 
 		mockMvc.perform(
 				MockMvcRequestBuilders.put("/api/v1/currencies")
@@ -163,26 +174,13 @@ public class CurrencyControllerIntegrationTests {
 
 	@Test
 	public void canReturnHttp204WhenDeletingAllCurrencies() throws Exception {
-		mockMvc.perform(
-				MockMvcRequestBuilders.delete("/api/v1/currencies/all"))
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/currencies/all"))
 				.andExpect(MockMvcResultMatchers.status().isNoContent());
 	}
 
 	@Test
-	public void canReturnHttp204WhenDeletingExistingCurrencyByItsId() throws Exception {
-		CurrencyEntity entity = new CurrencyEntity("Dollar");
-
-		Long id = currencyRepository.save(entity).getId();
-
-		mockMvc.perform(
-				MockMvcRequestBuilders.delete("/api/v1/currencies/" + id))
-				.andExpect(MockMvcResultMatchers.status().isNoContent());
-	}
-
-	@Test
-	public void canReturnHttp204WhenDeletingNonExistingCurrencyByItsId() throws Exception {
-		mockMvc.perform(
-				MockMvcRequestBuilders.delete("/api/v1/currencies/1"))
+	public void canReturnHttp204WhenDeletingCurrencyById() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/currencies/1"))
 				.andExpect(MockMvcResultMatchers.status().isNoContent());
 	}
 

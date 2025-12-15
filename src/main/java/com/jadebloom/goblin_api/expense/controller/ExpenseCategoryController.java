@@ -18,6 +18,8 @@ import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.service.ExpenseCategoryService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/expenses/categories")
 public class ExpenseCategoryController {
@@ -31,7 +33,7 @@ public class ExpenseCategoryController {
 
     @PostMapping
     public ResponseEntity<ExpenseCategoryDto> createExpenseCategory(
-            @RequestBody CreateExpenseCategoryDto createDto) {
+            @Valid @RequestBody CreateExpenseCategoryDto createDto) {
         ExpenseCategoryDto result = expenseCategoryService.create(createDto);
 
         return new ResponseEntity<>(result, HttpStatus.CREATED);
@@ -54,7 +56,7 @@ public class ExpenseCategoryController {
 
     @PutMapping
     public ResponseEntity<ExpenseCategoryDto> updateExpenseCategory(
-            @RequestBody ExpenseCategoryDto expenseCategoryDto) {
+            @Valid @RequestBody ExpenseCategoryDto expenseCategoryDto) {
         ExpenseCategoryDto result = expenseCategoryService.update(expenseCategoryDto);
 
         return new ResponseEntity<>(result, HttpStatus.OK);

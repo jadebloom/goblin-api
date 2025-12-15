@@ -3,8 +3,8 @@ package com.jadebloom.goblin_api.expense.controller;
 import java.util.List;
 
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,7 +12,6 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -25,18 +24,12 @@ import com.jadebloom.goblin_api.expense.dto.ExpenseDto;
 import com.jadebloom.goblin_api.expense.service.ExpenseCategoryService;
 import com.jadebloom.goblin_api.expense.service.ExpenseService;
 
-import jakarta.annotation.PostConstruct;
 import tools.jackson.databind.ObjectMapper;
 
 @SpringBootTest
-@ExtendWith(SpringExtension.class)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 public class ExpenseControllerIntegrationTests {
-
-	private static Long expenseCategoryId;
-
-	private static Long currencyId;
 
 	private final MockMvc mockMvc;
 
@@ -47,6 +40,10 @@ public class ExpenseControllerIntegrationTests {
 	private final CurrencyService currencyService;
 
 	private final ObjectMapper objectMapper;
+
+	private Long expenseCategoryId;
+
+	private Long currencyId;
 
 	@Autowired
 	public ExpenseControllerIntegrationTests(
@@ -65,18 +62,27 @@ public class ExpenseControllerIntegrationTests {
 		this.objectMapper = new ObjectMapper();
 	}
 
-	@PostConstruct
-	private void createExpenseDependencies() {
-		CreateExpenseCategoryDto dto1 = new CreateExpenseCategoryDto("Daily");
-		CreateCurrencyDto dto2 = new CreateCurrencyDto("Dollar");
+	@BeforeEach
+	public void createExpenseCategory() {
+		CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Food");
 
-		expenseCategoryId = expenseCategoryService.create(dto1).getId();
-		currencyId = currencyService.create(dto2).getId();
+		expenseCategoryId = expenseCategoryService.create(createDto).getId();
+	}
+
+	@BeforeEach
+	public void createCurrency() {
+		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
+
+		currencyId = currencyService.create(createDto).getId();
 	}
 
 	@Test
 	public void canReturnExpenseAndHttp201WhenCreatingExpense() throws Exception {
-		CreateExpenseDto dto = new CreateExpenseDto("Uber Ride", 100, expenseCategoryId, currencyId);
+		CreateExpenseDto dto = new CreateExpenseDto(
+				"Uber Ride",
+				100L,
+				expenseCategoryId,
+				currencyId);
 		dto.setDescription("Descr");
 		dto.setLabels(List.of("l1", "l2"));
 
@@ -101,7 +107,11 @@ public class ExpenseControllerIntegrationTests {
 
 	@Test
 	public void canReturnHttp404WhenCreatingInvalidExpense() throws Exception {
-		CreateExpenseDto createDto = new CreateExpenseDto(null, null, expenseCategoryId, currencyId);
+		CreateExpenseDto createDto = new CreateExpenseDto(
+				null,
+				null,
+				expenseCategoryId,
+				currencyId);
 
 		String json = objectMapper.writeValueAsString(createDto);
 
@@ -114,7 +124,11 @@ public class ExpenseControllerIntegrationTests {
 
 	@Test
 	public void canReturnHttp404WhenCreatingExpenseWithNonExistingExpenseCategory() throws Exception {
-		CreateExpenseDto createDto = new CreateExpenseDto("Uber Ride", 100, 2L, currencyId);
+		CreateExpenseDto createDto = new CreateExpenseDto(
+				"Uber Ride",
+				100L,
+				expenseCategoryId + 1,
+				currencyId);
 
 		String json = objectMapper.writeValueAsString(createDto);
 
@@ -127,7 +141,11 @@ public class ExpenseControllerIntegrationTests {
 
 	@Test
 	public void canReturnHttp404WhenCreatingExpenseWithNonExistingCurrencyCategory() throws Exception {
-		CreateExpenseDto createDto = new CreateExpenseDto("Uber Ride", 100, expenseCategoryId, 2L);
+		CreateExpenseDto createDto = new CreateExpenseDto(
+				"Uber Ride",
+				100L,
+				expenseCategoryId,
+				currencyId + 1);
 
 		String json = objectMapper.writeValueAsString(createDto);
 
@@ -148,8 +166,11 @@ public class ExpenseControllerIntegrationTests {
 
 	@Test
 	public void canReturnExpenseAndHttp200WhenFindingExpenseById() throws Exception {
-		CreateExpenseDto createDto = new CreateExpenseDto("Uber Ride", 100,
-				expenseCategoryId, currencyId);
+		CreateExpenseDto createDto = new CreateExpenseDto(
+				"Uber Ride",
+				100L,
+				expenseCategoryId,
+				currencyId);
 		createDto.setLabels(List.of("123", "32"));
 
 		ExpenseDto dto = expenseService.create(createDto);
@@ -174,7 +195,7 @@ public class ExpenseControllerIntegrationTests {
 	public void canReturnExpenseAndHttp200WhenUpdatingExpense() throws Exception {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
-				100,
+				100L,
 				expenseCategoryId,
 				currencyId);
 
@@ -203,15 +224,13 @@ public class ExpenseControllerIntegrationTests {
 
 	@Test
 	public void canReturnHttp204WhenDeletingAllExpenses() throws Exception {
-		mockMvc.perform(
-				MockMvcRequestBuilders.delete("/api/v1/expenses/all"))
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/all"))
 				.andExpect(MockMvcResultMatchers.status().isNoContent());
 	}
 
 	@Test
 	public void canReturnHttp204WhenDeletingExpenseById() throws Exception {
-		mockMvc.perform(
-				MockMvcRequestBuilders.delete("/api/v1/expenses/1"))
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/1"))
 				.andExpect(MockMvcResultMatchers.status().isNoContent());
 	}
 

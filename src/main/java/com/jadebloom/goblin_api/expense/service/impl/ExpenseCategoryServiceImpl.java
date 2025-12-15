@@ -36,7 +36,7 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
         String name = createDto.getName();
 
         if (expenseCategoryRepository.existsByName(name)) {
-            String f = "Expense category with name \"%s\" already exists";
+            String f = "Expense category with the name '%s' already exists";
             String errorMessage = String.format(f, name);
 
             throw new ExpenseCategoryNameUnavailableException(errorMessage);
@@ -60,7 +60,7 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
         Optional<ExpenseCategoryEntity> found = expenseCategoryRepository.findById(expenseCategoryId);
 
         if (found.isEmpty()) {
-            String f = "Expense category with ID=%d wasn't found";
+            String f = "Expense category with the ID '%d' wasn't found";
 
             throw new ExpenseCategoryNotFoundException(String.format(f, expenseCategoryId));
         }
@@ -81,13 +81,13 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
         String name = dto.getName();
 
         if (!existsById(id)) {
-            String f = "Expense category with ID=%d doesn't exist";
+            String f = "Expense category with the ID '%d' doesn't exist";
 
             throw new ExpenseCategoryNotFoundException(String.format(f, id));
         }
 
         if (expenseCategoryRepository.existsByIdNotAndName(id, name)) {
-            String f = "Expense category with name \"%s\" already exists";
+            String f = "Expense category with the name '%s' already exists";
             String errorMessage = String.format(f, name);
 
             throw new ExpenseCategoryNameUnavailableException(errorMessage);
