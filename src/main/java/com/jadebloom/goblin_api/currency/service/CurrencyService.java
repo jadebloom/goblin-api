@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.jadebloom.goblin_api.currency.dto.CreateCurrencyDto;
 import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
+import com.jadebloom.goblin_api.currency.dto.UpdateCurrencyDto;
 import com.jadebloom.goblin_api.currency.error.CurrencyInUseException;
 import com.jadebloom.goblin_api.currency.error.CurrencyNameUnavailableException;
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
@@ -19,7 +20,7 @@ public interface CurrencyService {
 
 	boolean existsById(Long currencyId);
 
-	CurrencyDto update(CurrencyDto dto)
+	CurrencyDto update(UpdateCurrencyDto updateDto)
 			throws CurrencyNotFoundException, CurrencyNameUnavailableException;
 
 	void deleteById(Long currencyId) throws CurrencyInUseException;

@@ -1,5 +1,9 @@
 package com.jadebloom.goblin_api.currency.entity;
 
+import java.time.ZonedDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jadebloom.goblin_api.currency.validation.ValidCurrencyAlphabeticalCode;
 import com.jadebloom.goblin_api.currency.validation.ValidCurrencyName;
@@ -28,6 +32,10 @@ public class CurrencyEntity {
     @JsonProperty("alphabetical_code")
     private String alphabeticalCode;
 
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private ZonedDateTime createdAt;
+
     public CurrencyEntity() {
     }
 
@@ -47,6 +55,10 @@ public class CurrencyEntity {
         return alphabeticalCode;
     }
 
+    public ZonedDateTime getCreatedAt() {
+        return createdAt;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -57,6 +69,10 @@ public class CurrencyEntity {
 
     public void setAlphabeticalCode(String alphabeticalCode) {
         this.alphabeticalCode = alphabeticalCode;
+    }
+
+    public void setCreatedAt(ZonedDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     @Override
@@ -75,14 +91,18 @@ public class CurrencyEntity {
             return false;
         }
 
+        if (createdAt != currencyEntity.createdAt) {
+            return false;
+        }
+
         return alphabeticalCode == currencyEntity.getAlphabeticalCode();
     }
 
     @Override
     public String toString() {
-        String f = "CurrencyEntity(id=%d, name=%s, alphabeticalCode=%s)";
+        String f = "CurrencyEntity(id=%d, name=%s, alphabeticalCode=%s, createdAt=%t)";
 
-        return String.format(f, id, name, alphabeticalCode);
+        return String.format(f, id, name, alphabeticalCode, createdAt);
     }
 
 }
