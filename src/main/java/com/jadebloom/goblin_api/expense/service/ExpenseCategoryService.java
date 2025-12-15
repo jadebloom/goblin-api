@@ -23,8 +23,6 @@ public interface ExpenseCategoryService {
 			throws ExpenseCategoryNotFoundException,
 			ExpenseCategoryNameUnavailableException;
 
-	void deleteAll();
-
 	void deleteById(Long expenseCategoryId);
 
 }

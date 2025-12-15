@@ -100,6 +100,11 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
+    public boolean existsByCurrencyId(Long currencyId) {
+        return expenseRepository.existsByCurrency_Id(currencyId);
+    }
+
+    @Override
     public ExpenseDto update(ExpenseDto dto)
             throws ExpenseNotFoundException,
             ExpenseNameUnavailableException,
@@ -141,11 +146,6 @@ public class ExpenseServiceImpl implements ExpenseService {
         ExpenseEntity updated = expenseRepository.save(entity);
 
         return mapper.map(updated);
-    }
-
-    @Override
-    public void deleteAll() {
-        expenseRepository.deleteAll();
     }
 
     @Override

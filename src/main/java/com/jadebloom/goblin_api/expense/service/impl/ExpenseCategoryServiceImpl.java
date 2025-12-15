@@ -99,11 +99,6 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
     }
 
     @Override
-    public void deleteAll() {
-        expenseCategoryRepository.deleteAll();
-    }
-
-    @Override
     public void deleteById(Long expenseCategoryId) {
         expenseCategoryRepository.deleteById(expenseCategoryId);
     }

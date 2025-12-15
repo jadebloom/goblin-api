@@ -2,6 +2,7 @@ package com.jadebloom.goblin_api.currency.service.impl;
 
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,16 +15,24 @@ import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
 import com.jadebloom.goblin_api.currency.mapper.CurrencyMapper;
 import com.jadebloom.goblin_api.currency.repository.CurrencyRepository;
 import com.jadebloom.goblin_api.currency.service.CurrencyService;
+import com.jadebloom.goblin_api.expense.service.ExpenseService;
 
 @Service
 public class CurrencyServiceImpl implements CurrencyService {
 
     private final CurrencyRepository currencyRepository;
 
+    private final ExpenseService expenseService;
+
     private final CurrencyMapper mapper;
 
-    public CurrencyServiceImpl(CurrencyRepository currencyRepository, CurrencyMapper mapper) {
+    public CurrencyServiceImpl(
+            CurrencyRepository currencyRepository,
+            @Qualifier("expenseServiceImpl") ExpenseService expenseService,
+            CurrencyMapper mapper) {
         this.currencyRepository = currencyRepository;
+
+        this.expenseService = expenseService;
 
         this.mapper = mapper;
     }
@@ -89,11 +98,6 @@ public class CurrencyServiceImpl implements CurrencyService {
         CurrencyEntity updated = mapper.map(dto);
 
         return mapper.map(currencyRepository.save(updated));
-    }
-
-    @Override
-    public void deleteAll() {
-        currencyRepository.deleteAll();
     }
 
     @Override
