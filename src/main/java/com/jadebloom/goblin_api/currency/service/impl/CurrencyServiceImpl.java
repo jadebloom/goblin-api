@@ -31,7 +31,7 @@ public class CurrencyServiceImpl implements CurrencyService {
     @Override
     public CurrencyDto create(CreateCurrencyDto createDto) throws CurrencyNameUnavailableException {
         if (currencyRepository.existsByName(createDto.getName())) {
-            String f = "Currency with name \"%s\" already exists";
+            String f = "Currency with the name '%s' already exists";
             String errorMessage = String.format(f, createDto.getName());
 
             throw new CurrencyNameUnavailableException(errorMessage);
@@ -54,7 +54,7 @@ public class CurrencyServiceImpl implements CurrencyService {
         Optional<CurrencyEntity> found = currencyRepository.findById(currencyId);
 
         if (found.isEmpty()) {
-            String f = "Currency with ID=%d wasn't found";
+            String f = "Currency with the ID '%d' wasn't found";
 
             throw new CurrencyNotFoundException(String.format(f, currencyId));
         }
@@ -74,7 +74,7 @@ public class CurrencyServiceImpl implements CurrencyService {
         String name = dto.getName();
 
         if (!existsById(id)) {
-            String f = "Currency with ID=%d doesn't exist";
+            String f = "Currency with the ID '%d' doesn't exist";
 
             throw new CurrencyNotFoundException(String.format(f, id));
         }

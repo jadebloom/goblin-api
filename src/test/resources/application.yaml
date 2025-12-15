@@ -9,3 +9,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+api:
+  docs:
+    uri: http://localhost:8080/swagger-ui/index.html

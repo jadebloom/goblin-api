@@ -39,7 +39,7 @@ public class ExpenseEntity {
 
     @Column(nullable = false)
     @ValidExpenseAmount
-    private Integer amount;
+    private Long amount;
 
     @ElementCollection
     @CollectionTable(name = "expense_labels", joinColumns = @JoinColumn(name = "expense_id"))
@@ -62,7 +62,7 @@ public class ExpenseEntity {
 
     public ExpenseEntity(
             String name,
-            Integer amount,
+            Long amount,
             ExpenseCategoryEntity expenseCategory,
             CurrencyEntity currency) {
         this.name = name;
@@ -86,7 +86,7 @@ public class ExpenseEntity {
         return description;
     }
 
-    public Integer getAmount() {
+    public Long getAmount() {
         return amount;
     }
 
@@ -114,7 +114,7 @@ public class ExpenseEntity {
         this.description = description;
     }
 
-    public void setAmount(Integer amount) {
+    public void setAmount(Long amount) {
         this.amount = amount;
     }
 

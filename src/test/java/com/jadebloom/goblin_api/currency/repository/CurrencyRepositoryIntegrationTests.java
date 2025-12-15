@@ -49,7 +49,7 @@ public class CurrencyRepositoryIntegrationTests {
     }
 
     @Test
-    public void canCreateAndFindCurrency() {
+    public void canCreateCurrencyAndFindItById() {
         CurrencyEntity e = new CurrencyEntity("American Dollar");
         e.setAlphabeticalCode("USD");
 
@@ -90,7 +90,7 @@ public class CurrencyRepositoryIntegrationTests {
     }
 
     @Test
-    public void canUpdateAndFindCurrency() {
+    public void canUpdateCurrencyAndFindItById() {
         CurrencyEntity e = new CurrencyEntity("Tenge");
         CurrencyEntity savedE = underTest.save(e);
 

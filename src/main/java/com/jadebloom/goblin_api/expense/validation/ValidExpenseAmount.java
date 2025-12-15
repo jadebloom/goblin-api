@@ -21,7 +21,7 @@ import jakarta.validation.constraints.NotNull;
 
 @NotNull
 @Min(1)
-@Max(Integer.MAX_VALUE)
+@Max(Long.MAX_VALUE)
 @ReportAsSingleViolation
 @Target({ FIELD, METHOD, PARAMETER, ANNOTATION_TYPE, TYPE_USE })
 @Retention(RUNTIME)
@@ -29,7 +29,7 @@ import jakarta.validation.constraints.NotNull;
 @Constraint(validatedBy = {})
 public @interface ValidExpenseAmount {
 
-    String message() default "The expense's amount must be in the range 1 - 2147483647";
+    String message() default "The expense's amount must be in the range 1 - 9223372036854775807";
 
     Class<?>[] groups() default {};
 

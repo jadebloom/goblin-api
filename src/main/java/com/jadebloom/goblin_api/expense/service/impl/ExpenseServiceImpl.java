@@ -15,12 +15,10 @@ import com.jadebloom.goblin_api.expense.entity.ExpenseEntity;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
 import com.jadebloom.goblin_api.expense.error.ExpenseNameUnavailableException;
 import com.jadebloom.goblin_api.expense.error.ExpenseNotFoundException;
-import com.jadebloom.goblin_api.expense.error.InvalidExpenseException;
 import com.jadebloom.goblin_api.expense.mapper.ExpenseMapper;
 import com.jadebloom.goblin_api.expense.repository.ExpenseRepository;
 import com.jadebloom.goblin_api.expense.service.ExpenseCategoryService;
 import com.jadebloom.goblin_api.expense.service.ExpenseService;
-import com.jadebloom.goblin_api.shared.validation.GenericValidator;
 
 @Service
 public class ExpenseServiceImpl implements ExpenseService {
@@ -48,43 +46,37 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public ExpenseDto create(CreateExpenseDto createExpenseDto)
-            throws InvalidExpenseException,
-            ExpenseNameUnavailableException,
+    public ExpenseDto create(CreateExpenseDto createDto)
+            throws ExpenseNameUnavailableException,
             ExpenseCategoryNotFoundException,
             CurrencyNotFoundException {
-        Long expenseCategoryId = createExpenseDto.getExpenseCategoryId();
-        Long currencyId = createExpenseDto.getCurrencyId();
+        String expenseName = createDto.getName();
+        Long expenseCategoryId = createDto.getExpenseCategoryId();
+        Long currencyId = createDto.getCurrencyId();
 
-        if (!GenericValidator.isValid(createExpenseDto)) {
-            String message = GenericValidator.getValidationErrorMessage(createExpenseDto);
-
-            throw new InvalidExpenseException(message);
-        }
-
-        if (expenseRepository.existsByName(createExpenseDto.getName())) {
-            String f = "Expense with name=%s already exists";
-            String errorMessage = String.format(f, createExpenseDto.getName());
+        if (expenseRepository.existsByName(expenseName)) {
+            String f = "Expense with the name '%s' already exists";
+            String errorMessage = String.format(f, expenseName);
 
             throw new ExpenseNameUnavailableException(errorMessage);
         }
 
         if (!expenseCategoryService.existsById(expenseCategoryId)) {
-            String f = "Expense category with ID=%d wasn't found";
+            String f = "Expense category with the ID '%d' wasn't found";
 
             throw new ExpenseCategoryNotFoundException(String.format(f, expenseCategoryId));
         }
 
         if (!currencyService.existsById(currencyId)) {
-            String f = "Currency with ID=%d wasn't found";
+            String f = "Currency with the ID '%d' wasn't found";
 
             throw new CurrencyNotFoundException(String.format(f, currencyId));
         }
 
-        ExpenseEntity entity = mapper.map(createExpenseDto);
-        ExpenseEntity savedEntity = expenseRepository.save(entity);
+        ExpenseEntity entity = mapper.map(createDto);
+        ExpenseEntity created = expenseRepository.save(entity);
 
-        return mapper.map(savedEntity);
+        return mapper.map(created);
     }
 
     @Override
@@ -96,69 +88,59 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public ExpenseDto findById(Long expenseId) throws ExpenseNotFoundException {
-        Optional<ExpenseEntity> entity = expenseRepository.findById(expenseId);
+        Optional<ExpenseEntity> found = expenseRepository.findById(expenseId);
 
-        if (entity.isEmpty()) {
-            String f = "Expense with ID=%d wasn't found";
+        if (found.isEmpty()) {
+            String f = "Expense with the ID '%d' wasn't found";
 
             throw new ExpenseNotFoundException(String.format(f, expenseId));
         }
 
-        return mapper.map(entity.get());
+        return mapper.map(found.get());
     }
 
     @Override
-    public boolean existsByCurrencyId(Long currencyId) {
-        return expenseRepository.existsByCurrency_Id(currencyId);
-    }
-
-    @Override
-    public ExpenseDto update(ExpenseDto expenseDto)
-            throws InvalidExpenseException,
-            ExpenseNotFoundException,
+    public ExpenseDto update(ExpenseDto dto)
+            throws ExpenseNotFoundException,
             ExpenseNameUnavailableException,
             ExpenseCategoryNotFoundException,
             CurrencyNotFoundException {
-        Long expenseId = expenseDto.getId();
-        String name = expenseDto.getName();
-
-        if (!GenericValidator.isValid(expenseDto)) {
-            String message = GenericValidator.getValidationErrorMessage(expenseDto);
-
-            throw new InvalidExpenseException(message);
-        }
+        Long expenseId = dto.getId();
+        String name = dto.getName();
+        Long expenseCategoryId = dto.getExpenseCategoryId();
+        Long currencyId = dto.getCurrencyId();
 
         if (!expenseRepository.existsById(expenseId)) {
-            String f = "Expense with ID=%d wasn't found";
+            String f = "Expense with the ID '%d' wasn't found";
 
             throw new ExpenseNotFoundException(String.format(f, expenseId));
         }
 
         if (expenseRepository.existsByIdNotAndName(expenseId, name)) {
-            String f = "Another expense with name '%s' already exists";
+            String f = "Another expense with the name '%s' already exists";
             String errorMessage = String.format(f, name);
 
             throw new ExpenseNameUnavailableException(errorMessage);
         }
 
-        if (!expenseCategoryService.existsById(expenseDto.getExpenseCategoryId())) {
-            String f = "Expense category with ID=%d wasn't found";
-            String message = String.format(f, String.format(f, expenseDto.getExpenseCategoryId()));
+        if (!expenseCategoryService.existsById(expenseCategoryId)) {
+            String f = "Expense category with the ID '%d' wasn't found";
+            String message = String.format(f, String.format(f, expenseCategoryId));
 
             throw new ExpenseCategoryNotFoundException(message);
         }
 
-        if (!currencyService.existsById(expenseDto.getCurrencyId())) {
-            String f = "Currency with ID=%d wasn't found";
-            String message = String.format(f, String.format(f, expenseDto.getCurrencyId()));
+        if (!currencyService.existsById(currencyId)) {
+            String f = "Currency with the ID '%d' wasn't found";
+            String message = String.format(f, String.format(f, currencyId));
 
             throw new CurrencyNotFoundException(message);
         }
 
-        ExpenseEntity entity = mapper.map(expenseDto);
-        ExpenseEntity savedEntity = expenseRepository.save(entity);
+        ExpenseEntity entity = mapper.map(dto);
+        ExpenseEntity updated = expenseRepository.save(entity);
 
-        return mapper.map(savedEntity);
+        return mapper.map(updated);
     }
 
     @Override
