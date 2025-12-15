@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.jadebloom.goblin_api.currency.dto.CreateCurrencyDto;
 import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
+import com.jadebloom.goblin_api.currency.dto.UpdateCurrencyDto;
 import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
 import com.jadebloom.goblin_api.currency.error.CurrencyInUseException;
 import com.jadebloom.goblin_api.currency.error.CurrencyNameUnavailableException;
@@ -77,10 +78,10 @@ public class CurrencyServiceImpl implements CurrencyService {
     }
 
     @Override
-    public CurrencyDto update(CurrencyDto dto)
+    public CurrencyDto update(UpdateCurrencyDto updateDto)
             throws CurrencyNotFoundException, CurrencyNameUnavailableException {
-        Long id = dto.getId();
-        String name = dto.getName();
+        Long id = updateDto.getId();
+        String name = updateDto.getName();
 
         if (!existsById(id)) {
             String f = "Currency with the ID '%d' doesn't exist";
@@ -95,7 +96,7 @@ public class CurrencyServiceImpl implements CurrencyService {
             throw new CurrencyNameUnavailableException(errorMessage);
         }
 
-        CurrencyEntity updated = mapper.map(dto);
+        CurrencyEntity updated = mapper.map(updateDto);
 
         return mapper.map(currencyRepository.save(updated));
     }

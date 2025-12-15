@@ -1,14 +1,12 @@
 package com.jadebloom.goblin_api.currency.dto;
 
-import java.time.ZonedDateTime;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jadebloom.goblin_api.currency.validation.ValidCurrencyAlphabeticalCode;
 import com.jadebloom.goblin_api.currency.validation.ValidCurrencyName;
 
 import jakarta.validation.constraints.NotNull;
 
-public class CurrencyDto {
+public class UpdateCurrencyDto {
 
     @NotNull
     private Long id;
@@ -20,13 +18,12 @@ public class CurrencyDto {
     @JsonProperty("alphabetical_code")
     private String alphabeticalCode;
 
-    @JsonProperty("created_at")
-    private ZonedDateTime createdAt;
-
-    public CurrencyDto() {
+    public UpdateCurrencyDto() {
     }
 
-    public CurrencyDto(String name) {
+    public UpdateCurrencyDto(Long id, String name) {
+        this.id = id;
+
         this.name = name;
     }
 
@@ -42,10 +39,6 @@ public class CurrencyDto {
         return alphabeticalCode;
     }
 
-    public ZonedDateTime getCreatedAt() {
-        return createdAt;
-    }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -58,15 +51,11 @@ public class CurrencyDto {
         this.alphabeticalCode = alphabeticalCode;
     }
 
-    public void setCreatedAt(ZonedDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     @Override
     public String toString() {
-        String f = "CurrencyDto(id=%d, name=%s, alphabeticalCode=%s, createdAt=%t)";
+        String f = "UpdateCurrencyDto(id=%d, name=%s, alphabeticalCode=%s)";
 
-        return String.format(f, id, name, alphabeticalCode, createdAt);
+        return String.format(f, id, name, alphabeticalCode);
     }
 
 }

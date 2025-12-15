@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.jadebloom.goblin_api.currency.dto.CreateCurrencyDto;
 import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
+import com.jadebloom.goblin_api.currency.dto.UpdateCurrencyDto;
 import com.jadebloom.goblin_api.currency.service.CurrencyService;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseDto;
@@ -129,26 +130,28 @@ public class CurrencyControllerIntegrationTests {
 	public void canReturnCurrencyAndHttp200WhenUpdatingCurrency() throws Exception {
 		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
 		CurrencyDto currency = currencyService.create(createDto);
-		currency.setName("NeName");
 
-		String json = objectMapper.writeValueAsString(currency);
+		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(currency.getId(), "new name here");
+
+		String json = objectMapper.writeValueAsString(updateDto);
 
 		mockMvc.perform(
 				MockMvcRequestBuilders.put("/api/v1/currencies")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(json))
 				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(currency.getId()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(currency.getName()));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(updateDto.getId()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(updateDto.getName()));
 	}
 
 	@Test
 	public void canReturnHttp400WhenUpdatingCurrencyWithInvalidName() throws Exception {
 		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
 		CurrencyDto currency = currencyService.create(createDto);
-		currency.setName(null);
 
-		String json = objectMapper.writeValueAsString(currency);
+		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(currency.getId(), null);
+
+		String json = objectMapper.writeValueAsString(updateDto);
 
 		mockMvc.perform(
 				MockMvcRequestBuilders.put("/api/v1/currencies")
@@ -161,9 +164,13 @@ public class CurrencyControllerIntegrationTests {
 	public void canReturnHttp400WhenUpdatingCurrencyWithInvalidAlphabeticalCode() throws Exception {
 		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
 		CurrencyDto currency = currencyService.create(createDto);
-		currency.setAlphabeticalCode("AB");
 
-		String json = objectMapper.writeValueAsString(currency);
+		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(
+				currency.getId(),
+				"new name here");
+		updateDto.setAlphabeticalCode("AB");
+
+		String json = objectMapper.writeValueAsString(updateDto);
 
 		mockMvc.perform(
 				MockMvcRequestBuilders.put("/api/v1/currencies")
@@ -174,10 +181,9 @@ public class CurrencyControllerIntegrationTests {
 
 	@Test
 	public void canReturnHttp404WhenUpdatingNotExistingCurrency() throws Exception {
-		CurrencyDto dto = new CurrencyDto("Dollar");
-		dto.setId(1L);
+		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(1L, ".");
 
-		String json = objectMapper.writeValueAsString(dto);
+		String json = objectMapper.writeValueAsString(updateDto);
 
 		mockMvc.perform(
 				MockMvcRequestBuilders.put("/api/v1/currencies")
