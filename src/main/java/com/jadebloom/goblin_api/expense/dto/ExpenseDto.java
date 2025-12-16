@@ -14,7 +14,7 @@ import jakarta.validation.constraints.NotNull;
 
 public class ExpenseDto {
 
-    @NotNull
+    @NotNull(message = "The expense's ID must not be null")
     private Long id;
 
     @ValidExpenseName
