@@ -80,25 +80,27 @@ public class CurrencyServiceImpl implements CurrencyService {
     @Override
     public CurrencyDto update(UpdateCurrencyDto updateDto)
             throws CurrencyNotFoundException, CurrencyNameUnavailableException {
-        Long id = updateDto.getId();
-        String name = updateDto.getName();
+        Optional<CurrencyEntity> optional = currencyRepository.findById(updateDto.getId());
 
-        if (!existsById(id)) {
+        if (optional.isEmpty()) {
             String f = "Currency with the ID '%d' doesn't exist";
 
-            throw new CurrencyNotFoundException(String.format(f, id));
+            throw new CurrencyNotFoundException(String.format(f, updateDto.getId()));
         }
 
-        if (currencyRepository.existsByIdNotAndName(id, name)) {
+        CurrencyEntity entity = optional.get();
+
+        if (currencyRepository.existsByIdNotAndName(entity.getId(), updateDto.getName())) {
             String f = "Other currency with name \"%s\" already exists";
-            String errorMessage = String.format(f, name);
+            String errorMessage = String.format(f, updateDto.getName());
 
             throw new CurrencyNameUnavailableException(errorMessage);
         }
 
-        CurrencyEntity updated = mapper.map(updateDto);
+        entity.setName(updateDto.getName());
+        entity.setAlphabeticalCode(updateDto.getAlphabeticalCode());
 
-        return mapper.map(currencyRepository.save(updated));
+        return mapper.map(currencyRepository.save(entity));
     }
 
     @Override

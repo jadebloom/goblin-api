@@ -103,21 +103,6 @@ public class ExpenseCategoryRepositoryIntegrationTests {
     }
 
     @Test
-    public void canDeleteAllExpenseCategories() {
-        ExpenseCategoryEntity e1 = new ExpenseCategoryEntity("Daily");
-        ExpenseCategoryEntity e2 = new ExpenseCategoryEntity("Debt");
-        underTest.save(e1);
-        underTest.save(e2);
-
-        underTest.deleteAll();
-
-        Page<ExpenseCategoryEntity> page = underTest.findAll(PageRequest.of(0, 5));
-        List<ExpenseCategoryEntity> entities = page.getContent();
-
-        assertTrue(entities.isEmpty());
-    }
-
-    @Test
     public void canDeleteExpenseCategoryById() {
         ExpenseCategoryEntity e = new ExpenseCategoryEntity("Daily");
         Long id = underTest.save(e).getId();

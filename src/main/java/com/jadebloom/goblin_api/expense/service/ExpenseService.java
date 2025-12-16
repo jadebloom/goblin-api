@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseDto;
+import com.jadebloom.goblin_api.expense.dto.UpdateExpenseDto;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
 import com.jadebloom.goblin_api.expense.error.ExpenseNameUnavailableException;
 import com.jadebloom.goblin_api.expense.error.ExpenseNotFoundException;
@@ -21,7 +22,7 @@ public interface ExpenseService {
 
 	ExpenseDto findById(Long expenseId) throws ExpenseNotFoundException;
 
-	ExpenseDto update(ExpenseDto dto)
+	ExpenseDto update(UpdateExpenseDto updateDto)
 			throws ExpenseNotFoundException,
 			ExpenseNameUnavailableException,
 			ExpenseCategoryNotFoundException,

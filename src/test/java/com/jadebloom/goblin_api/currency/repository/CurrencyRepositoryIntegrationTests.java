@@ -106,22 +106,6 @@ public class CurrencyRepositoryIntegrationTests {
     }
 
     @Test
-    public void canDeleteAllCurrencies() {
-        CurrencyEntity e1 = new CurrencyEntity("Dollar");
-        CurrencyEntity e2 = new CurrencyEntity("Ruble");
-
-        underTest.save(e1);
-        underTest.save(e2);
-
-        underTest.deleteAll();
-
-        Page<CurrencyEntity> page = underTest.findAll(PageRequest.of(0, 20));
-        List<CurrencyEntity> entities = page.getContent();
-
-        assertTrue(entities.isEmpty());
-    }
-
-    @Test
     public void canDeleteCurrencyById() {
         CurrencyEntity e = new CurrencyEntity("Dollar");
         Long id = underTest.save(e).getId();

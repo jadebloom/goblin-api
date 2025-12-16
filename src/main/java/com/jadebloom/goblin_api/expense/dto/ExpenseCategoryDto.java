@@ -1,5 +1,8 @@
 package com.jadebloom.goblin_api.expense.dto;
 
+import java.time.ZonedDateTime;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryDescription;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryName;
 
@@ -16,11 +19,18 @@ public class ExpenseCategoryDto {
     @ValidExpenseCategoryDescription
     private String description;
 
+    @JsonProperty("created_at")
+    private ZonedDateTime createdAt;
+
     public ExpenseCategoryDto() {
     }
 
-    public ExpenseCategoryDto(String name) {
+    public ExpenseCategoryDto(Long id, String name, ZonedDateTime createdAt) {
+        this.id = id;
+
         this.name = name;
+
+        this.createdAt = createdAt;
     }
 
     public Long getId() {
@@ -35,6 +45,10 @@ public class ExpenseCategoryDto {
         return description;
     }
 
+    public ZonedDateTime getCreatedAt() {
+        return createdAt;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -47,11 +61,17 @@ public class ExpenseCategoryDto {
         this.description = description;
     }
 
+    public void setCreatedAt(ZonedDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     @Override
     public String toString() {
-        String f = "ExpenseCategoryDto(id=%d, name=%s, description=%s)";
-
-        return String.format(f, id, name, description);
+        return "ExpenseCategoryDto(" +
+                "id=" + id +
+                ", name=" + name +
+                ", description=" + description +
+                ", createdAt=" + createdAt + ")";
     }
 
 }

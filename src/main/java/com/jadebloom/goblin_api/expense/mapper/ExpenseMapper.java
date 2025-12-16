@@ -8,6 +8,7 @@ import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
 import com.jadebloom.goblin_api.currency.repository.CurrencyRepository;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseDto;
+import com.jadebloom.goblin_api.expense.dto.UpdateExpenseDto;
 import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
 import com.jadebloom.goblin_api.expense.entity.ExpenseEntity;
 import com.jadebloom.goblin_api.expense.repository.ExpenseCategoryRepository;
@@ -65,37 +66,37 @@ public class ExpenseMapper {
         return typeMap.map(createExpenseDto);
     }
 
-    public ExpenseEntity map(ExpenseDto expenseDto) {
-        TypeMap<ExpenseDto, ExpenseEntity> typeMap = modelMapper.getTypeMap(
-                ExpenseDto.class,
+    public ExpenseEntity map(UpdateExpenseDto updateDto) {
+        TypeMap<UpdateExpenseDto, ExpenseEntity> typeMap = modelMapper.getTypeMap(
+                UpdateExpenseDto.class,
                 ExpenseEntity.class);
 
         if (typeMap == null) {
             typeMap = modelMapper.emptyTypeMap(
-                    ExpenseDto.class,
+                    UpdateExpenseDto.class,
                     ExpenseEntity.class);
 
-            typeMap.addMapping(ExpenseDto::getId, ExpenseEntity::setId);
-            typeMap.addMapping(ExpenseDto::getName, ExpenseEntity::setName);
-            typeMap.addMapping(ExpenseDto::getDescription, ExpenseEntity::setDescription);
-            typeMap.addMapping(ExpenseDto::getAmount, ExpenseEntity::setAmount);
-            typeMap.addMapping(ExpenseDto::getLabels, ExpenseEntity::setLabels);
+            typeMap.addMapping(UpdateExpenseDto::getId, ExpenseEntity::setId);
+            typeMap.addMapping(UpdateExpenseDto::getName, ExpenseEntity::setName);
+            typeMap.addMapping(UpdateExpenseDto::getDescription, ExpenseEntity::setDescription);
+            typeMap.addMapping(UpdateExpenseDto::getAmount, ExpenseEntity::setAmount);
+            typeMap.addMapping(UpdateExpenseDto::getLabels, ExpenseEntity::setLabels);
 
             typeMap.addMappings(mapper -> mapper.<ExpenseCategoryEntity>map(src -> {
-                Long id = expenseDto.getExpenseCategoryId();
+                Long id = updateDto.getExpenseCategoryId();
                 ExpenseCategoryEntity e = expenseCategoryRepository.findById(id).orElse(null);
 
                 return e;
             }, ExpenseEntity::setExpenseCategory));
             typeMap.addMappings(mapper -> mapper.<CurrencyEntity>map(src -> {
-                Long id = expenseDto.getCurrencyId();
+                Long id = updateDto.getCurrencyId();
                 CurrencyEntity e = currencyRepository.findById(id).orElse(null);
 
                 return e;
             }, ExpenseEntity::setCurrency));
         }
 
-        return typeMap.map(expenseDto);
+        return typeMap.map(updateDto);
     }
 
     public ExpenseDto map(ExpenseEntity expenseEntity) {

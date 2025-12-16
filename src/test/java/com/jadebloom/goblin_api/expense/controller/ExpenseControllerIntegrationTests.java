@@ -21,6 +21,7 @@ import com.jadebloom.goblin_api.currency.service.CurrencyService;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseDto;
+import com.jadebloom.goblin_api.expense.dto.UpdateExpenseDto;
 import com.jadebloom.goblin_api.expense.service.ExpenseCategoryService;
 import com.jadebloom.goblin_api.expense.service.ExpenseService;
 
@@ -100,6 +101,7 @@ public class ExpenseControllerIntegrationTests {
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.labels")
 								.value(Matchers.containsInAnyOrder(dto.getLabels().toArray())))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isString())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id")
 						.value(dto.getExpenseCategoryId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()));
@@ -186,6 +188,7 @@ public class ExpenseControllerIntegrationTests {
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.labels")
 								.value(Matchers.containsInAnyOrder(dto.getLabels().toArray())))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isString())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id")
 						.value(dto.getExpenseCategoryId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()));
@@ -198,28 +201,34 @@ public class ExpenseControllerIntegrationTests {
 				100L,
 				expenseCategoryId,
 				currencyId);
+		ExpenseDto created = expenseService.create(createDto);
 
-		ExpenseDto dto = expenseService.create(createDto);
-		dto.setName("New Name");
-		dto.setLabels(List.of("NewLabel"));
+		UpdateExpenseDto updateDto = new UpdateExpenseDto(
+				created.getId(),
+				created.getName(),
+				created.getAmount(),
+				created.getExpenseCategoryId(),
+				created.getExpenseCategoryId());
+		updateDto.setLabels(List.of("1", "2"));
 
-		String json = objectMapper.writeValueAsString(dto);
+		String json = objectMapper.writeValueAsString(updateDto);
 
 		mockMvc.perform(
 				MockMvcRequestBuilders.put("/api/v1/expenses")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(json))
 				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(dto.getName()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.description").value(dto.getDescription()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.amount").value(dto.getAmount()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(updateDto.getId()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(updateDto.getName()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.description").value(updateDto.getDescription()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.amount").value(updateDto.getAmount()))
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.labels")
-								.value(Matchers.containsInAnyOrder(dto.getLabels().toArray())))
+								.value(Matchers.containsInAnyOrder(updateDto.getLabels().toArray())))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isString())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id")
-						.value(dto.getExpenseCategoryId()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()));
+						.value(updateDto.getExpenseCategoryId()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.currency_id").value(updateDto.getCurrencyId()));
 	}
 
 	@Test

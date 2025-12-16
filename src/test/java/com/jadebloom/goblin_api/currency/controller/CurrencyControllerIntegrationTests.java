@@ -67,7 +67,8 @@ public class CurrencyControllerIntegrationTests {
 						.content(json))
 				.andExpect(MockMvcResultMatchers.status().isCreated())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(createDto.getName()));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(createDto.getName()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isString());
 	}
 
 	@Test
@@ -115,7 +116,8 @@ public class CurrencyControllerIntegrationTests {
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(currency.getName()));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(currency.getName()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isString());
 	}
 
 	@Test
@@ -129,9 +131,9 @@ public class CurrencyControllerIntegrationTests {
 	@Test
 	public void canReturnCurrencyAndHttp200WhenUpdatingCurrency() throws Exception {
 		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
-		CurrencyDto currency = currencyService.create(createDto);
+		CurrencyDto created = currencyService.create(createDto);
 
-		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(currency.getId(), "new name here");
+		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(created.getId(), ".");
 
 		String json = objectMapper.writeValueAsString(updateDto);
 
@@ -141,15 +143,16 @@ public class CurrencyControllerIntegrationTests {
 						.content(json))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(updateDto.getId()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(updateDto.getName()));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(updateDto.getName()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isString());
 	}
 
 	@Test
 	public void canReturnHttp400WhenUpdatingCurrencyWithInvalidName() throws Exception {
 		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
-		CurrencyDto currency = currencyService.create(createDto);
+		CurrencyDto created = currencyService.create(createDto);
 
-		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(currency.getId(), null);
+		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(created.getId(), null);
 
 		String json = objectMapper.writeValueAsString(updateDto);
 
@@ -163,11 +166,9 @@ public class CurrencyControllerIntegrationTests {
 	@Test
 	public void canReturnHttp400WhenUpdatingCurrencyWithInvalidAlphabeticalCode() throws Exception {
 		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
-		CurrencyDto currency = currencyService.create(createDto);
+		CurrencyDto created = currencyService.create(createDto);
 
-		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(
-				currency.getId(),
-				"new name here");
+		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(created.getId(), ".");
 		updateDto.setAlphabeticalCode("AB");
 
 		String json = objectMapper.writeValueAsString(updateDto);
