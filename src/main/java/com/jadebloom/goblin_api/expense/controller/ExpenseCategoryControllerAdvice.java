@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.jadebloom.goblin_api.currency.error.CurrencyInUseException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryInUseException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNameUnavailableException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
