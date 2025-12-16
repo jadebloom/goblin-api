@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
+import com.jadebloom.goblin_api.expense.dto.UpdateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNameUnavailableException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
 
@@ -19,7 +20,7 @@ public interface ExpenseCategoryService {
 
 	boolean existsById(Long expenseCategoryId);
 
-	ExpenseCategoryDto update(ExpenseCategoryDto dto)
+	ExpenseCategoryDto update(UpdateExpenseCategoryDto updateDto)
 			throws ExpenseCategoryNotFoundException,
 			ExpenseCategoryNameUnavailableException;
 

@@ -53,9 +53,10 @@ public class UpdateCurrencyDto {
 
     @Override
     public String toString() {
-        String f = "UpdateCurrencyDto(id=%d, name=%s, alphabeticalCode=%s)";
-
-        return String.format(f, id, name, alphabeticalCode);
+        return "UpdateCurrencyDto(" +
+                "id=" + id +
+                ", name=" + name +
+                ", alphabeticalCode=" + alphabeticalCode + ")";
     }
 
 }

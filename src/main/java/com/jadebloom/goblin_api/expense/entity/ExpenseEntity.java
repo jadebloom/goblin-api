@@ -1,6 +1,9 @@
 package com.jadebloom.goblin_api.expense.entity;
 
+import java.time.ZonedDateTime;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseAmount;
@@ -27,6 +30,7 @@ public class ExpenseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(updatable = false)
     private Long id;
 
     @Column(nullable = false, length = 64)
@@ -46,6 +50,10 @@ public class ExpenseEntity {
     @Column(name = "label", length = 32)
     @ValidExpenseLabelsList
     private List<@ValidExpenseLabel String> labels;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private ZonedDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "expense_category_id", referencedColumnName = "id")
@@ -94,6 +102,10 @@ public class ExpenseEntity {
         return labels;
     }
 
+    public ZonedDateTime getCreatedAt() {
+        return createdAt;
+    }
+
     public ExpenseCategoryEntity getExpenseCategory() {
         return expenseCategory;
     }
@@ -120,6 +132,10 @@ public class ExpenseEntity {
 
     public void setLabels(List<String> labels) {
         this.labels = labels;
+    }
+
+    public void setCreatedAt(ZonedDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public void setExpenseCategory(ExpenseCategoryEntity expenseCategory) {
@@ -163,6 +179,10 @@ public class ExpenseEntity {
             }
         }
 
+        if (createdAt != expenseEntity.createdAt) {
+            return false;
+        }
+
         if (expenseCategory != expenseEntity.expenseCategory) {
             return false;
         }
@@ -177,6 +197,7 @@ public class ExpenseEntity {
                 ", description=" + description +
                 ", amount=" + amount +
                 ", labels=" + labels +
+                ", createdAt=" + createdAt +
                 ", expenseCategory=" + expenseCategory +
                 ", currency=" + currency + ")";
 

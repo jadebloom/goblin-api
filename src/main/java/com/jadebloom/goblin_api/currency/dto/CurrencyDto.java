@@ -26,8 +26,12 @@ public class CurrencyDto {
     public CurrencyDto() {
     }
 
-    public CurrencyDto(String name) {
+    public CurrencyDto(Long id, String name, ZonedDateTime createdAt) {
+        this.id = id;
+
         this.name = name;
+
+        this.createdAt = createdAt;
     }
 
     public Long getId() {
@@ -64,9 +68,11 @@ public class CurrencyDto {
 
     @Override
     public String toString() {
-        String f = "CurrencyDto(id=%d, name=%s, alphabeticalCode=%s, createdAt=%t)";
-
-        return String.format(f, id, name, alphabeticalCode, createdAt);
+        return "CurrencyDto(" +
+                "id=" + id +
+                ", name=" + name +
+                ", alphabeticalCode=" + alphabeticalCode +
+                ", createdAt=" + createdAt + ")";
     }
 
 }

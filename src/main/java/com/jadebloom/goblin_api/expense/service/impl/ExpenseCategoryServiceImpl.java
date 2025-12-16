@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
+import com.jadebloom.goblin_api.expense.dto.UpdateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNameUnavailableException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
@@ -74,28 +75,31 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
     }
 
     @Override
-    public ExpenseCategoryDto update(ExpenseCategoryDto dto)
+    public ExpenseCategoryDto update(UpdateExpenseCategoryDto updateDto)
             throws ExpenseCategoryNotFoundException,
             ExpenseCategoryNameUnavailableException {
-        Long id = dto.getId();
-        String name = dto.getName();
+        Optional<ExpenseCategoryEntity> optional = expenseCategoryRepository.findById(
+                updateDto.getId());
 
-        if (!existsById(id)) {
+        if (optional.isEmpty()) {
             String f = "Expense category with the ID '%d' doesn't exist";
 
-            throw new ExpenseCategoryNotFoundException(String.format(f, id));
+            throw new ExpenseCategoryNotFoundException(String.format(f, updateDto.getId()));
         }
 
-        if (expenseCategoryRepository.existsByIdNotAndName(id, name)) {
+        ExpenseCategoryEntity entity = optional.get();
+
+        if (expenseCategoryRepository.existsByIdNotAndName(entity.getId(), updateDto.getName())) {
             String f = "Expense category with the name '%s' already exists";
-            String errorMessage = String.format(f, name);
+            String errorMessage = String.format(f, updateDto.getName());
 
             throw new ExpenseCategoryNameUnavailableException(errorMessage);
         }
 
-        ExpenseCategoryEntity updated = mapper.map(dto);
+        entity.setName(updateDto.getName());
+        entity.setDescription(updateDto.getDescription());
 
-        return mapper.map(expenseCategoryRepository.save(updated));
+        return mapper.map(expenseCategoryRepository.save(entity));
     }
 
     @Override

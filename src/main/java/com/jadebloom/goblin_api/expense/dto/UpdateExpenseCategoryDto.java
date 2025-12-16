@@ -3,7 +3,12 @@ package com.jadebloom.goblin_api.expense.dto;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryDescription;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryName;
 
-public class CreateExpenseCategoryDto {
+import jakarta.validation.constraints.NotNull;
+
+public class UpdateExpenseCategoryDto {
+
+    @NotNull
+    private Long id;
 
     @ValidExpenseCategoryName
     private String name;
@@ -11,11 +16,17 @@ public class CreateExpenseCategoryDto {
     @ValidExpenseCategoryDescription
     private String description;
 
-    public CreateExpenseCategoryDto() {
+    public UpdateExpenseCategoryDto() {
     }
 
-    public CreateExpenseCategoryDto(String name) {
+    public UpdateExpenseCategoryDto(Long id, String name) {
+        this.id = id;
+
         this.name = name;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
@@ -24,6 +35,10 @@ public class CreateExpenseCategoryDto {
 
     public String getDescription() {
         return description;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setName(String name) {
@@ -36,8 +51,9 @@ public class CreateExpenseCategoryDto {
 
     @Override
     public String toString() {
-        return "CreateExpenseCategoryDto(" +
-                "name=" + name +
+        return "UpdateExpenseCategoryDto(" +
+                "id=" + id +
+                ", name=" + name +
                 ", description=" + description + ")";
     }
 

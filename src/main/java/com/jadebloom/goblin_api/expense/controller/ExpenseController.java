@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseDto;
+import com.jadebloom.goblin_api.expense.dto.UpdateExpenseDto;
 import com.jadebloom.goblin_api.expense.service.ExpenseService;
 
 import jakarta.validation.Valid;
@@ -55,8 +56,8 @@ public class ExpenseController {
 
     @PutMapping
     public ResponseEntity<ExpenseDto> updateExpense(
-            @Valid @RequestBody ExpenseDto expenseDto) {
-        ExpenseDto result = expenseService.update(expenseDto);
+            @Valid @RequestBody UpdateExpenseDto updateDto) {
+        ExpenseDto result = expenseService.update(updateDto);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

@@ -1,6 +1,5 @@
 package com.jadebloom.goblin_api.expense.dto;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,7 +11,7 @@ import com.jadebloom.goblin_api.expense.validation.ValidExpenseName;
 
 import jakarta.validation.constraints.NotNull;
 
-public class ExpenseDto {
+public class UpdateExpenseDto {
 
     @NotNull
     private Long id;
@@ -29,9 +28,6 @@ public class ExpenseDto {
     @ValidExpenseLabelsList
     private List<@ValidExpenseLabel String> labels;
 
-    @JsonProperty("created_at")
-    private ZonedDateTime createdAt;
-
     @NotNull
     @JsonProperty("expense_category_id")
     private Long expenseCategoryId;
@@ -40,23 +36,15 @@ public class ExpenseDto {
     @JsonProperty("currency_id")
     private Long currencyId;
 
-    public ExpenseDto() {
+    public UpdateExpenseDto() {
     }
 
-    public ExpenseDto(
-            Long id,
-            String name,
-            Long amount,
-            ZonedDateTime createdAt,
-            Long expenseCategoryId,
-            Long currencyId) {
+    public UpdateExpenseDto(Long id, String name, Long amount, Long expenseCategoryId, Long currencyId) {
         this.id = id;
 
         this.name = name;
 
         this.amount = amount;
-
-        this.createdAt = createdAt;
 
         this.expenseCategoryId = expenseCategoryId;
 
@@ -81,10 +69,6 @@ public class ExpenseDto {
 
     public List<String> getLabels() {
         return labels;
-    }
-
-    public ZonedDateTime getCreatedAt() {
-        return createdAt;
     }
 
     public Long getExpenseCategoryId() {
@@ -115,10 +99,6 @@ public class ExpenseDto {
         this.labels = labels;
     }
 
-    public void setCreatedAt(ZonedDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public void setExpenseCategoryId(Long expenseCategoryId) {
         this.expenseCategoryId = expenseCategoryId;
     }
@@ -129,12 +109,11 @@ public class ExpenseDto {
 
     @Override
     public String toString() {
-        String f = "ExpenseDto(id=" + id +
-                ", name=" + name +
+        String f = "UpdateExpenseDto(id=" + id +
+                ", name" + name +
                 ", description=" + description +
                 ", amount=" + amount +
                 ", labels=" + labels +
-                ", createdAt=" + createdAt +
                 ", expenseCategoryId=" + expenseCategoryId +
                 ", currencyId=" + currencyId + ")";
 

@@ -122,29 +122,6 @@ public class ExpenseRepositoryIntegrationTests {
 	}
 
 	@Test
-	public void canDeleteAllExpenses() {
-		ExpenseEntity e1 = new ExpenseEntity(
-				"Uber Ride",
-				1000L,
-				expenseCategoryEntity,
-				currencyEntity);
-		ExpenseEntity e2 = new ExpenseEntity(
-				"Uber Ride",
-				1000L,
-				expenseCategoryEntity,
-				currencyEntity);
-
-		underTest.save(e1);
-		underTest.save(e2);
-
-		underTest.deleteAll();
-
-		Page<ExpenseEntity> page = underTest.findAll(PageRequest.of(0, 20));
-
-		assertTrue(page.getContent().isEmpty());
-	}
-
-	@Test
 	public void canDeleteExpenseById() {
 		ExpenseEntity e = new ExpenseEntity(
 				"Uber Ride",

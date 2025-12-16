@@ -1,5 +1,6 @@
 package com.jadebloom.goblin_api.expense.service.impl;
 
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
 import com.jadebloom.goblin_api.currency.repository.CurrencyRepository;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseDto;
+import com.jadebloom.goblin_api.expense.dto.UpdateExpenseDto;
 import com.jadebloom.goblin_api.expense.entity.ExpenseEntity;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
 import com.jadebloom.goblin_api.expense.error.ExpenseNameUnavailableException;
@@ -99,47 +101,48 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
-    public ExpenseDto update(ExpenseDto dto)
+    public ExpenseDto update(UpdateExpenseDto updateDto)
             throws ExpenseNotFoundException,
             ExpenseNameUnavailableException,
             ExpenseCategoryNotFoundException,
             CurrencyNotFoundException {
-        Long expenseId = dto.getId();
-        String name = dto.getName();
-        Long expenseCategoryId = dto.getExpenseCategoryId();
-        Long currencyId = dto.getCurrencyId();
+        Optional<ExpenseEntity> optionalExpense = expenseRepository.findById(updateDto.getId());
 
-        if (!expenseRepository.existsById(expenseId)) {
+        if (optionalExpense.isEmpty()) {
             String f = "Expense with the ID '%d' wasn't found";
 
-            throw new ExpenseNotFoundException(String.format(f, expenseId));
+            throw new ExpenseNotFoundException(String.format(f, updateDto.getId()));
         }
 
-        if (expenseRepository.existsByIdNotAndName(expenseId, name)) {
+        ExpenseEntity expense = optionalExpense.get();
+
+        if (expenseRepository.existsByIdNotAndName(expense.getId(), updateDto.getName())) {
             String f = "Another expense with the name '%s' already exists";
-            String errorMessage = String.format(f, name);
+            String errorMessage = String.format(f, updateDto.getName());
 
             throw new ExpenseNameUnavailableException(errorMessage);
         }
 
-        if (!expenseCategoryRepository.existsById(expenseCategoryId)) {
+        if (!expenseCategoryRepository.existsById(updateDto.getExpenseCategoryId())) {
             String f = "Expense category with the ID '%d' wasn't found";
-            String message = String.format(f, String.format(f, expenseCategoryId));
+            String message = String.format(f, updateDto.getExpenseCategoryId());
 
             throw new ExpenseCategoryNotFoundException(message);
         }
 
-        if (!currencyRepository.existsById(currencyId)) {
+        if (!currencyRepository.existsById(updateDto.getCurrencyId())) {
             String f = "Currency with the ID '%d' wasn't found";
-            String message = String.format(f, String.format(f, currencyId));
+            String message = String.format(f, f, updateDto.getCurrencyId());
 
             throw new CurrencyNotFoundException(message);
         }
 
-        ExpenseEntity entity = mapper.map(dto);
-        ExpenseEntity updated = expenseRepository.save(entity);
+        ZonedDateTime createdAt = expense.getCreatedAt();
 
-        return mapper.map(updated);
+        expense = mapper.map(updateDto);
+        expense.setCreatedAt(createdAt);
+
+        return mapper.map(expenseRepository.save(expense));
     }
 
     @Override
