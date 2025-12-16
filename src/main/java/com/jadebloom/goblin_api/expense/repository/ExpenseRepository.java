@@ -17,4 +17,6 @@ public interface ExpenseRepository
 
 	boolean existsByCurrency_Id(Long currencyId);
 
+	boolean existsByExpenseCategory_Id(Long expenseCategoryId);
+
 }
