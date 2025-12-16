@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.jadebloom.goblin_api.currency.error.CurrencyInUseException;
+import com.jadebloom.goblin_api.expense.error.ExpenseCategoryInUseException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNameUnavailableException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
 
@@ -42,6 +44,18 @@ public class ExpenseCategoryControllerAdvice {
 				.builder(ex, HttpStatus.NOT_FOUND, ex.getMessage())
 				.type(URI.create(API_DOCS_URI))
 				.title("Expense category not found")
+				.build();
+
+		return errorResponse;
+	}
+
+	@ExceptionHandler(ExpenseCategoryInUseException.class)
+	@ResponseStatus(HttpStatus.CONFLICT)
+	public ErrorResponse handleCurrencyInUseException(ExpenseCategoryInUseException ex) {
+		ErrorResponse errorResponse = ErrorResponse
+				.builder(ex, HttpStatus.CONFLICT, ex.getMessage())
+				.type(URI.create(API_DOCS_URI))
+				.title("Expense category is in use")
 				.build();
 
 		return errorResponse;
