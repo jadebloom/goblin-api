@@ -34,3 +34,4 @@ Currently working on 1.0.0:
 4. Update the documentation (README + Swagger).
 1. Consider the frontend part. 
 1. Optimize the queries and the Lighthouse or something.
+2. Add formatting.
