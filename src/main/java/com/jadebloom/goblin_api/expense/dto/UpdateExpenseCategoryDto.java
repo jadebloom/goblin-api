@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 
 public class UpdateExpenseCategoryDto {
 
-    @NotNull
+    @NotNull(message = "The expense category's ID must not be null")
     private Long id;
 
     @ValidExpenseCategoryName

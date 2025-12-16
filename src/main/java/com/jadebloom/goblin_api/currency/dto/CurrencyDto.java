@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotNull;
 
 public class CurrencyDto {
 
-    @NotNull
+    @NotNull(message = "The currency's ID must not be null")
     private Long id;
 
     @ValidCurrencyName
