@@ -1,0 +1,39 @@
+operationId: updateExpenseCategory
+summary: Update an expense category
+tags:
+  - Expense Categories
+security: []
+requestBody:
+  description: A JSON UpdateExpenseCategoryDto object.
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: ../../../openapi.yaml#/components/schemas/UpdateExpenseCategoryDto
+      examples:
+        required:
+          summary: An example with only required fields
+          value:
+            id: 1
+            name: Daily
+        all:
+          summary: An example with all fields
+          value:
+            id: 2
+            name: Debt
+            description: Daily debt payments
+responses:
+  "200":
+    description: Updated the expense category.
+    content:
+      application/json:
+        schema:
+          $ref: ../../../openapi.yaml#/components/schemas/ExpenseCategoryDto
+  "400":
+    description: Invalid expense category or such expense category name is already in use.
+    content:
+      application/json:
+        schema:
+          $ref: ../../../openapi.yaml#/components/schemas/ErrorResponse
+  "500":
+    $ref: ../../../openapi.yaml#/components/responses/InternalServerError

@@ -6,7 +6,7 @@ The centralized log of tasks and improvements.
 
 Currently working on 1.0.0:
 
-1. Replace the centralized openapi.yaml with generated docs.
+3. Add OpenAPI tags to operations.
 
 ## Backlog
 
@@ -28,10 +28,11 @@ Currently working on 1.0.0:
 13. Add alerts and limits on expenses.
 
 ## Technical Debt & Others
+
 1. Integrate JaCoCo.
 2. Integrate a relational database instead of H2.
 3. Consider deploy.
-4. Update the documentation (README + Swagger).
-1. Consider the frontend part. 
-1. Optimize the queries and the Lighthouse or something.
-2. Add formatting.
+4. Update the documentation (README).
+5. Consider the frontend part. 
+6. Optimize the queries and the Lighthouse or something.
+7. Add formatting.

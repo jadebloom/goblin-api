@@ -1,0 +1,5 @@
+description: A resource was not found.
+content:
+  application/json:
+    schema:
+      $ref: "../../openapi.yaml#/components/schemas/ErrorResponse"

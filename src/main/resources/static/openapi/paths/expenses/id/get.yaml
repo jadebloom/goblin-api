@@ -1,0 +1,20 @@
+operationId: findExpenseById
+summary: Get an expense by its ID
+tags:
+  - Expenses
+parameters:
+  - name: id
+    in: path
+    description: Expense ID
+    schema:
+      type: integer
+security: []
+responses:
+  "200":
+    description: Returned the expense.
+    content:
+      application/json:
+        schema:
+          $ref: ../../../openapi.yaml#/components/schemas/ExpenseDto
+  "500":
+    $ref: ../../../openapi.yaml#/components/responses/InternalServerError

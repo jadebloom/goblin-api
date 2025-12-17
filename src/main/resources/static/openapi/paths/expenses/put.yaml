@@ -1,0 +1,48 @@
+operationId: updateExpense
+summary: Update an expense
+tags:
+  - Expenses
+security: []
+requestBody:
+  description: A JSON UpdateExpenseDto object.
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: ../../openapi.yaml#/components/schemas/UpdateExpenseDto
+      examples:
+        required:
+          summary: An example with only required fields.
+          value:
+            id: 1
+            name: New Expense
+            amount: 1
+            expense_category_id: 1
+            currency_id: 1
+        all:
+          summary: An example with all fields.
+          value:
+            id: 1
+            name: New Expense
+            amount: 1
+            description: Amount should be at least 1 by the way
+            expense_category_id: 1
+            currency_id: 1
+            labels:
+              - Some label
+              - Another label
+responses:
+  "200":
+    description: Updated the expense category.
+    content:
+      application/json:
+        schema:
+          $ref: ../../openapi.yaml#/components/schemas/ExpenseDto
+  "400":
+    description: Invalid expense.
+    content:
+      application/json:
+        schema:
+          $ref: ../../openapi.yaml#/components/schemas/ErrorResponse
+  "500":
+    $ref: ../../openapi.yaml#/components/responses/InternalServerError

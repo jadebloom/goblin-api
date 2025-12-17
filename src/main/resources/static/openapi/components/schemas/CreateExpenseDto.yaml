@@ -1,0 +1,37 @@
+type: object
+required:
+  - name
+  - amount
+  - expense_category_id
+  - currency_id
+properties:
+  name:
+    type: string
+    description: The name of an expense.
+    minLength: 1
+    maxLength: 64
+  description:
+    type: string
+    description: The description of an expense.
+    nullable: true
+    minLength: 1
+    maxLength: 256
+  amount:
+    type: integer
+    description: The amount spend on the expense.
+    minLength: 1
+  labels:
+    type: array
+    description: The labels related to an expense, where each label is 1 - 16 characters long.
+    nullable: true
+    minItems: 1
+    maxItems: 16
+    items:
+      type: string
+      maxLength: 32
+  expense_category_id:
+    type: integer
+    description: The expense category ID related to an expense.
+  currency_id:
+    type: integer
+    description: The currency ID related to an expense.

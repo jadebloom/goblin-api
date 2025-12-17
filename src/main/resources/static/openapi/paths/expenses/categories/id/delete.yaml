@@ -1,0 +1,16 @@
+operationId: deleteExpenseCategoryById
+summary: Deletes an expense category by ID, regardless whether it exists or not
+tags:
+  - Expense Categories
+parameters:
+  - name: id
+    in: path
+    description: Expense category ID
+    schema:
+      type: integer
+security: []
+responses:
+  "204":
+    $ref: ../../../../openapi.yaml#/components/responses/NoContent
+  "500":
+    $ref: ../../../../openapi.yaml#/components/responses/InternalServerError

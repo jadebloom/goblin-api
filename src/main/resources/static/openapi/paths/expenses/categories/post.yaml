@@ -1,0 +1,37 @@
+operationId: createExpenseCategory
+summary: Create an expense category
+tags:
+  - Expense Categories
+security: []
+requestBody:
+  description: A JSON CreateExpenseCategoryDto object.
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: ../../../openapi.yaml#/components/schemas/CreateExpenseCategoryDto
+      examples:
+        required:
+          summary: An example with only required fields
+          value:
+            name: Daily
+        all:
+          summary: An example with all fields
+          value:
+            name: Debt
+            description: Daily debt payments
+responses:
+  "201":
+    description: Created new expense category.
+    content:
+      application/json:
+        schema:
+          $ref: ../../../openapi.yaml#/components/schemas/ExpenseCategoryDto
+  "400":
+    description: Invalid expense category or such expense category name is already in use.
+    content:
+      application/json:
+        schema:
+          $ref: ../../../openapi.yaml#/components/schemas/ErrorResponse
+  "500":
+    $ref: ../../../openapi.yaml#/components/responses/InternalServerError
