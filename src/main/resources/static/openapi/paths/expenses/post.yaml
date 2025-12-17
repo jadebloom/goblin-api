@@ -1,0 +1,46 @@
+operationId: createExpense
+summary: Create an expense
+tags:
+  - Expenses
+security: []
+requestBody:
+  description: A JSON CreateExpenseDto object.
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: ../../openapi.yaml#/components/schemas/CreateExpenseDto
+      examples:
+        required:
+          summary: An example with only required fields
+          value:
+            name: Daily
+            amount: 1000
+            expense_category_id: 1
+            currency_id: 1
+        all:
+          summary: An example with all fields
+          value:
+            name: New Expense
+            amount: 1
+            description: Amount should be at least 1 by the way
+            expense_category_id: 1
+            currency_id: 1
+            labels:
+              - Some label
+              - Another label
+responses:
+  "201":
+    description: Created new expense.
+    content:
+      application/json:
+        schema:
+          $ref: ../../openapi.yaml#/components/schemas/ExpenseDto
+  "400":
+    description: Invalid expense.
+    content:
+      application/json:
+        schema:
+          $ref: ../../openapi.yaml#/components/schemas/ErrorResponse
+  "500":
+    $ref: ../../openapi.yaml#/components/responses/InternalServerError

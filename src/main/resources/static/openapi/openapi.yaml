@@ -1,0 +1,80 @@
+openapi: 3.0.0
+info:
+  title: Goblin API
+  version: 1.0.0
+  description: Goblin API - is a REST API application for expense tracking and analyzing. Dedicated for Goblin desktop application, built on Spring Boot.
+  # termsOfService:
+  contact:
+    name: jadebloom
+    # email: ?
+    url: https://github.com/jadebloom
+  license:
+    name: MIT License
+    url: https://mit-license.org
+externalDocs:
+  url: https://github.com/jadebloom/goblin-api?tab=readme-ov-file
+  description: GitHub README documentation.
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development server.
+paths:
+  /currencies:
+    $ref: paths/currencies/index.yaml
+  /currencies/{id}:
+    $ref: paths/currencies/id/index.yaml
+  /expenses/categories:
+    $ref: paths/expenses/categories/index.yaml
+  /expenses/categories/{id}:
+    $ref: paths/expenses/categories/id/index.yaml
+  /expenses:
+    $ref: paths/expenses/index.yaml
+  /expenses/{id}:
+    $ref: paths/expenses/id/index.yaml
+components:
+  schemas:
+    CreateCurrencyDto:
+      $ref: components/schemas/CreateCurrencyDto.yaml
+    UpdateCurrencyDto:
+      $ref: components/schemas/UpdateCurrencyDto.yaml
+    CurrencyDto:
+      $ref: components/schemas/CurrencyDto.yaml
+    CreateExpenseCategoryDto:
+      $ref: components/schemas/CreateExpenseCategoryDto.yaml
+    UpdateExpenseCategoryDto:
+      $ref: components/schemas/UpdateExpenseCategoryDto.yaml
+    ExpenseCategoryDto:
+      $ref: components/schemas/ExpenseCategoryDto.yaml
+    CreateExpenseDto:
+      $ref: components/schemas/CreateExpenseDto.yaml
+    UpdateExpenseDto:
+      $ref: components/schemas/UpdateExpenseDto.yaml
+    ExpenseDto:
+      $ref: components/schemas/ExpenseDto.yaml
+    ErrorResponse:
+      $ref: components/schemas/ErrorResponse.yaml
+  parameters:
+    paginationPageIndex:
+      $ref: components/parameters/paginationPageIndex.yaml
+    paginationPageSize:
+      $ref: components/parameters/paginationPageSize.yaml
+    paginationSort:
+      $ref: components/parameters/paginationSort.yaml
+  # securitySchemes:
+  #   ?
+  # requestBodies:
+  #   ?
+  responses:
+    NoContent:
+      $ref: components/responses/NoContent.yaml
+    NotFoundError:
+      $ref: components/responses/NotFoundError.yaml
+    InternalServerError:
+      $ref: components/responses/InternalServerError.yaml
+  # headers:
+  #   ?
+  # examples:
+  #   ?
+  # links:
+  #   ?
+  # callbacks:
+  #   ?

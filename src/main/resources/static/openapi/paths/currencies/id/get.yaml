@@ -1,0 +1,22 @@
+operationId: findCurrencyById
+summary: Get a currency by its ID
+tags:
+  - Currencies
+parameters:
+  - name: id
+    in: path
+    description: Currency ID
+    schema:
+      type: integer
+security: []
+responses:
+  "200":
+    description: Returned the currency.
+    content:
+      application/json:
+        schema:
+          $ref: ../../../openapi.yaml#/components/schemas/CurrencyDto
+  "404":
+    $ref: ../../../openapi.yaml#/components/responses/NotFoundError
+  "500":
+    $ref: ../../../openapi.yaml#/components/responses/InternalServerError

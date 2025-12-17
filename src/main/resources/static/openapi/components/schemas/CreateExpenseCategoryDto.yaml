@@ -1,0 +1,15 @@
+type: object
+required:
+  - name
+properties:
+  name:
+    type: string
+    description: The name of an expense category.
+    minLength: 1
+    maxLength: 64
+  description:
+    type: string
+    description: The description of an expense category.
+    nullable: true
+    minLength: 1
+    maxLength: 256

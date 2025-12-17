@@ -1,0 +1,19 @@
+type: object
+required:
+  - id
+  - name
+properties:
+  id:
+    type: integer
+    description: THe ID of an expense category.
+  name:
+    type: string
+    description: The name of an expense category.
+    minLength: 1
+    maxLength: 64
+  description:
+    type: string
+    description: The description of an expense category.
+    nullable: true
+    minLength: 1
+    maxLength: 256

@@ -1,0 +1,6 @@
+in: query
+name: size
+description: Optional size of a page (default 20).
+schema:
+  type: integer
+  default: 20

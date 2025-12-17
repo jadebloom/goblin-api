@@ -1,0 +1,6 @@
+in: query
+name: page
+description: Optional zero-indexed page number (default 0).
+schema:
+  type: integer
+  default: 0

@@ -1,0 +1,6 @@
+post:
+  $ref: post.yaml
+get:
+  $ref: get.yaml
+put:
+  $ref: put.yaml

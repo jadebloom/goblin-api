@@ -1,0 +1,20 @@
+operationId: findExpenseCategoryById
+summary: Get an expense category by its ID
+tags:
+  - Expense Categories
+parameters:
+  - name: id
+    in: path
+    description: Expense category ID
+    schema:
+      type: integer
+security: []
+responses:
+  "200":
+    description: Returned the expense category.
+    content:
+      application/json:
+        schema:
+          $ref: "../../../../openapi.yaml#/components/schemas/ExpenseCategoryDto"
+  "500":
+    $ref: ../../../../openapi.yaml#/components/responses/InternalServerError

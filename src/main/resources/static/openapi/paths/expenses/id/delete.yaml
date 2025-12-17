@@ -1,0 +1,16 @@
+operationId: deleteExpenseById
+summary: Deletes an expense by ID, regardless whether it exists or not
+tags:
+  - Expenses
+parameters:
+  - name: id
+    in: path
+    description: Expense ID
+    schema:
+      type: integer
+security: []
+responses:
+  "204":
+    $ref: ../../../openapi.yaml#/components/responses/NoContent
+  "500":
+    $ref: ../../../openapi.yaml#/components/responses/InternalServerError

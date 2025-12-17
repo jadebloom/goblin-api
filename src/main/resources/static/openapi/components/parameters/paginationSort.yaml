@@ -1,0 +1,7 @@
+in: query
+name: sort
+description: Optional sorting parameters (e.g. ?sort=name,desc).
+schema:
+  type: array
+  items:
+    type: string

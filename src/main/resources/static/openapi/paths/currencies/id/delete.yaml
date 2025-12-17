@@ -1,0 +1,16 @@
+operationId: deleteCurrencyById
+summary: Delete a currency by ID, regardless whether it exists or not
+tags:
+  - Currencies
+parameters:
+  - name: id
+    in: path
+    description: Currency ID
+    schema:
+      type: integer
+security: []
+responses:
+  "204":
+    $ref: ../../../openapi.yaml#/components/responses/NoContent
+  "500":
+    $ref: ../../../openapi.yaml#/components/responses/InternalServerError
