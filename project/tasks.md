@@ -4,9 +4,9 @@ The centralized log of tasks and improvements.
 
 ## Sprintlog
 
-Currently working on 1.0.0:
+Currently working on 1.1.0:
 
-3. Add OpenAPI tags to operations.
+6. Test everything.
 
 ## Backlog
 
@@ -29,6 +29,7 @@ Currently working on 1.0.0:
 
 ## Technical Debt & Others
 
+1. Manage versions correctly.
 1. Integrate JaCoCo.
 2. Integrate a relational database instead of H2.
 3. Consider deploy.

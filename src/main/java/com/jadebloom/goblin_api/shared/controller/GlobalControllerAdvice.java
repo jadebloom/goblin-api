@@ -3,12 +3,19 @@ package com.jadebloom.goblin_api.shared.controller;
 import java.net.URI;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.ErrorResponse;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import jakarta.validation.ConstraintViolationException;
@@ -20,6 +27,24 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
 
 	public GlobalControllerAdvice(@Value("${api.docs.uri}") String API_DOCS_URI) {
 		this.API_DOCS_URI = API_DOCS_URI;
+	}
+
+	@Override
+	protected @Nullable ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+		String errorMessage = "";
+
+		for (ObjectError oe : ex.getAllErrors()) {
+			errorMessage += oe.getDefaultMessage() + ". ";
+		}
+
+		ErrorResponse errorResponse = ErrorResponse
+				.builder(ex, HttpStatus.BAD_REQUEST, errorMessage.trim())
+				.type(URI.create(API_DOCS_URI))
+				.title("Invalid Argument")
+				.build();
+
+		return new ResponseEntity<>(errorResponse.getBody(), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(ConstraintViolationException.class)
