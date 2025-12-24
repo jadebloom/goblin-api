@@ -25,12 +25,12 @@ public class CurrencyDto {
 
     @NotNull(message = "The currency's creator ID must not be null")
     @JsonProperty("creator_id")
-    private String creatorId;
+    private Long creatorId;
 
     public CurrencyDto() {
     }
 
-    public CurrencyDto(Long id, String name, ZonedDateTime createdAt, String creatorId) {
+    public CurrencyDto(Long id, String name, ZonedDateTime createdAt, Long creatorId) {
         this.id = id;
 
         this.name = name;
@@ -56,7 +56,7 @@ public class CurrencyDto {
         return createdAt;
     }
 
-    public String getCreatorId() {
+    public Long getCreatorId() {
         return creatorId;
     }
 
@@ -76,7 +76,7 @@ public class CurrencyDto {
         this.createdAt = createdAt;
     }
 
-    public void setCreatorId(String creatorId) {
+    public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
     }
 
