@@ -39,7 +39,7 @@ public class CurrencyEntity {
     private ZonedDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(referencedColumnName = "id", name = "user_id", nullable = false)
+    @JoinColumn(referencedColumnName = "id", name = "user_id", nullable = false, updatable = false)
     private UserEntity creator;
 
     public CurrencyEntity() {
