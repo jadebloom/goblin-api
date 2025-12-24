@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.jadebloom.goblin_api.shared.error.ForbiddenException;
+
 import jakarta.validation.ConstraintViolationException;
 
 @RestControllerAdvice
@@ -60,6 +62,18 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
 				.builder(ex, HttpStatus.BAD_REQUEST, errorMessage)
 				.type(URI.create(API_DOCS_URI))
 				.title("Violated Constraints")
+				.build();
+
+		return errorResponse;
+	}
+
+	@ExceptionHandler(ForbiddenException.class)
+	@ResponseStatus(HttpStatus.FORBIDDEN)
+	public ErrorResponse handleForbiddenException(ForbiddenException ex) {
+		ErrorResponse errorResponse = ErrorResponse
+				.builder(ex, HttpStatus.FORBIDDEN, "Insufficient permissions")
+				.type(URI.create(API_DOCS_URI))
+				.title("Forbidden")
 				.build();
 
 		return errorResponse;

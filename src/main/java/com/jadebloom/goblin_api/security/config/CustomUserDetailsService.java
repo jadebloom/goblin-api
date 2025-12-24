@@ -27,22 +27,21 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<UserEntity> opt = userRepository.findByEmail(email);
-
-        if (opt.isEmpty()) {
+        Optional<UserEntity> optUser = userRepository.findByEmail(email);
+        if (optUser.isEmpty()) {
             String f = "User with email %s wasn't found";
 
             throw new UsernameNotFoundException(String.format(f, email));
         }
+        UserEntity user = optUser.get();
 
-        UserEntity user = opt.get();
+        Set<GrantedAuthority> userGrantedAuthorities = new HashSet<>();
 
-        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
         for (RoleEntity role : user.getRoles()) {
-            grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
+            userGrantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
         }
 
-        return new User(email, user.getPassword(), grantedAuthorities);
+        return new User(email, user.getPassword(), userGrantedAuthorities);
     }
 
 }

@@ -38,9 +38,7 @@ public class CreateCurrencyDto {
 
     @Override
     public String toString() {
-        return "CreateCurrencyDto(" +
-                "name=" + name +
-                ", alphabeticalCode=" + alphabeticalCode + ")";
+        return "CreateCurrencyDto(name=" + name + ", alphabeticalCode=" + alphabeticalCode + ")";
     }
 
 }

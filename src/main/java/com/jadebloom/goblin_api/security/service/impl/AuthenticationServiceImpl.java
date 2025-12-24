@@ -60,7 +60,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String email = dto.getEmail(), password = dto.getPassword();
 
         if (userRepository.existsByEmail(email)) {
-            String f = "Email '%s' is already used";
+            String f = "Email '%s' is already in use";
 
             throw new UserEmailInUseException(String.format(f, email));
         }
@@ -68,30 +68,32 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Optional<RoleEntity> opt = roleRepository.findByName("ROLE_USER");
 
         if (opt.isEmpty()) {
-            throw new RuntimeException("Bad role");
+            throw new RuntimeException("Failed to load user roles");
         }
 
-        UserEntity user = new UserEntity(email, passwordEncoder.encode(password));
-        user.setRoles(Set.of(opt.get()));
+        Set<RoleEntity> userRoles = Set.of(opt.get());
+
+        UserEntity user = new UserEntity(email, passwordEncoder.encode(password), userRoles);
+
         userRepository.save(user);
 
-        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        Set<String> roleNames = new HashSet<>();
+        Set<String> userRoleNames = new HashSet<>();
+        Set<GrantedAuthority> userGrantedAuthorities = new HashSet<>();
 
         for (RoleEntity role : user.getRoles()) {
-            grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
+            userGrantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
 
-            roleNames.add(role.getName());
+            userRoleNames.add(role.getName());
         }
 
         Authentication request = new UsernamePasswordAuthenticationToken(
                 email,
                 password,
-                grantedAuthorities);
+                userGrantedAuthorities);
         authenticationManager.authenticate(request);
 
-        String accessToken = jwtService.generateAccessToken(email, roleNames);
-        String refreshToken = jwtService.generateRefreshToken(email, roleNames);
+        String accessToken = jwtService.generateAccessToken(email, userRoleNames);
+        String refreshToken = jwtService.generateRefreshToken(email, userRoleNames);
 
         return new JwtResponseDto(accessToken, refreshToken);
     }
@@ -101,6 +103,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String email = dto.getEmail(), password = dto.getPassword();
 
         Optional<UserEntity> opt = userRepository.findByEmail(email);
+
         if (opt.isEmpty()) {
             String f = "User with email '%s' wasn't found";
 
@@ -113,23 +116,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new IncorrectPasswordException("Provided password is incorrect");
         }
 
-        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        Set<String> roleNames = new HashSet<>();
+        Set<GrantedAuthority> userGrantedAuthorities = new HashSet<>();
+        Set<String> userRoleNames = new HashSet<>();
 
         for (RoleEntity role : user.getRoles()) {
-            grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
+            userGrantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
 
-            roleNames.add(role.getName());
+            userRoleNames.add(role.getName());
         }
 
         Authentication request = new UsernamePasswordAuthenticationToken(
                 email,
                 password,
-                grantedAuthorities);
+                userGrantedAuthorities);
         authenticationManager.authenticate(request);
 
-        String accessToken = jwtService.generateAccessToken(email, roleNames);
-        String refreshToken = jwtService.generateRefreshToken(email, roleNames);
+        String accessToken = jwtService.generateAccessToken(email, userRoleNames);
+        String refreshToken = jwtService.generateRefreshToken(email, userRoleNames);
 
         return new JwtResponseDto(accessToken, refreshToken);
     }

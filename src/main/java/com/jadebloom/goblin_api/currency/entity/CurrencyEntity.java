@@ -7,12 +7,15 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jadebloom.goblin_api.currency.validation.ValidCurrencyAlphabeticalCode;
 import com.jadebloom.goblin_api.currency.validation.ValidCurrencyName;
+import com.jadebloom.goblin_api.security.entity.UserEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -37,11 +40,18 @@ public class CurrencyEntity {
     @Column(name = "created_at", updatable = false)
     private ZonedDateTime createdAt;
 
+    @ManyToOne
+    @JoinColumn(referencedColumnName = "id", name = "user_id", nullable = false)
+    @JsonProperty("creator_id")
+    private UserEntity creator;
+
     public CurrencyEntity() {
     }
 
-    public CurrencyEntity(String name) {
+    public CurrencyEntity(String name, UserEntity creator) {
         this.name = name;
+
+        this.creator = creator;
     }
 
     public Long getId() {
@@ -60,6 +70,10 @@ public class CurrencyEntity {
         return createdAt;
     }
 
+    public UserEntity getCreator() {
+        return creator;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -74,6 +88,10 @@ public class CurrencyEntity {
 
     public void setCreatedAt(ZonedDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public void setCreator(UserEntity creator) {
+        this.creator = creator;
     }
 
     @Override
@@ -101,11 +119,11 @@ public class CurrencyEntity {
 
     @Override
     public String toString() {
-        return "CurrencyEntity(" +
-                "id=" + id +
+        return "CurrencyEntity(id=" + id +
                 ", name=" + name +
                 ", alphabeticalCode=" + alphabeticalCode +
-                ", createdAt=" + createdAt + ")";
+                ", createdAt=" + createdAt +
+                ", creator=" + creator + ")";
     }
 
 }

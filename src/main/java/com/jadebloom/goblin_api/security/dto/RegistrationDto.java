@@ -48,17 +48,12 @@ public class RegistrationDto {
 
         RegistrationDto registrationDto = (RegistrationDto) o;
 
-        if (email != registrationDto.getEmail()) {
-            return false;
-        }
-
-        return password == registrationDto.getPassword();
+        return email == registrationDto.getEmail() && password == registrationDto.getPassword();
     }
 
     @Override
     public String toString() {
-        return "RegistrationDto(email=" + email +
-                ", password=" + password + ")";
+        return "RegistrationDto(email=" + email + ", password=" + password + ")";
     }
 
 }

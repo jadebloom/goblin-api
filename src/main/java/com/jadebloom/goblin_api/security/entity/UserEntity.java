@@ -16,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "\"user\"")
@@ -23,12 +24,14 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(updatable = false)
     private Long id;
 
     @ValidUserEmail
     @Column(unique = true)
     private String email;
 
+    @NotNull
     private String password;
 
     @CreationTimestamp
@@ -42,10 +45,12 @@ public class UserEntity {
     public UserEntity() {
     }
 
-    public UserEntity(String email, String password) {
+    public UserEntity(String email, String password, Set<RoleEntity> roles) {
         this.email = email;
 
         this.password = password;
+
+        this.roles = roles;
     }
 
     public Long getId() {
@@ -60,12 +65,12 @@ public class UserEntity {
         return password;
     }
 
-    public Set<RoleEntity> getRoles() {
-        return roles;
-    }
-
     public ZonedDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public Set<RoleEntity> getRoles() {
+        return roles;
     }
 
     public void setId(Long id) {
@@ -80,12 +85,12 @@ public class UserEntity {
         this.password = password;
     }
 
-    public void setRoles(Set<RoleEntity> roles) {
-        this.roles = roles;
-    }
-
     public void setCreatedAt(ZonedDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public void setRoles(Set<RoleEntity> roles) {
+        this.roles = roles;
     }
 
     @Override
@@ -104,15 +109,15 @@ public class UserEntity {
             return false;
         }
 
-        return password == userEntity.getPassword();
+        return password == userEntity.getPassword() && createdAt == userEntity.getCreatedAt();
     }
 
     @Override
     public String toString() {
+        // Roles are skipped as a micro-optimization.
         return "UserEntity(id=" + id +
                 ", email=" + email +
                 ", password=" + password +
-                ", roles=" + roles.toString() +
                 ", createdAt=" + createdAt + ")";
     }
 

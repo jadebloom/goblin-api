@@ -53,8 +53,7 @@ public class UpdateCurrencyDto {
 
     @Override
     public String toString() {
-        return "UpdateCurrencyDto(" +
-                "id=" + id +
+        return "UpdateCurrencyDto(id=" + id +
                 ", name=" + name +
                 ", alphabeticalCode=" + alphabeticalCode + ")";
     }

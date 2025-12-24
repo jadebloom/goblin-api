@@ -14,6 +14,7 @@ public class PermissionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(updatable = false)
     private Long id;
 
     @NotBlank
@@ -24,12 +25,6 @@ public class PermissionEntity {
     }
 
     public PermissionEntity(String name) {
-        this.name = name;
-    }
-
-    public PermissionEntity(Long id, String name) {
-        this.id = id;
-
         this.name = name;
     }
 

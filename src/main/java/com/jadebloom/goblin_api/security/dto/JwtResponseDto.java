@@ -37,8 +37,7 @@ public class JwtResponseDto {
 
     @Override
     public String toString() {
-        return "JwtResponseDto(accessToken=" + accessToken +
-                ", refreshToken" + refreshToken + ")";
+        return "JwtResponseDto(accessToken=" + accessToken + ", refreshToken" + refreshToken + ")";
     }
 
 }

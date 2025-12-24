@@ -22,59 +22,59 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 @Service
 public class JwtService {
 
-    private String jwtSecret;
+	private String jwtSecret;
 
-    private static final long ACCESS_TOKEN_EXPIRATION = 15 * 60 * 1000; // 15 min
+	private static final long ACCESS_TOKEN_EXPIRATION = 15 * 60 * 1000; // 15 min
 
-    private static final long REFRESH_TOKEN_EXPIRATION = 7 * 24 * 60 * 60 * 1000; // 7 days
+	private static final long REFRESH_TOKEN_EXPIRATION = 7 * 24 * 60 * 60 * 1000; // 7 days
 
-    public JwtService(@Value("${JWT_SECRET}") String jwtSecret) {
-        this.jwtSecret = jwtSecret;
-    }
+	public JwtService(@Value("${JWT_SECRET}") String jwtSecret) {
+		this.jwtSecret = jwtSecret;
+	}
 
-    public String generateAccessToken(String email, Set<String> roles) {
-        return JWT.create()
-                .withSubject("User Details")
-                .withClaim("email", email)
-                .withClaim("roles", new ArrayList<>(roles))
-                .withIssuedAt(new Date())
-                .withIssuer("Goblin API")
-                .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION))
-                .sign(Algorithm.HMAC256(jwtSecret));
-    }
+	public String generateAccessToken(String email, Set<String> roles) {
+		return JWT.create()
+				.withSubject("User Details")
+				.withClaim("email", email)
+				.withClaim("roles", new ArrayList<>(roles))
+				.withIssuedAt(new Date())
+				.withIssuer("Goblin API")
+				.withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION))
+				.sign(Algorithm.HMAC256(jwtSecret));
+	}
 
-    public String generateRefreshToken(String email, Set<String> roles) {
-        return JWT.create()
-                .withClaim("roles", new ArrayList<>(roles))
-                .withIssuedAt(new Date())
-                .withIssuer("Goblin API")
-                .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
-                .sign(Algorithm.HMAC256(jwtSecret));
-    }
+	public String generateRefreshToken(String email, Set<String> roles) {
+		return JWT.create()
+				.withClaim("roles", new ArrayList<>(roles))
+				.withIssuedAt(new Date())
+				.withIssuer("Goblin API")
+				.withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
+				.sign(Algorithm.HMAC256(jwtSecret));
+	}
 
-    public Authentication validateTokenAndRetrieveEmail(String token) {
-        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(jwtSecret))
-                .withSubject("User Details")
-                .withIssuer("Goblin API")
-                .build();
-        DecodedJWT decodedJWT = jwtVerifier.verify(token);
+	public Authentication validateTokenAndRetrieveEmail(String token) {
+		JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(jwtSecret))
+				.withSubject("User Details")
+				.withIssuer("Goblin API")
+				.build();
+		DecodedJWT decodedJWT = jwtVerifier.verify(token);
 
-        String email = decodedJWT.getClaim("email").asString();
+		String email = decodedJWT.getClaim("email").asString();
 
-        List<String> roleNames = decodedJWT.getClaim("roles")
-                .asList(String.class);
-        Set<String> uniqueRoleNames = new HashSet<>(roleNames);
+		List<String> roleNames = decodedJWT.getClaim("roles")
+				.asList(String.class);
+		Set<String> uniqueRoleNames = new HashSet<>(roleNames);
 
-        Set<GrantedAuthority> roles = uniqueRoleNames.stream()
-                .map(n -> new SimpleGrantedAuthority(n))
-                .collect(Collectors.toSet());
+		Set<GrantedAuthority> roles = uniqueRoleNames.stream()
+				.map(n -> new SimpleGrantedAuthority(n))
+				.collect(Collectors.toSet());
 
-        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                email,
-                "",
-                roles);
+		UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+				email,
+				"",
+				roles);
 
-        return auth;
-    }
+		return auth;
+	}
 
 }

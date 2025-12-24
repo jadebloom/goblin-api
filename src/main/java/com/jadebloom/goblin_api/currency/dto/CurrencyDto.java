@@ -23,15 +23,21 @@ public class CurrencyDto {
     @JsonProperty("created_at")
     private ZonedDateTime createdAt;
 
+    @NotNull
+    @JsonProperty("creator_id")
+    private String creatorId;
+
     public CurrencyDto() {
     }
 
-    public CurrencyDto(Long id, String name, ZonedDateTime createdAt) {
+    public CurrencyDto(Long id, String name, ZonedDateTime createdAt, String creatorId) {
         this.id = id;
 
         this.name = name;
 
         this.createdAt = createdAt;
+
+        this.creatorId = creatorId;
     }
 
     public Long getId() {
@@ -50,6 +56,10 @@ public class CurrencyDto {
         return createdAt;
     }
 
+    public String getCreatorId() {
+        return creatorId;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -66,13 +76,17 @@ public class CurrencyDto {
         this.createdAt = createdAt;
     }
 
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
+    }
+
     @Override
     public String toString() {
-        return "CurrencyDto(" +
-                "id=" + id +
+        return "CurrencyDto(id=" + id +
                 ", name=" + name +
                 ", alphabeticalCode=" + alphabeticalCode +
-                ", createdAt=" + createdAt + ")";
+                ", createdAt=" + createdAt +
+                ", creatorId=" + creatorId + ")";
     }
 
 }

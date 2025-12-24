@@ -22,18 +22,6 @@ public class AuthenticationControllerAdvice {
         this.API_DOCS_URI = API_DOCS_URI;
     }
 
-    @ExceptionHandler(UserEmailInUseException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleUserEmailInUseException(UserEmailInUseException ex) {
-        ErrorResponse errorResponse = ErrorResponse
-                .builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage())
-                .type(URI.create(API_DOCS_URI))
-                .title("User's email is already in use")
-                .build();
-
-        return errorResponse;
-    }
-
     @ExceptionHandler(IncorrectPasswordException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIncorrectPasswordException(IncorrectPasswordException ex) {
@@ -53,6 +41,18 @@ public class AuthenticationControllerAdvice {
                 .builder(ex, HttpStatus.NOT_FOUND, ex.getMessage())
                 .type(URI.create(API_DOCS_URI))
                 .title("User wasn't found")
+                .build();
+
+        return errorResponse;
+    }
+
+    @ExceptionHandler(UserEmailInUseException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleUserEmailInUseException(UserEmailInUseException ex) {
+        ErrorResponse errorResponse = ErrorResponse
+                .builder(ex, HttpStatus.CONFLICT, ex.getMessage())
+                .type(URI.create(API_DOCS_URI))
+                .title("User email is in use")
                 .build();
 
         return errorResponse;

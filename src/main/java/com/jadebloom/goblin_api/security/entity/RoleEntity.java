@@ -19,6 +19,7 @@ public class RoleEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(updatable = false)
     private Long id;
 
     @NotBlank
@@ -33,14 +34,6 @@ public class RoleEntity {
     }
 
     public RoleEntity(String name, Set<PermissionEntity> permissions) {
-        this.name = name;
-
-        this.permissions = permissions;
-    }
-
-    public RoleEntity(Long id, String name, Set<PermissionEntity> permissions) {
-        this.id = id;
-
         this.name = name;
 
         this.permissions = permissions;
@@ -87,9 +80,8 @@ public class RoleEntity {
 
     @Override
     public String toString() {
-        return "RoleEntity(id=" + id +
-                ", name=" + name +
-                ", permissions=" + permissions.toString() + ")";
+        // Permissions are skipped as a micro-optimization.
+        return "RoleEntity(id=" + id + ", name=" + name + ")";
     }
 
 }

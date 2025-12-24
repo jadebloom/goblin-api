@@ -48,17 +48,12 @@ public class LoginDto {
 
         LoginDto loginDto = (LoginDto) o;
 
-        if (email != loginDto.getEmail()) {
-            return false;
-        }
-
-        return password == loginDto.getPassword();
+        return email == loginDto.getEmail() && password == loginDto.getPassword();
     }
 
     @Override
     public String toString() {
-        return "LoginDto(email=" + email +
-                ", password=" + password + ")";
+        return "LoginDto(email=" + email + ", password=" + password + ")";
     }
 
 }

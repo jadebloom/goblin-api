@@ -30,17 +30,14 @@ public class JwtFilter extends OncePerRequestFilter {
 		HttpServletRequest httpReq = (HttpServletRequest) request;
 
 		String bearer = httpReq.getHeader("Authorization");
-
-		if (bearer == null || !bearer.startsWith("Bearer ")) {
+		if (bearer == null || !bearer.startsWith("Bearer ") || bearer.length() < 8) {
 			filterChain.doFilter(request, response);
 
 			return;
 		}
-
 		String token = bearer.substring(7);
 
 		Authentication auth = jwtService.validateTokenAndRetrieveEmail(token);
-
 		SecurityContextHolder.getContext().setAuthentication(auth);
 
 		filterChain.doFilter(request, response);
