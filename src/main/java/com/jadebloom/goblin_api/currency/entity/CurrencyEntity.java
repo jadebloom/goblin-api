@@ -4,7 +4,6 @@ import java.time.ZonedDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jadebloom.goblin_api.currency.validation.ValidCurrencyAlphabeticalCode;
 import com.jadebloom.goblin_api.currency.validation.ValidCurrencyName;
 import com.jadebloom.goblin_api.security.entity.UserEntity;
@@ -33,7 +32,6 @@ public class CurrencyEntity {
 
     @Column(name = "alphabetical_code", length = 3)
     @ValidCurrencyAlphabeticalCode
-    @JsonProperty("alphabetical_code")
     private String alphabeticalCode;
 
     @CreationTimestamp
@@ -42,7 +40,6 @@ public class CurrencyEntity {
 
     @ManyToOne
     @JoinColumn(referencedColumnName = "id", name = "user_id", nullable = false)
-    @JsonProperty("creator_id")
     private UserEntity creator;
 
     public CurrencyEntity() {
