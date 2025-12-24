@@ -56,7 +56,6 @@ public class ExpenseCategoryMapper {
 			typeMap.addMapping(
 					ExpenseCategoryEntity::getCreatedAt,
 					ExpenseCategoryDto::setCreatedAt);
-
 			typeMap.addMappings(mapper -> mapper.map(
 					src -> src.getId(), ExpenseCategoryDto::setCreatorId));
 		}

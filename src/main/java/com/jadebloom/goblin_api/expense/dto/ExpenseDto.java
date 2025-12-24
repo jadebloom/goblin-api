@@ -32,13 +32,17 @@ public class ExpenseDto {
     @JsonProperty("created_at")
     private ZonedDateTime createdAt;
 
-    @NotNull
+    @NotNull(message = "The expense's creator ID is not null")
     @JsonProperty("expense_category_id")
     private Long expenseCategoryId;
 
-    @NotNull
+    @NotNull(message = "The expense's creator ID is not null")
     @JsonProperty("currency_id")
     private Long currencyId;
+
+    @NotNull(message = "The expense's creator ID is not null")
+    @JsonProperty("creator_id")
+    private Long creatorId;
 
     public ExpenseDto() {
     }
@@ -49,7 +53,8 @@ public class ExpenseDto {
             Long amount,
             ZonedDateTime createdAt,
             Long expenseCategoryId,
-            Long currencyId) {
+            Long currencyId,
+            Long creatorId) {
         this.id = id;
 
         this.name = name;
@@ -61,6 +66,8 @@ public class ExpenseDto {
         this.expenseCategoryId = expenseCategoryId;
 
         this.currencyId = currencyId;
+
+        this.creatorId = creatorId;
     }
 
     public Long getId() {
@@ -95,6 +102,10 @@ public class ExpenseDto {
         return currencyId;
     }
 
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -127,6 +138,10 @@ public class ExpenseDto {
         this.currencyId = currencyId;
     }
 
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
+    }
+
     @Override
     public String toString() {
         String f = "ExpenseDto(id=" + id +
@@ -136,7 +151,8 @@ public class ExpenseDto {
                 ", labels=" + labels +
                 ", createdAt=" + createdAt +
                 ", expenseCategoryId=" + expenseCategoryId +
-                ", currencyId=" + currencyId + ")";
+                ", currencyId=" + currencyId +
+                ", creatorId=" + creatorId + ")";
 
         return f;
     }

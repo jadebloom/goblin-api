@@ -170,14 +170,14 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
     }
 
     @Override
-    public void deleteById(Long expenseCategoryId) {
-        Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
-        if (optCreatorEmail.isEmpty()) {
+    public void deleteById(Long expenseCategoryId) throws CurrencyInUseException {
+        Optional<String> optUserEmail = SecurityContextUtils.getAuthenticatedUserEmail();
+        if (optUserEmail.isEmpty()) {
             throw new ForbiddenException();
         }
-        String creatorEmail = optCreatorEmail.get();
 
-        if (!expenseCategoryRepository.existsByIdAndCreator_Email(expenseCategoryId, creatorEmail)) {
+        String userEmail = optUserEmail.get();
+        if (!expenseCategoryRepository.existsByIdAndCreator_Email(expenseCategoryId, userEmail)) {
             return;
         }
 

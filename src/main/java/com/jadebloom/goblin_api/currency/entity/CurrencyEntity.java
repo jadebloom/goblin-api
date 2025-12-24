@@ -120,7 +120,7 @@ public class CurrencyEntity {
                 ", name=" + name +
                 ", alphabeticalCode=" + alphabeticalCode +
                 ", createdAt=" + createdAt +
-                ", creator=" + creator + ")";
+                ", creatorId=" + creator.getId() + ")";
     }
 
 }

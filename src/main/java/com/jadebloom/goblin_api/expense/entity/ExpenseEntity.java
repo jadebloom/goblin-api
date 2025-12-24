@@ -11,6 +11,7 @@ import com.jadebloom.goblin_api.expense.validation.ValidExpenseDescription;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseLabel;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseLabelsList;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseName;
+import com.jadebloom.goblin_api.security.entity.UserEntity;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -52,18 +53,23 @@ public class ExpenseEntity {
     private List<@ValidExpenseLabel String> labels;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private ZonedDateTime createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "expense_category_id", referencedColumnName = "id")
-    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "expense_category_id", referencedColumnName = "id", nullable = false)
+    @NotNull(message = "The expense's category must not be null")
     private ExpenseCategoryEntity expenseCategory;
 
-    @ManyToOne
-    @JoinColumn(name = "currency_id", referencedColumnName = "id")
-    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "currency_id", referencedColumnName = "id", nullable = false)
+    @NotNull(message = "The expense's currency must not be null")
     private CurrencyEntity currency;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "creator_id", referencedColumnName = "id", nullable = false, updatable = false)
+    @NotNull(message = "The expense's creator must not be null")
+    private UserEntity creator;
 
     public ExpenseEntity() {
     }
@@ -72,7 +78,8 @@ public class ExpenseEntity {
             String name,
             Long amount,
             ExpenseCategoryEntity expenseCategory,
-            CurrencyEntity currency) {
+            CurrencyEntity currency,
+            UserEntity creator) {
         this.name = name;
 
         this.amount = amount;
@@ -80,6 +87,8 @@ public class ExpenseEntity {
         this.expenseCategory = expenseCategory;
 
         this.currency = currency;
+
+        this.creator = creator;
     }
 
     public Long getId() {
@@ -114,6 +123,10 @@ public class ExpenseEntity {
         return currency;
     }
 
+    public UserEntity getCreator() {
+        return creator;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -146,6 +159,10 @@ public class ExpenseEntity {
         this.currency = currency;
     }
 
+    public void setCreator(UserEntity creator) {
+        this.creator = creator;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -166,42 +183,16 @@ public class ExpenseEntity {
             return false;
         }
 
-        if (labels.size() != expenseEntity.getLabels().size()) {
-            return false;
-        }
-
-        for (int i = 0; i < labels.size(); i++) {
-            String a = labels.get(i);
-            String b = expenseEntity.getLabels().get(i);
-
-            if (!a.equals(b)) {
-                return false;
-            }
-        }
-
-        if (createdAt != expenseEntity.createdAt) {
-            return false;
-        }
-
-        if (expenseCategory != expenseEntity.expenseCategory) {
-            return false;
-        }
-
-        return currency == expenseEntity.getCurrency();
+        return createdAt == expenseEntity.createdAt;
     }
 
     @Override
     public String toString() {
-        String f = "ExpenseEntity(id=" + id +
+        return "ExpenseEntity(id=" + id +
                 ", name=" + name +
                 ", description=" + description +
                 ", amount=" + amount +
-                ", labels=" + labels +
-                ", createdAt=" + createdAt +
-                ", expenseCategory=" + expenseCategory +
-                ", currency=" + currency + ")";
-
-        return f;
+                ", createdAt=" + createdAt + ")";
     }
 
 }

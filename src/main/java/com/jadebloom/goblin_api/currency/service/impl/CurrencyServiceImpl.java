@@ -94,12 +94,7 @@ public class CurrencyServiceImpl implements CurrencyService {
         if (optCreatorEmail.isEmpty()) {
             throw new ForbiddenException();
         }
-
-        Optional<UserEntity> optCreator = userRepository.findByEmail(optCreatorEmail.get());
-        if (optCreator.isEmpty()) {
-            throw new ForbiddenException();
-        }
-        UserEntity creator = optCreator.get();
+        String creatorEmail = optCreatorEmail.get();
 
         Optional<CurrencyEntity> optCurrency = currencyRepository.findById(currencyId);
         if (optCurrency.isEmpty()) {
@@ -109,7 +104,7 @@ public class CurrencyServiceImpl implements CurrencyService {
         }
         CurrencyEntity currency = optCurrency.get();
 
-        if (currency.getCreator().getId() != creator.getId()) {
+        if (!currency.getCreator().getEmail().equals(creatorEmail)) {
             throw new ForbiddenException();
         }
 
@@ -158,13 +153,13 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     @Override
     public void deleteById(Long currencyId) throws ForbiddenException, CurrencyInUseException {
-        Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
-        if (optCreatorEmail.isEmpty()) {
+        Optional<String> optUserEmail = SecurityContextUtils.getAuthenticatedUserEmail();
+        if (optUserEmail.isEmpty()) {
             throw new ForbiddenException();
         }
-        String creatorEmail = optCreatorEmail.get();
 
-        if (!currencyRepository.existsByIdAndCreator_Email(currencyId, creatorEmail)) {
+        String userEmail = optUserEmail.get();
+        if (!currencyRepository.existsByIdAndCreator_Email(currencyId, userEmail)) {
             return;
         }
 

@@ -25,11 +25,11 @@ public class CreateExpenseDto {
     @ValidExpenseLabelsList
     private List<@ValidExpenseLabel String> labels;
 
-    @NotNull
+    @NotNull(message = "The expense's category ID must not be null")
     @JsonProperty("expense_category_id")
     private Long expenseCategoryId;
 
-    @NotNull
+    @NotNull(message = "The expense's currency ID must not be null")
     @JsonProperty("currency_id")
     private Long currencyId;
 
@@ -96,14 +96,12 @@ public class CreateExpenseDto {
 
     @Override
     public String toString() {
-        String f = "CreateExpenseDto(name=" + name +
+        return "CreateExpenseDto(name=" + name +
                 ", description=" + description +
                 ", amount=" + amount +
                 ", labels=" + labels +
                 ", expenseCategoryId=" + expenseCategoryId +
                 ", currencyId=" + currencyId + ")";
-
-        return f;
     }
 
 }
