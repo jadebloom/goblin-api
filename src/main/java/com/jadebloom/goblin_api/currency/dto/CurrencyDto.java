@@ -23,7 +23,7 @@ public class CurrencyDto {
     @JsonProperty("created_at")
     private ZonedDateTime createdAt;
 
-    @NotNull
+    @NotNull(message = "The currency's creator ID must not be null")
     @JsonProperty("creator_id")
     private String creatorId;
 
