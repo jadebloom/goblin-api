@@ -23,7 +23,7 @@ public class CurrencyEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(nullable = false, updatable = false)
+    @Column(updatable = false)
     private Long id;
 
     @Column(unique = true, nullable = false, length = 64)
@@ -38,7 +38,7 @@ public class CurrencyEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private ZonedDateTime createdAt;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(referencedColumnName = "id", name = "user_id", nullable = false, updatable = false)
     private UserEntity creator;
 
