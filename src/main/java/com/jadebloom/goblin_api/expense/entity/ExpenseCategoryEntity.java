@@ -6,12 +6,15 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryDescription;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryName;
+import com.jadebloom.goblin_api.security.entity.UserEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -32,14 +35,20 @@ public class ExpenseCategoryEntity {
     private String description;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private ZonedDateTime createdAt;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "creator_id", referencedColumnName = "id", nullable = false, updatable = false)
+    private UserEntity creator;
 
     public ExpenseCategoryEntity() {
     }
 
-    public ExpenseCategoryEntity(String name) {
+    public ExpenseCategoryEntity(String name, UserEntity creator) {
         this.name = name;
+
+        this.creator = creator;
     }
 
     public Long getId() {
@@ -58,6 +67,10 @@ public class ExpenseCategoryEntity {
         return createdAt;
     }
 
+    public UserEntity getCreator() {
+        return creator;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -72,6 +85,10 @@ public class ExpenseCategoryEntity {
 
     public void setCreatedAt(ZonedDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public void setCreator(UserEntity creator) {
+        this.creator = creator;
     }
 
     @Override
@@ -99,9 +116,11 @@ public class ExpenseCategoryEntity {
 
     @Override
     public String toString() {
-        String f = "ExpenseCategoryEntity(id=%d, name=%s, description=%s, createdAt=%tc)";
-
-        return String.format(f, id, name, description);
+        return "ExpenseCategoryEntity(id=" + id +
+                ", name=" + name +
+                ", description=" + description +
+                ", createdAt=" + createdAt +
+                ", creatorId=" + creator.getId() + ")";
     }
 
 }

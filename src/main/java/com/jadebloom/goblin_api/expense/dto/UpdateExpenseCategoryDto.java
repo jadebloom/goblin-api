@@ -51,8 +51,7 @@ public class UpdateExpenseCategoryDto {
 
     @Override
     public String toString() {
-        return "UpdateExpenseCategoryDto(" +
-                "id=" + id +
+        return "UpdateExpenseCategoryDto(id=" + id +
                 ", name=" + name +
                 ", description=" + description + ")";
     }

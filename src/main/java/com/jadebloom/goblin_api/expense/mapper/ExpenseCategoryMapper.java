@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
-import com.jadebloom.goblin_api.expense.dto.UpdateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
 
 @Component
@@ -24,7 +23,7 @@ public class ExpenseCategoryMapper {
 				ExpenseCategoryEntity.class);
 
 		if (typeMap == null) {
-			typeMap = modelMapper.createTypeMap(
+			typeMap = modelMapper.emptyTypeMap(
 					CreateExpenseCategoryDto.class,
 					ExpenseCategoryEntity.class);
 
@@ -37,30 +36,6 @@ public class ExpenseCategoryMapper {
 		}
 
 		return typeMap.map(createExpenseCategoryDto);
-	}
-
-	public ExpenseCategoryEntity map(UpdateExpenseCategoryDto updateDto) {
-		TypeMap<UpdateExpenseCategoryDto, ExpenseCategoryEntity> typeMap = modelMapper.getTypeMap(
-				UpdateExpenseCategoryDto.class,
-				ExpenseCategoryEntity.class);
-
-		if (typeMap == null) {
-			typeMap = modelMapper.createTypeMap(
-					UpdateExpenseCategoryDto.class,
-					ExpenseCategoryEntity.class);
-
-			typeMap.addMapping(
-					UpdateExpenseCategoryDto::getId,
-					ExpenseCategoryEntity::setId);
-			typeMap.addMapping(
-					UpdateExpenseCategoryDto::getName,
-					ExpenseCategoryEntity::setName);
-			typeMap.addMapping(
-					UpdateExpenseCategoryDto::getDescription,
-					ExpenseCategoryEntity::setDescription);
-		}
-
-		return typeMap.map(updateDto);
 	}
 
 	public ExpenseCategoryDto map(ExpenseCategoryEntity expenseCategoryDto) {
@@ -82,6 +57,8 @@ public class ExpenseCategoryMapper {
 					ExpenseCategoryEntity::getCreatedAt,
 					ExpenseCategoryDto::setCreatedAt);
 
+			typeMap.addMappings(mapper -> mapper.map(
+					src -> src.getId(), ExpenseCategoryDto::setCreatorId));
 		}
 
 		return typeMap.map(expenseCategoryDto);

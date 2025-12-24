@@ -17,11 +17,17 @@ import com.jadebloom.goblin_api.expense.mapper.ExpenseCategoryMapper;
 import com.jadebloom.goblin_api.expense.repository.ExpenseCategoryRepository;
 import com.jadebloom.goblin_api.expense.repository.ExpenseRepository;
 import com.jadebloom.goblin_api.expense.service.ExpenseCategoryService;
+import com.jadebloom.goblin_api.security.entity.UserEntity;
+import com.jadebloom.goblin_api.security.repository.UserRepository;
+import com.jadebloom.goblin_api.security.util.SecurityContextUtils;
+import com.jadebloom.goblin_api.shared.error.ForbiddenException;
 
 @Service
 public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 
     private final ExpenseCategoryRepository expenseCategoryRepository;
+
+    private final UserRepository userRepository;
 
     private final ExpenseRepository expenseRepository;
 
@@ -29,9 +35,12 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 
     public ExpenseCategoryServiceImpl(
             ExpenseCategoryRepository expenseCategoryRepository,
+            UserRepository userRepository,
             ExpenseRepository expenseRepository,
             ExpenseCategoryMapper mapper) {
         this.expenseCategoryRepository = expenseCategoryRepository;
+
+        this.userRepository = userRepository;
 
         this.expenseRepository = expenseRepository;
 
@@ -40,9 +49,20 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 
     @Override
     public ExpenseCategoryDto create(CreateExpenseCategoryDto createDto)
-            throws ExpenseCategoryNameUnavailableException {
-        String name = createDto.getName();
+            throws ForbiddenException, ExpenseCategoryNameUnavailableException {
+        Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
+        if (optCreatorEmail.isEmpty()) {
+            throw new ForbiddenException();
+        }
+        String creatorEmail = optCreatorEmail.get();
 
+        Optional<UserEntity> optCreator = userRepository.findByEmail(creatorEmail);
+        if (optCreator.isEmpty()) {
+            throw new ForbiddenException();
+        }
+        UserEntity creator = optCreator.get();
+
+        String name = createDto.getName();
         if (expenseCategoryRepository.existsByName(name)) {
             String f = "Expense category with the name '%s' already exists";
             String errorMessage = String.format(f, name);
@@ -51,66 +71,116 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
         }
 
         ExpenseCategoryEntity created = mapper.map(createDto);
+        created.setCreator(creator);
 
         return mapper.map(expenseCategoryRepository.save(created));
     }
 
     @Override
-    public Page<ExpenseCategoryDto> findAll(Pageable pageable) {
-        Page<ExpenseCategoryEntity> page = expenseCategoryRepository.findAll(pageable);
+    public Page<ExpenseCategoryDto> findAuthenticatedUserExpenseCategories(Pageable pageable)
+            throws ForbiddenException {
+        Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
+        if (optCreatorEmail.isEmpty()) {
+            throw new ForbiddenException();
+        }
+        String creatorEmail = optCreatorEmail.get();
+
+        Page<ExpenseCategoryEntity> page = expenseCategoryRepository.findAllByCreator_Email(
+                creatorEmail, pageable);
 
         return page.map(mapper::map);
     }
 
     @Override
     public ExpenseCategoryDto findById(Long expenseCategoryId)
-            throws ExpenseCategoryNotFoundException {
-        Optional<ExpenseCategoryEntity> found = expenseCategoryRepository.findById(expenseCategoryId);
+            throws ForbiddenException, ExpenseCategoryNotFoundException {
+        Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
+        if (optCreatorEmail.isEmpty()) {
+            throw new ForbiddenException();
+        }
+        String creatorEmail = optCreatorEmail.get();
 
-        if (found.isEmpty()) {
+        Optional<ExpenseCategoryEntity> optExpenseCategory = expenseCategoryRepository.findById(
+                expenseCategoryId);
+        if (optExpenseCategory.isEmpty()) {
             String f = "Expense category with the ID '%d' wasn't found";
 
             throw new ExpenseCategoryNotFoundException(String.format(f, expenseCategoryId));
         }
 
-        return mapper.map(found.get());
+        ExpenseCategoryEntity expenseCategory = optExpenseCategory.get();
+        if (!expenseCategory.getCreator().getEmail().equals(creatorEmail)) {
+            throw new ForbiddenException();
+        }
+
+        return mapper.map(expenseCategory);
     }
 
     @Override
-    public boolean existsById(Long expenseCategoryId) {
-        return expenseCategoryRepository.existsById(expenseCategoryId);
+    public boolean existsById(Long expenseCategoryId) throws ForbiddenException {
+        Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
+        if (optCreatorEmail.isEmpty()) {
+            throw new ForbiddenException();
+        }
+        String creatorEmail = optCreatorEmail.get();
+
+        return expenseCategoryRepository.existsByIdAndCreator_Email(
+                expenseCategoryId, creatorEmail);
     }
 
     @Override
     public ExpenseCategoryDto update(UpdateExpenseCategoryDto updateDto)
-            throws ExpenseCategoryNotFoundException,
-            ExpenseCategoryNameUnavailableException {
-        Optional<ExpenseCategoryEntity> optional = expenseCategoryRepository.findById(
-                updateDto.getId());
+            throws ForbiddenException,
+            ExpenseCategoryNameUnavailableException,
+            ExpenseCategoryNotFoundException {
+        Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
+        if (optCreatorEmail.isEmpty()) {
+            throw new ForbiddenException();
+        }
+        String creatorEmail = optCreatorEmail.get();
 
-        if (optional.isEmpty()) {
+        Optional<UserEntity> optCreator = userRepository.findByEmail(creatorEmail);
+        if (optCreator.isEmpty()) {
+            throw new ForbiddenException();
+        }
+        UserEntity creator = optCreator.get();
+
+        Optional<ExpenseCategoryEntity> optExpenseCategory = expenseCategoryRepository.findById(
+                updateDto.getId());
+        if (optExpenseCategory.isEmpty()) {
             String f = "Expense category with the ID '%d' doesn't exist";
 
             throw new ExpenseCategoryNotFoundException(String.format(f, updateDto.getId()));
         }
 
-        ExpenseCategoryEntity entity = optional.get();
-
-        if (expenseCategoryRepository.existsByIdNotAndName(entity.getId(), updateDto.getName())) {
+        ExpenseCategoryEntity expenseCategory = optExpenseCategory.get();
+        if (expenseCategoryRepository.existsByIdNotAndName(
+                expenseCategory.getId(), updateDto.getName())) {
             String f = "Expense category with the name '%s' already exists";
             String errorMessage = String.format(f, updateDto.getName());
 
             throw new ExpenseCategoryNameUnavailableException(errorMessage);
         }
 
-        entity.setName(updateDto.getName());
-        entity.setDescription(updateDto.getDescription());
+        expenseCategory.setName(updateDto.getName());
+        expenseCategory.setDescription(updateDto.getDescription());
+        expenseCategory.setCreator(creator);
 
-        return mapper.map(expenseCategoryRepository.save(entity));
+        return mapper.map(expenseCategoryRepository.save(expenseCategory));
     }
 
     @Override
     public void deleteById(Long expenseCategoryId) {
+        Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
+        if (optCreatorEmail.isEmpty()) {
+            throw new ForbiddenException();
+        }
+        String creatorEmail = optCreatorEmail.get();
+
+        if (!expenseCategoryRepository.existsByIdAndCreator_Email(expenseCategoryId, creatorEmail)) {
+            return;
+        }
+
         if (expenseRepository.existsByExpenseCategory_Id(expenseCategoryId)) {
             String f = "Cannot delete the expense category with the ID '%d': some amount of expenses depend use it";
             String errorMessage = String.format(f, expenseCategoryId);

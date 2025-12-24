@@ -36,9 +36,7 @@ public class CreateExpenseCategoryDto {
 
     @Override
     public String toString() {
-        return "CreateExpenseCategoryDto(" +
-                "name=" + name +
-                ", description=" + description + ")";
+        return "CreateExpenseCategoryDto(name=" + name + ", description=" + description + ")";
     }
 
 }

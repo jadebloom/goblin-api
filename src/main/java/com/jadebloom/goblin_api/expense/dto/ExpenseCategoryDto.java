@@ -22,15 +22,21 @@ public class ExpenseCategoryDto {
     @JsonProperty("created_at")
     private ZonedDateTime createdAt;
 
+    @NotNull(message = "The expense category's creator ID must not be null")
+    @JsonProperty("creator_id")
+    private Long creatorId;
+
     public ExpenseCategoryDto() {
     }
 
-    public ExpenseCategoryDto(Long id, String name, ZonedDateTime createdAt) {
+    public ExpenseCategoryDto(Long id, String name, ZonedDateTime createdAt, Long creatorId) {
         this.id = id;
 
         this.name = name;
 
         this.createdAt = createdAt;
+
+        this.creatorId = creatorId;
     }
 
     public Long getId() {
@@ -49,6 +55,10 @@ public class ExpenseCategoryDto {
         return createdAt;
     }
 
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -65,13 +75,17 @@ public class ExpenseCategoryDto {
         this.createdAt = createdAt;
     }
 
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
+    }
+
     @Override
     public String toString() {
-        return "ExpenseCategoryDto(" +
-                "id=" + id +
+        return "ExpenseCategoryDto(id=" + id +
                 ", name=" + name +
                 ", description=" + description +
-                ", createdAt=" + createdAt + ")";
+                ", createdAt=" + createdAt +
+                ", creatorId=" + creatorId + ")";
     }
 
 }
