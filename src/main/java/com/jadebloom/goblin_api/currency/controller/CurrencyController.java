@@ -3,7 +3,6 @@ package com.jadebloom.goblin_api.currency.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,7 +32,7 @@ public class CurrencyController {
     }
 
     @PreAuthorize("hasRole('USER')")
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     public ResponseEntity<CurrencyDto> createCurrency(@Valid @RequestBody CreateCurrencyDto createDto) {
         CurrencyDto created = currencyService.create(createDto);
 
@@ -41,7 +40,7 @@ public class CurrencyController {
     }
 
     @PreAuthorize("hasRole('USER')")
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<Page<CurrencyDto>> findCurrencies(Pageable pageable) {
         Page<CurrencyDto> page = currencyService.findAuthenticatedUserCurrencies(pageable);
 
@@ -49,7 +48,7 @@ public class CurrencyController {
     }
 
     @PreAuthorize("hasRole('USER')")
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}")
     public ResponseEntity<CurrencyDto> findCurrencyById(@PathVariable(name = "id") Long currencyId) {
         CurrencyDto found = currencyService.findById(currencyId);
 
@@ -57,7 +56,7 @@ public class CurrencyController {
     }
 
     @PreAuthorize("hasRole('USER')")
-    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping()
     public ResponseEntity<CurrencyDto> updateCurrency(@Valid @RequestBody UpdateCurrencyDto updateDto) {
         CurrencyDto updated = currencyService.update(updateDto);
 
