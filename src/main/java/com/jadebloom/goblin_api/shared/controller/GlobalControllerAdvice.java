@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -74,6 +75,18 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
 				.builder(ex, HttpStatus.FORBIDDEN, "Insufficient permissions")
 				.type(URI.create(API_DOCS_URI))
 				.title("Forbidden")
+				.build();
+
+		return errorResponse;
+	}
+
+	@ExceptionHandler(AuthorizationDeniedException.class)
+	@ResponseStatus(HttpStatus.FORBIDDEN)
+	public ErrorResponse handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+		ErrorResponse errorResponse = ErrorResponse
+				.builder(ex, HttpStatus.FORBIDDEN, "Authorization denied")
+				.type(URI.create(API_DOCS_URI))
+				.title("Authorization denied")
 				.build();
 
 		return errorResponse;
