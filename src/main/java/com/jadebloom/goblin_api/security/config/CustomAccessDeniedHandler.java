@@ -21,7 +21,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     private final String API_DOCS_URI;
 
-    public CustomAccessDeniedHandler(@Value("api.docs.uri") String API_DOCS_URI) {
+    public CustomAccessDeniedHandler(@Value("${api.docs.uri}") String API_DOCS_URI) {
         this.API_DOCS_URI = API_DOCS_URI;
     }
 
