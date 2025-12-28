@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "currency")
@@ -40,6 +41,7 @@ public class CurrencyEntity {
 
     @ManyToOne(optional = false)
     @JoinColumn(referencedColumnName = "id", name = "user_id", nullable = false, updatable = false)
+    @NotNull(message = "The currency's creator must not be null")
     private UserEntity creator;
 
     public CurrencyEntity() {

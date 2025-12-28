@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "expense_category")
@@ -40,6 +41,7 @@ public class ExpenseCategoryEntity {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "creator_id", referencedColumnName = "id", nullable = false, updatable = false)
+    @NotNull(message = "The expense category's creator must not be null")
     private UserEntity creator;
 
     public ExpenseCategoryEntity() {
