@@ -37,3 +37,4 @@ Currently working on 1.1.0:
 5. Consider the frontend part. 
 6. Optimize the queries and the Lighthouse or something.
 7. Add formatting.
+8. Rename controller findAll methods.

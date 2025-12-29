@@ -6,11 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.jadebloom.goblin_api.currency.error.CurrencyInUseException;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.UpdateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
+import com.jadebloom.goblin_api.expense.error.ExpenseCategoryInUseException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNameUnavailableException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
 import com.jadebloom.goblin_api.expense.mapper.ExpenseCategoryMapper;
@@ -170,7 +170,7 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
     }
 
     @Override
-    public void deleteById(Long expenseCategoryId) throws CurrencyInUseException {
+    public void deleteById(Long expenseCategoryId) throws ExpenseCategoryInUseException {
         Optional<String> optUserEmail = SecurityContextUtils.getAuthenticatedUserEmail();
         if (optUserEmail.isEmpty()) {
             throw new ForbiddenException();
@@ -185,7 +185,7 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
             String f = "Cannot delete the expense category with the ID '%d': some amount of expenses depend use it";
             String errorMessage = String.format(f, expenseCategoryId);
 
-            throw new CurrencyInUseException(errorMessage);
+            throw new ExpenseCategoryInUseException(errorMessage);
         }
 
         expenseCategoryRepository.deleteById(expenseCategoryId);

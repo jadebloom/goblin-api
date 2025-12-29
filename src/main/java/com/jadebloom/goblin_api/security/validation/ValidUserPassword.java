@@ -27,7 +27,7 @@ import jakarta.validation.constraints.Size;
 @Constraint(validatedBy = { UserPasswordValidator.class })
 public @interface ValidUserPassword {
 
-    String message() default "The user's password must be 8 - 32 characters long and contain at least one uppercase letter, number and special symbol ('_', '!')";
+    String message() default "The user's password must be 8 - 32 latin characters long and contain at least one uppercase letter, one lowercase letter, number and special symbol ('!', '?', '_', '$', '#', '%', '^', '&', '*')";
 
     Class<?>[] groups() default {};
 
