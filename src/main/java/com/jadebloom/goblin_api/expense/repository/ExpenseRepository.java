@@ -15,8 +15,6 @@ public interface ExpenseRepository
 
 	Page<ExpenseEntity> findAllByCreator_Email(String creatorEmail, Pageable pageable);
 
-	boolean existsByName(String name);
-
 	boolean existsByIdNotAndName(Long id, String name);
 
 	boolean existsByCurrency_Id(Long currencyId);

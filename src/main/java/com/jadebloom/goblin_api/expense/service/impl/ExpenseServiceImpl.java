@@ -15,7 +15,6 @@ import com.jadebloom.goblin_api.expense.dto.UpdateExpenseDto;
 import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
 import com.jadebloom.goblin_api.expense.entity.ExpenseEntity;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
-import com.jadebloom.goblin_api.expense.error.ExpenseNameUnavailableException;
 import com.jadebloom.goblin_api.expense.error.ExpenseNotFoundException;
 import com.jadebloom.goblin_api.expense.mapper.ExpenseMapper;
 import com.jadebloom.goblin_api.expense.repository.ExpenseCategoryRepository;
@@ -59,7 +58,6 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     public ExpenseDto create(CreateExpenseDto createDto)
             throws ForbiddenException,
-            ExpenseNameUnavailableException,
             ExpenseCategoryNotFoundException,
             CurrencyNotFoundException {
         Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
@@ -73,14 +71,6 @@ public class ExpenseServiceImpl implements ExpenseService {
             throw new ForbiddenException();
         }
         UserEntity creator = optCreator.get();
-
-        String expenseName = createDto.getName();
-        if (expenseRepository.existsByName(expenseName)) {
-            String f = "Expense with the name '%s' already exists";
-            String errorMessage = String.format(f, expenseName);
-
-            throw new ExpenseNameUnavailableException(errorMessage);
-        }
 
         Long expenseCategoryId = createDto.getExpenseCategoryId();
         if (!expenseCategoryRepository.existsById(expenseCategoryId)) {
@@ -142,7 +132,6 @@ public class ExpenseServiceImpl implements ExpenseService {
     public ExpenseDto update(UpdateExpenseDto updateDto)
             throws ForbiddenException,
             ExpenseNotFoundException,
-            ExpenseNameUnavailableException,
             ExpenseCategoryNotFoundException,
             CurrencyNotFoundException {
         Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
@@ -161,13 +150,6 @@ public class ExpenseServiceImpl implements ExpenseService {
         ExpenseEntity expense = optExpense.get();
         if (!expense.getCreator().getEmail().equals(creatorEmail)) {
             throw new ForbiddenException();
-        }
-
-        if (expenseRepository.existsByIdNotAndName(expense.getId(), updateDto.getName())) {
-            String f = "Another expense with the name '%s' already exists";
-            String errorMessage = String.format(f, updateDto.getName());
-
-            throw new ExpenseNameUnavailableException(errorMessage);
         }
 
         Long expenseCategoryId = updateDto.getExpenseCategoryId();
