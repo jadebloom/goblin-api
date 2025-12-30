@@ -126,7 +126,7 @@ public class CurrencyControllerUnitTests {
 	@Test
 	@DisplayName("Return HTTP 403 when finding currencies as user with invalid permissions")
 	@WithMockUser(roles = "SOME_ROLE_THAT_IS_NOT_USER")
-	public void GivenInvalidUserRole_WhenFindingCurrencies_ThenReturnHttp403() throws Exception {
+	public void GivenInvalidUserRole_WhenFindingAuthenticatedUserCurrencies_ThenReturnHttp403() throws Exception {
 		mockMvc.perform(
 				MockMvcRequestBuilders.get("/api/v1/currencies").with(csrf()))
 				.andExpect(MockMvcResultMatchers.status().isForbidden());
@@ -141,8 +141,7 @@ public class CurrencyControllerUnitTests {
 
 		when(currencyService.findById(anyLong())).thenReturn(dto);
 
-		mockMvc.perform(
-				MockMvcRequestBuilders.get("/api/v1/currencies/" + dto.getId()).with(csrf()))
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/currencies/" + dto.getId()).with(csrf()))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(dto.getId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(dto.getName()))

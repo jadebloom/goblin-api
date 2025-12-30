@@ -42,7 +42,7 @@ public class ExpenseController {
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping
-    public ResponseEntity<Page<ExpenseDto>> findExpenses(Pageable pageable) {
+    public ResponseEntity<Page<ExpenseDto>> findAuthenticatedUserExpenses(Pageable pageable) {
         Page<ExpenseDto> page = expenseService.findUserAuthenticatedExpenses(pageable);
 
         return new ResponseEntity<>(page, HttpStatus.OK);

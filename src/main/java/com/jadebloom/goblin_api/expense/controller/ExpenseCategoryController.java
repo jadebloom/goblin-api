@@ -42,7 +42,7 @@ public class ExpenseCategoryController {
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping
-    public ResponseEntity<Page<ExpenseCategoryDto>> findExpenseCategories(Pageable pageable) {
+    public ResponseEntity<Page<ExpenseCategoryDto>> findAuthenticatedUserExpenseCategories(Pageable pageable) {
         Page<ExpenseCategoryDto> page = expenseCategoryService.findAuthenticatedUserExpenseCategories(
                 pageable);
 

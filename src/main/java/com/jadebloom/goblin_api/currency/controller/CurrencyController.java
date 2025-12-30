@@ -41,7 +41,7 @@ public class CurrencyController {
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping()
-    public ResponseEntity<Page<CurrencyDto>> findCurrencies(Pageable pageable) {
+    public ResponseEntity<Page<CurrencyDto>> findAuthenticatedUserCurrencies(Pageable pageable) {
         Page<CurrencyDto> page = currencyService.findAuthenticatedUserCurrencies(pageable);
 
         return new ResponseEntity<>(page, HttpStatus.OK);

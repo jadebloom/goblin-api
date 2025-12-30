@@ -6,9 +6,10 @@ The centralized log of tasks and improvements.
 
 Currently working on 1.1.0:
 
-1. Add service tests.
-2. Manage versions correctly.
-3. Rename controller findAll methods.
+1. Rename controller findAll methods.
+2. Add service tests.
+3. Manage versions correctly.
+4. Update openapi.
 
 ## Backlog
 
