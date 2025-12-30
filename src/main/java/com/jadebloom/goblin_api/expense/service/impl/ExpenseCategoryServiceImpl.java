@@ -13,6 +13,7 @@ import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryInUseException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNameUnavailableException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
+import com.jadebloom.goblin_api.expense.error.InvalidExpenseCategoryException;
 import com.jadebloom.goblin_api.expense.mapper.ExpenseCategoryMapper;
 import com.jadebloom.goblin_api.expense.repository.ExpenseCategoryRepository;
 import com.jadebloom.goblin_api.expense.repository.ExpenseRepository;
@@ -21,6 +22,7 @@ import com.jadebloom.goblin_api.security.entity.UserEntity;
 import com.jadebloom.goblin_api.security.repository.UserRepository;
 import com.jadebloom.goblin_api.security.util.SecurityContextUtils;
 import com.jadebloom.goblin_api.shared.error.ForbiddenException;
+import com.jadebloom.goblin_api.shared.validation.GenericValidator;
 
 @Service
 public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
@@ -49,7 +51,15 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 
     @Override
     public ExpenseCategoryDto create(CreateExpenseCategoryDto createDto)
-            throws ForbiddenException, ExpenseCategoryNameUnavailableException {
+            throws InvalidExpenseCategoryException,
+            ForbiddenException,
+            ExpenseCategoryNameUnavailableException {
+        if (!GenericValidator.isValid(createDto)) {
+            String message = GenericValidator.getValidationErrorMessage(createDto);
+
+            throw new InvalidExpenseCategoryException(message);
+        }
+
         Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
         if (optCreatorEmail.isEmpty()) {
             throw new ForbiddenException();
@@ -130,9 +140,16 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 
     @Override
     public ExpenseCategoryDto update(UpdateExpenseCategoryDto updateDto)
-            throws ForbiddenException,
+            throws InvalidExpenseCategoryException,
+            ForbiddenException,
             ExpenseCategoryNameUnavailableException,
             ExpenseCategoryNotFoundException {
+        if (!GenericValidator.isValid(updateDto)) {
+            String message = GenericValidator.getValidationErrorMessage(updateDto);
+
+            throw new InvalidExpenseCategoryException(message);
+        }
+
         Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
         if (optCreatorEmail.isEmpty()) {
             throw new ForbiddenException();

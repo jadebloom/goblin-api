@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryInUseException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNameUnavailableException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
+import com.jadebloom.goblin_api.expense.error.InvalidExpenseCategoryException;
 
 @ControllerAdvice
 public class ExpenseCategoryControllerAdvice {
@@ -20,6 +21,18 @@ public class ExpenseCategoryControllerAdvice {
 
 	public ExpenseCategoryControllerAdvice(@Value("${api.docs.uri}") String API_DOCS_URI) {
 		this.API_DOCS_URI = API_DOCS_URI;
+	}
+
+	@ExceptionHandler(InvalidExpenseCategoryException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ErrorResponse handleInvalidExpenseCategoryException(InvalidExpenseCategoryException ex) {
+		ErrorResponse errorResponse = ErrorResponse
+				.builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage())
+				.type(URI.create(API_DOCS_URI))
+				.title("Invalid expense category")
+				.build();
+
+		return errorResponse;
 	}
 
 	@ExceptionHandler(ExpenseCategoryNameUnavailableException.class)
@@ -37,8 +50,7 @@ public class ExpenseCategoryControllerAdvice {
 
 	@ExceptionHandler(ExpenseCategoryNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ErrorResponse handleExpenseCategoryNotFoundException(
-			ExpenseCategoryNotFoundException ex) {
+	public ErrorResponse handleExpenseCategoryNotFoundException(ExpenseCategoryNotFoundException ex) {
 		ErrorResponse errorResponse = ErrorResponse
 				.builder(ex, HttpStatus.NOT_FOUND, ex.getMessage())
 				.type(URI.create(API_DOCS_URI))

@@ -9,12 +9,15 @@ import com.jadebloom.goblin_api.expense.dto.UpdateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryInUseException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNameUnavailableException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
+import com.jadebloom.goblin_api.expense.error.InvalidExpenseCategoryException;
 import com.jadebloom.goblin_api.shared.error.ForbiddenException;
 
 public interface ExpenseCategoryService {
 
 	ExpenseCategoryDto create(CreateExpenseCategoryDto createDto)
-			throws ForbiddenException, ExpenseCategoryNameUnavailableException;
+			throws InvalidExpenseCategoryException,
+			ForbiddenException,
+			ExpenseCategoryNameUnavailableException;
 
 	Page<ExpenseCategoryDto> findAuthenticatedUserExpenseCategories(Pageable pageable)
 			throws ForbiddenException;
@@ -25,7 +28,8 @@ public interface ExpenseCategoryService {
 	boolean existsById(Long expenseCategoryId) throws ForbiddenException;
 
 	ExpenseCategoryDto update(UpdateExpenseCategoryDto updateDto)
-			throws ForbiddenException,
+			throws InvalidExpenseCategoryException,
+			ForbiddenException,
 			ExpenseCategoryNotFoundException,
 			ExpenseCategoryNameUnavailableException;
 
