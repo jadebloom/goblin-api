@@ -13,6 +13,7 @@ import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
 import com.jadebloom.goblin_api.currency.error.CurrencyInUseException;
 import com.jadebloom.goblin_api.currency.error.CurrencyNameUnavailableException;
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
+import com.jadebloom.goblin_api.currency.error.InvalidCurrencyException;
 import com.jadebloom.goblin_api.currency.mapper.CurrencyMapper;
 import com.jadebloom.goblin_api.currency.repository.CurrencyRepository;
 import com.jadebloom.goblin_api.currency.service.CurrencyService;
@@ -21,6 +22,7 @@ import com.jadebloom.goblin_api.security.entity.UserEntity;
 import com.jadebloom.goblin_api.security.repository.UserRepository;
 import com.jadebloom.goblin_api.security.util.SecurityContextUtils;
 import com.jadebloom.goblin_api.shared.error.ForbiddenException;
+import com.jadebloom.goblin_api.shared.validation.GenericValidator;
 
 @Service
 public class CurrencyServiceImpl implements CurrencyService {
@@ -49,6 +51,12 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     @Override
     public CurrencyDto create(CreateCurrencyDto createDto) throws ForbiddenException, CurrencyNameUnavailableException {
+        if (!GenericValidator.isValid(createDto)) {
+            String message = GenericValidator.getValidationErrorMessage(createDto);
+
+            throw new InvalidCurrencyException(message);
+        }
+
         Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
         if (optCreatorEmail.isEmpty()) {
             throw new ForbiddenException();
@@ -125,6 +133,12 @@ public class CurrencyServiceImpl implements CurrencyService {
     @Override
     public CurrencyDto update(UpdateCurrencyDto updateDto)
             throws ForbiddenException, CurrencyNotFoundException, CurrencyNameUnavailableException {
+        if (!GenericValidator.isValid(updateDto)) {
+            String message = GenericValidator.getValidationErrorMessage(updateDto);
+
+            throw new InvalidCurrencyException(message);
+        }
+
         Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
         if (optCreatorEmail.isEmpty()) {
             throw new ForbiddenException();
