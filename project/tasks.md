@@ -6,7 +6,9 @@ The centralized log of tasks and improvements.
 
 Currently working on 1.1.0:
 
-6. Test everything.
+1. Add service tests.
+2. Manage versions correctly.
+3. Rename controller findAll methods.
 
 ## Backlog
 
@@ -29,12 +31,9 @@ Currently working on 1.1.0:
 
 ## Technical Debt & Others
 
-1. Manage versions correctly.
 1. Integrate JaCoCo.
 2. Integrate a relational database instead of H2.
 3. Consider deploy.
 4. Update the documentation (README).
-5. Consider the frontend part. 
 6. Optimize the queries and the Lighthouse or something.
 7. Add formatting.
-8. Rename controller findAll methods.
