@@ -190,11 +190,6 @@ public class ExpenseServiceImpl implements ExpenseService {
             throw new ForbiddenException();
         }
 
-        String userEmail = optUserEmail.get();
-        if (!expenseRepository.existsByIdAndCreator_Email(expenseId, userEmail)) {
-            throw new ForbiddenException();
-        }
-
         expenseRepository.deleteById(expenseId);
     }
 
