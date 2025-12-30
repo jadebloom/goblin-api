@@ -16,6 +16,7 @@ import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
 import com.jadebloom.goblin_api.expense.entity.ExpenseEntity;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
 import com.jadebloom.goblin_api.expense.error.ExpenseNotFoundException;
+import com.jadebloom.goblin_api.expense.error.InvalidExpenseException;
 import com.jadebloom.goblin_api.expense.mapper.ExpenseMapper;
 import com.jadebloom.goblin_api.expense.repository.ExpenseCategoryRepository;
 import com.jadebloom.goblin_api.expense.repository.ExpenseRepository;
@@ -24,6 +25,7 @@ import com.jadebloom.goblin_api.security.entity.UserEntity;
 import com.jadebloom.goblin_api.security.repository.UserRepository;
 import com.jadebloom.goblin_api.security.util.SecurityContextUtils;
 import com.jadebloom.goblin_api.shared.error.ForbiddenException;
+import com.jadebloom.goblin_api.shared.validation.GenericValidator;
 
 @Service
 public class ExpenseServiceImpl implements ExpenseService {
@@ -57,9 +59,16 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public ExpenseDto create(CreateExpenseDto createDto)
-            throws ForbiddenException,
+            throws InvalidExpenseException,
+            ForbiddenException,
             ExpenseCategoryNotFoundException,
             CurrencyNotFoundException {
+        if (!GenericValidator.isValid(createDto)) {
+            String message = GenericValidator.getValidationErrorMessage(createDto);
+
+            throw new InvalidExpenseException(message);
+        }
+
         Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
         if (optCreatorEmail.isEmpty()) {
             throw new ForbiddenException();
@@ -130,10 +139,17 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     @Override
     public ExpenseDto update(UpdateExpenseDto updateDto)
-            throws ForbiddenException,
+            throws InvalidExpenseException,
+            ForbiddenException,
             ExpenseNotFoundException,
             ExpenseCategoryNotFoundException,
             CurrencyNotFoundException {
+        if (!GenericValidator.isValid(updateDto)) {
+            String message = GenericValidator.getValidationErrorMessage(updateDto);
+
+            throw new InvalidExpenseException(message);
+        }
+
         Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
         if (optCreatorEmail.isEmpty()) {
             throw new ForbiddenException();
