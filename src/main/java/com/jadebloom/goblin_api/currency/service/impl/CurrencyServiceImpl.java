@@ -50,7 +50,10 @@ public class CurrencyServiceImpl implements CurrencyService {
     }
 
     @Override
-    public CurrencyDto create(CreateCurrencyDto createDto) throws ForbiddenException, CurrencyNameUnavailableException {
+    public CurrencyDto create(CreateCurrencyDto createDto)
+            throws InvalidCurrencyException,
+            ForbiddenException,
+            CurrencyNameUnavailableException {
         if (!GenericValidator.isValid(createDto)) {
             String message = GenericValidator.getValidationErrorMessage(createDto);
 
@@ -78,7 +81,7 @@ public class CurrencyServiceImpl implements CurrencyService {
         CurrencyEntity toCreate = mapper.map(createDto);
         toCreate.setCreator(creator);
 
-        return mapper.map(currencyRepository.save(toCreate));
+        return mapper.map(currencyRepository.saveAndFlush(toCreate));
     }
 
     @Override
@@ -99,6 +102,7 @@ public class CurrencyServiceImpl implements CurrencyService {
     public CurrencyDto findById(Long currencyId)
             throws ForbiddenException, CurrencyNotFoundException {
         Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
+        System.out.println(optCreatorEmail);
         if (optCreatorEmail.isEmpty()) {
             throw new ForbiddenException();
         }
@@ -132,7 +136,10 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     @Override
     public CurrencyDto update(UpdateCurrencyDto updateDto)
-            throws ForbiddenException, CurrencyNotFoundException, CurrencyNameUnavailableException {
+            throws InvalidCurrencyException,
+            ForbiddenException,
+            CurrencyNotFoundException,
+            CurrencyNameUnavailableException {
         if (!GenericValidator.isValid(updateDto)) {
             String message = GenericValidator.getValidationErrorMessage(updateDto);
 
