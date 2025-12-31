@@ -43,7 +43,7 @@ public class CurrencyRepositoryIntegrationTests {
 
     @BeforeEach
     public void createCurrencyCreator() {
-        currencyCreator = userTestUtils.createUser();
+        currencyCreator = userTestUtils.createUserAndItsDependencies();
     }
 
     @Test
