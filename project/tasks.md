@@ -6,8 +6,6 @@ The centralized log of tasks and improvements.
 
 Currently working on 1.1.0:
 
-1. Rename controller findAll methods.
-2. Add service tests.
 3. Manage versions correctly.
 4. Update openapi.
 
@@ -29,6 +27,7 @@ Currently working on 1.1.0:
 11. Consider adding income functionality.
 12. Consider expenses reporting (maybe with emailing?).
 13. Add alerts and limits on expenses.
+14. Think about transactions.
 
 ## Technical Debt & Others
 
