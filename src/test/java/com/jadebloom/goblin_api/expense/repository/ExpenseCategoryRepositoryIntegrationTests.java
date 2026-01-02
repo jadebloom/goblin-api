@@ -22,7 +22,7 @@ import com.jadebloom.goblin_api.security.test.PermissionTestUtils;
 import com.jadebloom.goblin_api.security.test.RoleTestUtils;
 import com.jadebloom.goblin_api.security.test.UserTestUtils;
 
-@DataJpaTest
+@DataJpaTest(showSql = false)
 @Import({ UserTestUtils.class, RoleTestUtils.class, PermissionTestUtils.class })
 public class ExpenseCategoryRepositoryIntegrationTests {
 

@@ -12,11 +12,9 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
 
 	Page<ExpenseEntity> findAllByCreator_Email(String creatorEmail, Pageable pageable);
 
-	boolean existsByIdNotAndName(Long id, String name);
+	boolean existsByExpenseCategory_Id(Long expenseCategoryId);
 
 	boolean existsByCurrency_Id(Long currencyId);
-
-	boolean existsByExpenseCategory_Id(Long expenseCategoryId);
 
 	boolean existsByIdAndCreator_Email(Long id, String creatorEmail);
 

@@ -22,95 +22,95 @@ import com.jadebloom.goblin_api.security.test.PermissionTestUtils;
 import com.jadebloom.goblin_api.security.test.RoleTestUtils;
 import com.jadebloom.goblin_api.security.test.UserTestUtils;
 
-@DataJpaTest
+@DataJpaTest(showSql = false)
 @Import({ UserTestUtils.class, RoleTestUtils.class, PermissionTestUtils.class })
 public class CurrencyRepositoryIntegrationTests {
 
-    private final CurrencyRepository underTest;
+	private final CurrencyRepository underTest;
 
-    private final UserTestUtils userTestUtils;
+	private final UserTestUtils userTestUtils;
 
-    private UserEntity currencyCreator;
+	private UserEntity currencyCreator;
 
-    @Autowired
-    public CurrencyRepositoryIntegrationTests(
-            CurrencyRepository underTest,
-            UserTestUtils userTestUtils) {
-        this.underTest = underTest;
+	@Autowired
+	public CurrencyRepositoryIntegrationTests(
+			CurrencyRepository underTest,
+			UserTestUtils userTestUtils) {
+		this.underTest = underTest;
 
-        this.userTestUtils = userTestUtils;
-    }
+		this.userTestUtils = userTestUtils;
+	}
 
-    @BeforeEach
-    public void createCurrencyCreator() {
-        currencyCreator = userTestUtils.createUserAndItsDependencies();
-    }
+	@BeforeEach
+	public void createCurrencyCreator() {
+		currencyCreator = userTestUtils.createUserAndItsDependencies();
+	}
 
-    @Test
-    @DisplayName("Return currencies found by their creator email")
-    public void GivenCurrencies_WhenFindingThemByTheirCreatorEmail_ThenReturnCurrencies() {
-        CurrencyEntity toCreate1 = new CurrencyEntity("Tenge", currencyCreator);
-        CurrencyEntity toCreate2 = new CurrencyEntity("Dollar", currencyCreator);
+	@Test
+	@DisplayName("Return currencies found by their creator email")
+	public void GivenCurrencies_WhenFindingThemByTheirCreatorEmail_ThenReturnCurrencies() {
+		CurrencyEntity toCreate1 = new CurrencyEntity("Tenge", currencyCreator);
+		CurrencyEntity toCreate2 = new CurrencyEntity("Dollar", currencyCreator);
 
-        CurrencyEntity created1 = underTest.save(toCreate1);
-        CurrencyEntity created2 = underTest.save(toCreate2);
+		CurrencyEntity created1 = underTest.save(toCreate1);
+		CurrencyEntity created2 = underTest.save(toCreate2);
 
-        Page<CurrencyEntity> page = underTest.findAllByCreator_Email(currencyCreator.getEmail(), PageRequest.of(0, 20));
+		Page<CurrencyEntity> page = underTest.findAllByCreator_Email(currencyCreator.getEmail(), PageRequest.of(0, 20));
 
-        List<CurrencyEntity> currencies = page.getContent();
+		List<CurrencyEntity> currencies = page.getContent();
 
-        assertAll("Assert that currencies can be found be their creator's email",
-                () -> assertEquals(2, currencies.size()),
-                () -> assertTrue(currencies.contains(created1)),
-                () -> assertTrue(currencies.contains(created2)));
-    }
+		assertAll("Assert that currencies can be found be their creator's email",
+				() -> assertEquals(2, currencies.size()),
+				() -> assertTrue(currencies.contains(created1)),
+				() -> assertTrue(currencies.contains(created2)));
+	}
 
-    @Test
-    @DisplayName("Return true when checking the existence of an existing currency by its name")
-    public void GivenCurrency_WhenCheckingItsExistenceByName_ThenReturnTrue() {
-        CurrencyEntity toCreate = new CurrencyEntity("Tenge", currencyCreator);
-        CurrencyEntity created = underTest.save(toCreate);
+	@Test
+	@DisplayName("Return true when checking the existence of an existing currency by its name")
+	public void GivenCurrency_WhenCheckingItsExistenceByName_ThenReturnTrue() {
+		CurrencyEntity toCreate = new CurrencyEntity("Tenge", currencyCreator);
+		CurrencyEntity created = underTest.save(toCreate);
 
-        boolean isExists = underTest.existsByName(created.getName());
+		boolean isExists = underTest.existsByName(created.getName());
 
-        assertTrue(isExists);
-    }
+		assertTrue(isExists);
+	}
 
-    @Test
-    @DisplayName("Return true when checking the existence of an existing currency by its name, but not ID")
-    public void GivenCurrency_WhenCheckingItsExistenceByNameAndNotId_ThenReturnTrue() {
-        CurrencyEntity toCreate = new CurrencyEntity("Tenge", currencyCreator);
-        CurrencyEntity created = underTest.save(toCreate);
+	@Test
+	@DisplayName("Return true when checking the existence of an existing currency by its name, but not ID")
+	public void GivenCurrency_WhenCheckingItsExistenceByNameAndNotId_ThenReturnTrue() {
+		CurrencyEntity toCreate = new CurrencyEntity("Tenge", currencyCreator);
+		CurrencyEntity created = underTest.save(toCreate);
 
-        boolean isExists = underTest.existsByIdNotAndName(created.getId() + 1, created.getName());
+		boolean isExists = underTest.existsByIdNotAndName(created.getId() + 1, created.getName());
 
-        assertTrue(isExists);
-    }
+		assertTrue(isExists);
+	}
 
-    @Test
-    @DisplayName("Return true when checking the existence of an existing currency by its name and creator's email")
-    public void GivenCurrency_WhenCheckingItsExistenceByNameAndCreatorEmail_ThenReturnTrue() {
-        CurrencyEntity toCreate = new CurrencyEntity("Tenge", currencyCreator);
-        CurrencyEntity created = underTest.save(toCreate);
+	@Test
+	@DisplayName("Return true when checking the existence of an existing currency by its name and creator's email")
+	public void GivenCurrency_WhenCheckingItsExistenceByNameAndCreatorEmail_ThenReturnTrue() {
+		CurrencyEntity toCreate = new CurrencyEntity("Tenge", currencyCreator);
+		CurrencyEntity created = underTest.save(toCreate);
 
-        boolean isExists = underTest.existsByIdAndCreator_Email(
-                created.getId(),
-                currencyCreator.getEmail());
+		boolean isExists = underTest.existsByIdAndCreator_Email(
+				created.getId(),
+				currencyCreator.getEmail());
 
-        assertTrue(isExists);
-    }
+		assertTrue(isExists);
+	}
 
-    @Test
-    @DisplayName("Return false when checking the existence of an existing currency by its name and other creator's email")
-    public void GivenCurrency_WhenCheckingItsExistenceByNameAndOtherCreatorEmail_ThenReturnFalse() {
-        CurrencyEntity toCreate = new CurrencyEntity("Tenge", currencyCreator);
-        CurrencyEntity created = underTest.save(toCreate);
+	@Test
+	@DisplayName("Return false when checking the existence of an existing currency by its name and other creator's email")
+	public void GivenCurrency_WhenCheckingItsExistenceByNameAndOtherCreatorEmail_ThenReturnFalse() {
+		CurrencyEntity toCreate = new CurrencyEntity("Tenge", currencyCreator);
+		CurrencyEntity created = underTest.save(toCreate);
 
-        boolean isExists = underTest.existsByIdAndCreator_Email(
-                created.getId(),
-                currencyCreator.getEmail() + "m");
+		boolean isExists = underTest.existsByIdAndCreator_Email(
+				created.getId(),
+				currencyCreator.getEmail() + "m");
 
-        assertFalse(isExists);
-    }
+		assertFalse(isExists);
+	}
 
 }
