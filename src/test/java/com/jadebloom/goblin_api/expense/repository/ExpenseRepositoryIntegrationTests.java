@@ -60,7 +60,7 @@ public class ExpenseRepositoryIntegrationTests {
 	}
 
 	@BeforeEach
-	public void createUser() {
+	public void createDependencies() {
 		user = userTestUtils.createUserAndItsDependencies();
 
 		ExpenseCategoryEntity toCreate1 = new ExpenseCategoryEntity("Daily", user);

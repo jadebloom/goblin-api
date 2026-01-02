@@ -82,20 +82,27 @@ public class ExpenseServiceImpl implements ExpenseService {
 		UserEntity creator = optCreator.get();
 
 		Long expenseCategoryId = createDto.getExpenseCategoryId();
-		if (!expenseCategoryRepository.existsById(expenseCategoryId)) {
+		Optional<ExpenseCategoryEntity> optExpenseCategory = expenseCategoryRepository.findById(
+				expenseCategoryId);
+		if (optExpenseCategory.isEmpty()) {
 			String f = "Expense category with the ID '%d' wasn't found";
 
 			throw new ExpenseCategoryNotFoundException(String.format(f, expenseCategoryId));
 		}
+		ExpenseCategoryEntity expenseCategory = optExpenseCategory.get();
 
 		Long currencyId = createDto.getCurrencyId();
-		if (!currencyRepository.existsById(currencyId)) {
+		Optional<CurrencyEntity> optCurrency = currencyRepository.findById(currencyId);
+		if (optCurrency.isEmpty()) {
 			String f = "Currency with the ID '%d' wasn't found";
 
 			throw new CurrencyNotFoundException(String.format(f, currencyId));
 		}
+		CurrencyEntity currency = optCurrency.get();
 
 		ExpenseEntity expense = mapper.map(createDto);
+		expense.setExpenseCategory(expenseCategory);
+		expense.setCurrency(currency);
 		expense.setCreator(creator);
 
 		return mapper.map(expenseRepository.saveAndFlush(expense));
@@ -135,6 +142,16 @@ public class ExpenseServiceImpl implements ExpenseService {
 		}
 
 		return mapper.map(expense);
+	}
+
+	@Override
+	public boolean existsById(Long expenseId) throws ForbiddenException {
+		Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
+		if (optCreatorEmail.isEmpty()) {
+			throw new ForbiddenException();
+		}
+
+		return expenseRepository.existsById(expenseId);
 	}
 
 	@Override

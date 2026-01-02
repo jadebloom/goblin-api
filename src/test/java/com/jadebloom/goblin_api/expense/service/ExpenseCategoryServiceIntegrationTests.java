@@ -36,7 +36,7 @@ import com.jadebloom.goblin_api.shared.error.ForbiddenException;
 @Transactional
 public class ExpenseCategoryServiceIntegrationTests {
 
-	private final ExpenseCategoryService expenseCategoryService;
+	private final ExpenseCategoryService underTest;
 
 	private final UserTestUtils userTestUtils;
 
@@ -44,9 +44,9 @@ public class ExpenseCategoryServiceIntegrationTests {
 
 	@Autowired
 	public ExpenseCategoryServiceIntegrationTests(
-			ExpenseCategoryService expenseCategoryService,
+			ExpenseCategoryService underTest,
 			UserTestUtils userTestUtils) {
-		this.expenseCategoryService = expenseCategoryService;
+		this.underTest = underTest;
 
 		this.userTestUtils = userTestUtils;
 	}
@@ -66,7 +66,7 @@ public class ExpenseCategoryServiceIntegrationTests {
 		CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Daily");
 		createDto.setDescription("Magnificent ride");
 
-		ExpenseCategoryDto created = expenseCategoryService.create(createDto);
+		ExpenseCategoryDto created = underTest.create(createDto);
 
 		assertAll("Assert that an expense category can be created using valid all fields",
 				() -> assertNotNull(created.getId()),
@@ -81,7 +81,7 @@ public class ExpenseCategoryServiceIntegrationTests {
 	@WithMockUser(username = "user@gmail.com")
 	public void GivenValidExpenseCategoryWithOnlyRequiredFields_WhenCreating_ThenReturnExpenseCategory() {
 		CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Daily");
-		ExpenseCategoryDto created = expenseCategoryService.create(createDto);
+		ExpenseCategoryDto created = underTest.create(createDto);
 
 		assertAll("Assert that an expense category can be created using valid all fields",
 				() -> assertNotNull(created.getId()),
@@ -98,7 +98,7 @@ public class ExpenseCategoryServiceIntegrationTests {
 		CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto(" ");
 
 		assertThrowsExactly(InvalidExpenseCategoryException.class,
-				() -> expenseCategoryService.create(createDto));
+				() -> underTest.create(createDto));
 	}
 
 	@Test
@@ -107,10 +107,10 @@ public class ExpenseCategoryServiceIntegrationTests {
 	public void GivenUnavailableName_WhenCreating_ThenThrowExpenseCategoryNameUnavailable() {
 		CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Daily");
 
-		expenseCategoryService.create(createDto);
+		underTest.create(createDto);
 
 		assertThrowsExactly(ExpenseCategoryNameUnavailableException.class,
-				() -> expenseCategoryService.create(createDto));
+				() -> underTest.create(createDto));
 	}
 
 	@Test
@@ -118,7 +118,7 @@ public class ExpenseCategoryServiceIntegrationTests {
 	public void GivenWithoutAuthenticatedUserEmail_WhenCreating_ThenThrowForbiddenException() {
 		CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Daily");
 
-		assertThrowsExactly(ForbiddenException.class, () -> expenseCategoryService.create(createDto));
+		assertThrowsExactly(ForbiddenException.class, () -> underTest.create(createDto));
 	}
 
 	@Test
@@ -128,10 +128,10 @@ public class ExpenseCategoryServiceIntegrationTests {
 		CreateExpenseCategoryDto createDto1 = new CreateExpenseCategoryDto("Daily");
 		CreateExpenseCategoryDto createDto2 = new CreateExpenseCategoryDto("Special");
 
-		ExpenseCategoryDto created1 = expenseCategoryService.create(createDto1);
-		ExpenseCategoryDto created2 = expenseCategoryService.create(createDto2);
+		ExpenseCategoryDto created1 = underTest.create(createDto1);
+		ExpenseCategoryDto created2 = underTest.create(createDto2);
 
-		Page<ExpenseCategoryDto> page = expenseCategoryService.findAuthenticatedUserExpenseCategories(
+		Page<ExpenseCategoryDto> page = underTest.findAuthenticatedUserExpenseCategories(
 				PageRequest.of(0, 20));
 
 		List<ExpenseCategoryDto> expenseCategories = page.getContent();
@@ -150,7 +150,7 @@ public class ExpenseCategoryServiceIntegrationTests {
 		Pageable pageable = PageRequest.of(0, 20);
 
 		assertThrowsExactly(ForbiddenException.class,
-				() -> expenseCategoryService.findAuthenticatedUserExpenseCategories(pageable));
+				() -> underTest.findAuthenticatedUserExpenseCategories(pageable));
 	}
 
 	@Test
@@ -158,9 +158,9 @@ public class ExpenseCategoryServiceIntegrationTests {
 	@WithMockUser(username = "user@gmail.com")
 	public void GivenExistingExpenseCategory_WhenFindingById_ThenReturnExpenseCategory() {
 		CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Daily");
-		ExpenseCategoryDto created = expenseCategoryService.create(createDto);
+		ExpenseCategoryDto created = underTest.create(createDto);
 
-		ExpenseCategoryDto found = expenseCategoryService.findById(created.getId());
+		ExpenseCategoryDto found = underTest.findById(created.getId());
 
 		assertEquals(created, found);
 	}
@@ -168,8 +168,7 @@ public class ExpenseCategoryServiceIntegrationTests {
 	@Test
 	@DisplayName("Throw ForbiddenException when trying to find an expense category by its ID without the authenticated user's email")
 	public void GivenWithoutAuthenticatedUserEmail_WhenFindingById_ThenThrowForbiddenException() {
-		assertThrowsExactly(ForbiddenException.class,
-				() -> expenseCategoryService.findById(0L));
+		assertThrowsExactly(ForbiddenException.class, () -> underTest.findById(0L));
 	}
 
 	@Test
@@ -177,7 +176,7 @@ public class ExpenseCategoryServiceIntegrationTests {
 	@WithMockUser(username = "user@gmail.com")
 	public void GivenNonExistingExpenseCategory_WhenFindingById_ThenThrowExpenseCategoryNotFoundException() {
 		assertThrowsExactly(ExpenseCategoryNotFoundException.class,
-				() -> expenseCategoryService.findById(0L));
+				() -> underTest.findById(0L));
 	}
 
 	@Test
@@ -185,9 +184,9 @@ public class ExpenseCategoryServiceIntegrationTests {
 	@WithMockUser(username = "user@gmail.com")
 	public void GivenExistingExpenseCategory_WhenCheckingItsExistenceById_ReturnTrue() {
 		CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Daily");
-		ExpenseCategoryDto created = expenseCategoryService.create(createDto);
+		ExpenseCategoryDto created = underTest.create(createDto);
 
-		boolean isExists = expenseCategoryService.existsById(created.getId());
+		boolean isExists = underTest.existsById(created.getId());
 
 		assertTrue(isExists);
 	}
@@ -196,7 +195,7 @@ public class ExpenseCategoryServiceIntegrationTests {
 	@DisplayName("Return false when checking the existence of a non-existing expense category by its ID")
 	@WithMockUser(username = "user@gmail.com")
 	public void GivenNonExistingExpenseCategory_WhenCheckingItsExistenceById_ReturnFalse() {
-		boolean isExists = expenseCategoryService.existsById(0L);
+		boolean isExists = underTest.existsById(0L);
 
 		assertFalse(isExists);
 	}
@@ -204,7 +203,7 @@ public class ExpenseCategoryServiceIntegrationTests {
 	@Test
 	@DisplayName("Throw ForbiddenException when trying to check the existence of an expense category without the authenticated user's email")
 	public void GivenWithoutAuthenticatedUserEmail_WhenCheckingExistenceByID_ThenThrowForbiddenException() {
-		assertThrowsExactly(ForbiddenException.class, () -> expenseCategoryService.existsById(0L));
+		assertThrowsExactly(ForbiddenException.class, () -> underTest.existsById(0L));
 	}
 
 	@Test
@@ -212,14 +211,14 @@ public class ExpenseCategoryServiceIntegrationTests {
 	@WithMockUser(username = "user@gmail.com")
 	public void GivenValidExpenseCategoryWithAllFields_WhenUpdating_ThenReturnExpenseCategory() {
 		CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Daily");
-		ExpenseCategoryDto created = expenseCategoryService.create(createDto);
+		ExpenseCategoryDto created = underTest.create(createDto);
 
 		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(
 				created.getId(),
 				"Debt");
 		updateDto.setDescription("Daily expenses category");
 
-		ExpenseCategoryDto updated = expenseCategoryService.update(updateDto);
+		ExpenseCategoryDto updated = underTest.update(updateDto);
 
 		assertAll("Assert that an expense category can be updated given valid all fields",
 				() -> assertEquals(created.getId(), updated.getId()),
@@ -234,13 +233,13 @@ public class ExpenseCategoryServiceIntegrationTests {
 	@WithMockUser(username = "user@gmail.com")
 	public void GivenValidExpenseCategoryWithOnlyRequiredFields_WhenUpdating_ThenReturnExpenseCategory() {
 		CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Daily");
-		ExpenseCategoryDto created = expenseCategoryService.create(createDto);
+		ExpenseCategoryDto created = underTest.create(createDto);
 
 		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(
 				created.getId(),
 				"Debt");
 
-		ExpenseCategoryDto updated = expenseCategoryService.update(updateDto);
+		ExpenseCategoryDto updated = underTest.update(updateDto);
 
 		assertAll("Assert that an expense category can be updated given valid only required fields",
 				() -> assertEquals(created.getId(), updated.getId()),
@@ -255,14 +254,14 @@ public class ExpenseCategoryServiceIntegrationTests {
 	@WithMockUser(username = "user@gmail.com")
 	public void GivenInvalidExpenseCategory_WhenUpdating_ThenReturnThrowInvalidExpenseCategory() {
 		CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Daily");
-		ExpenseCategoryDto created = expenseCategoryService.create(createDto);
+		ExpenseCategoryDto created = underTest.create(createDto);
 
 		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(
 				created.getId(),
 				"  ");
 
 		assertThrowsExactly(InvalidExpenseCategoryException.class,
-				() -> expenseCategoryService.update(updateDto));
+				() -> underTest.update(updateDto));
 	}
 
 	@Test
@@ -270,17 +269,17 @@ public class ExpenseCategoryServiceIntegrationTests {
 	@WithMockUser(username = "user@gmail.com")
 	public void GivenUnavailableName_WhenUpdating_ThenThrowExpenseCategoryNameUnavailable() {
 		CreateExpenseCategoryDto createDto1 = new CreateExpenseCategoryDto("Daily");
-		expenseCategoryService.create(createDto1);
+		underTest.create(createDto1);
 
 		CreateExpenseCategoryDto createDto2 = new CreateExpenseCategoryDto("Debt");
-		ExpenseCategoryDto created2 = expenseCategoryService.create(createDto2);
+		ExpenseCategoryDto created2 = underTest.create(createDto2);
 
 		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(
 				created2.getId(),
 				createDto1.getName());
 
 		assertThrowsExactly(ExpenseCategoryNameUnavailableException.class,
-				() -> expenseCategoryService.update(updateDto));
+				() -> underTest.update(updateDto));
 	}
 
 	@Test
@@ -290,21 +289,21 @@ public class ExpenseCategoryServiceIntegrationTests {
 		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(0L, "Daily");
 
 		assertThrowsExactly(ExpenseCategoryNotFoundException.class,
-				() -> expenseCategoryService.update(updateDto));
+				() -> underTest.update(updateDto));
 	}
 
 	@Test
 	@DisplayName("Do not throw when deleting an expense category by its ID, regardless if it exists or not")
 	@WithMockUser(username = "user@gmail.com")
 	public void GivenPossibleExpenseCategory_WhenDeletingItById_ThenDoNotThrow() {
-		assertDoesNotThrow(() -> expenseCategoryService.deleteById(0L));
+		assertDoesNotThrow(() -> underTest.deleteById(0L));
 	}
 
 	@Test
 	@DisplayName("Throw ForbiddenException when trying to delete an expense category by its ID without the authenticated user's email")
 	public void GivenWithoutAuthenticatedUserEmail_WhenDeletingById_ThenThrowForbiddenException() {
 		assertThrowsExactly(ForbiddenException.class,
-				() -> expenseCategoryService.deleteById(1L));
+				() -> underTest.deleteById(1L));
 	}
 
 }
