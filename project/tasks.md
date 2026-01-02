@@ -2,13 +2,6 @@
 
 The centralized log of tasks and improvements.
 
-## Sprintlog
-
-Currently working on 1.1.0:
-
-3. Manage versions correctly.
-4. Update openapi.
-
 ## Backlog
 
 ## Features
@@ -20,20 +13,20 @@ Currently working on 1.1.0:
 4. Delete multiple expense categories at once.
 5. Delete multiple expenses at once.
 6. Add colors to expense categories.
-7. Add `User` entity with AAA.
 8. Consider adding icons to expense categories.
 9. Add configuration packs (w/ linking to the `User`).
 10. Consider adding reocurring expenses.
 11. Consider adding income functionality.
 12. Consider expenses reporting (maybe with emailing?).
 13. Add alerts and limits on expenses.
-14. Think about transactions.
 
 ## Technical Debt & Others
 
-1. Integrate JaCoCo.
-2. Integrate a relational database instead of H2.
-3. Consider deploy.
-4. Update the documentation (README).
-6. Optimize the queries and the Lighthouse or something.
+1.  Think about transactions.
+2.  Optimize the queries and the Lighthouse or something.
+3. Integrate JaCoCo.
+4. Integrate a relational database instead of H2.
+5. Consider deploy.
+6. Update the documentation (README).
 7. Add formatting.
+8. Update the license.
