@@ -35,7 +35,7 @@ public class UserTestUtils {
 		RoleEntity userRole = roleTestUtils.createUserRole();
 
 		UserEntity toCreate = new UserEntity("user@gmail.com", "123", Set.of(userRole));
-		UserEntity created = userRepository.save(toCreate);
+		UserEntity created = userRepository.saveAndFlush(toCreate);
 
 		return created;
 	}
@@ -56,7 +56,7 @@ public class UserTestUtils {
 
 		UserEntity toCreate = new UserEntity(email, password, roles);
 
-		return userRepository.save(toCreate);
+		return userRepository.saveAndFlush(toCreate);
 	}
 
 }

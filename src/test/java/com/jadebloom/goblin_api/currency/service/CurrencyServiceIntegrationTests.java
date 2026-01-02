@@ -64,14 +64,14 @@ public class CurrencyServiceIntegrationTests {
 		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
 		createDto.setAlphabeticalCode("KZT");
 
-		CurrencyDto dto = currencyService.create(createDto);
+		CurrencyDto created = currencyService.create(createDto);
 
 		assertAll("Assert that a valid currency with all fields can be created",
-				() -> assertTrue(dto.getId() != null),
-				() -> assertEquals(createDto.getName(), dto.getName()),
-				() -> assertEquals(createDto.getAlphabeticalCode(), dto.getAlphabeticalCode()),
-				() -> assertTrue(dto.getCreatedAt() != null),
-				() -> assertEquals(user.getId(), dto.getCreatorId()));
+				() -> assertNotNull(created.getId()),
+				() -> assertEquals(createDto.getName(), created.getName()),
+				() -> assertEquals(createDto.getAlphabeticalCode(), created.getAlphabeticalCode()),
+				() -> assertNotNull(created.getCreatedAt()),
+				() -> assertEquals(user.getId(), created.getCreatorId()));
 	}
 
 	@Test
@@ -80,14 +80,14 @@ public class CurrencyServiceIntegrationTests {
 	public void GivenValidCurrencyWithRequiredFields_WhenCreating_ThenReturnCurrency() {
 		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
 
-		CurrencyDto dto = currencyService.create(createDto);
+		CurrencyDto created = currencyService.create(createDto);
 
 		assertAll("Assert that a valid currency with required fields can be created",
-				() -> assertTrue(dto.getId() != null),
-				() -> assertEquals(createDto.getName(), dto.getName()),
-				() -> assertTrue(dto.getAlphabeticalCode() == null),
-				() -> assertTrue(dto.getCreatedAt() != null),
-				() -> assertEquals(user.getId(), dto.getCreatorId()));
+				() -> assertNotNull(created.getId()),
+				() -> assertEquals(createDto.getName(), created.getName()),
+				() -> assertEquals(createDto.getAlphabeticalCode(), created.getAlphabeticalCode()),
+				() -> assertNotNull(created.getCreatedAt()),
+				() -> assertEquals(user.getId(), created.getCreatorId()));
 	}
 
 	@Test
@@ -153,17 +153,11 @@ public class CurrencyServiceIntegrationTests {
 	@WithMockUser(username = "user@gmail.com")
 	public void GivenExistingCurrency_WhenFindingItById_ThenReturnIt() {
 		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
-		createDto.setAlphabeticalCode("KZT");
-		CurrencyDto dto = currencyService.create(createDto);
+		CurrencyDto created = currencyService.create(createDto);
 
-		CurrencyDto found = currencyService.findById(dto.getId());
+		CurrencyDto found = currencyService.findById(created.getId());
 
-		assertAll("Assert that an existing currency can be found by its ID",
-				() -> assertEquals(dto.getId(), found.getId()),
-				() -> assertEquals(dto.getName(), found.getName()),
-				() -> assertEquals(dto.getAlphabeticalCode(), found.getAlphabeticalCode()),
-				() -> assertNotNull(found.getCreatedAt()),
-				() -> assertEquals(dto.getCreatorId(), found.getCreatorId()));
+		assertEquals(created, found);
 	}
 
 	@Test
@@ -171,10 +165,10 @@ public class CurrencyServiceIntegrationTests {
 	@WithMockUser(username = "user@gmail.com")
 	public void GivenNonExistingCurrency_WhenFindingById_ThenThrowCurrencyNotFoundException() {
 		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
-		CurrencyDto dto = currencyService.create(createDto);
+		CurrencyDto created = currencyService.create(createDto);
 
 		assertThrowsExactly(CurrencyNotFoundException.class,
-				() -> currencyService.findById(dto.getId() + 1));
+				() -> currencyService.findById(created.getId() + 1));
 	}
 
 	@Test
@@ -255,7 +249,7 @@ public class CurrencyServiceIntegrationTests {
 				() -> assertEquals(created.getId(), updated.getId()),
 				() -> assertEquals(created.getName(), updated.getName()),
 				() -> assertEquals(created.getAlphabeticalCode(), updated.getAlphabeticalCode()),
-				() -> assertTrue(updated.getCreatedAt() != null),
+				() -> assertEquals(created.getCreatedAt(), updated.getCreatedAt()),
 				() -> assertEquals(created.getCreatorId(), updated.getCreatorId()));
 	}
 
@@ -307,7 +301,7 @@ public class CurrencyServiceIntegrationTests {
 	}
 
 	@Test
-	@DisplayName("Do not throw when trying to delete a currency by its ID without the authenticated user's email")
+	@DisplayName("Throw ForbiddenException when trying to delete a currency by its ID without the authenticated user's email")
 	public void GivenWithoutAuthenticatedUserEmail_WhenDeletingById_ThenThrowForbiddenException() {
 		assertThrowsExactly(ForbiddenException.class, () -> currencyService.deleteById(1L));
 	}
