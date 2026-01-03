@@ -8,9 +8,12 @@ parameters:
     description: Expense ID
     schema:
       type: integer
-security: []
+security:
+  - bearerAuth: []
 responses:
   "204":
     $ref: ../../../openapi.yaml#/components/responses/NoContent
+  "403":
+    $ref: ../../../openapi.yaml#/components/responses/ForbiddenError
   "500":
     $ref: ../../../openapi.yaml#/components/responses/InternalServerError

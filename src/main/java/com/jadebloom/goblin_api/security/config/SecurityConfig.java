@@ -39,9 +39,15 @@ public class SecurityConfig {
 				.formLogin(formLogin -> formLogin.disable())
 				.authenticationManager(authManager)
 				.authorizeHttpRequests((auth) -> auth
-						.requestMatchers("/api/v1/auth/**").permitAll()
-						.requestMatchers("/public/**").permitAll()
-						.anyRequest().authenticated())
+						.requestMatchers("/api/v1/auth/**",
+								"/v3/api-docs/**",
+								"/swagger-ui/**",
+								"/swagger-ui.html",
+								"/openapi/**",
+								"/public/**")
+						.permitAll()
+						.anyRequest()
+						.authenticated())
 				.exceptionHandling(
 						ex -> ex.authenticationEntryPoint(authEntryPoint)
 								.accessDeniedHandler(accessDeniedHandler));

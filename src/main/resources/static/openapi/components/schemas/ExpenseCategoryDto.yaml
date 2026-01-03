@@ -3,6 +3,7 @@ required:
   - id
   - name
   - created_at
+  - creator_id
 properties:
   id:
     type: integer
@@ -22,3 +23,5 @@ properties:
     type: string
     description: The automatically generated zoned creation timestamp of an expense category.
     format: date-time
+  creator_id:
+    type: integer

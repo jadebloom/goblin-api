@@ -1,0 +1,33 @@
+operationId: login
+summary: Login
+tags:
+  - Authentication
+security: []
+requestBody:
+  description: A JSON LoginDto object.
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: ../../../openapi.yaml#/components/schemas/LoginDto
+      examples:
+        registration:
+          summary: An example of the login data
+          value:
+            email: user@gmail.com
+            password: PasswordHasFormat123!
+responses:
+  "201":
+    description: Successful login.
+    content:
+      application/json:
+        schema:
+          $ref: ../../../openapi.yaml#/components/schemas/JwtResponseDto
+  "400":
+    description: Invalid email, password or provided email is already in use.
+    content:
+      application/json:
+        schema:
+          $ref: ../../../openapi.yaml#/components/schemas/ErrorResponse
+  "500":
+    $ref: ../../../openapi.yaml#/components/responses/InternalServerError

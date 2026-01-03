@@ -1,0 +1,5 @@
+description: An entity is in referenced or used by something.
+content:
+  application/json:
+    schema:
+      $ref: "../../openapi.yaml#/components/schemas/ErrorResponse"

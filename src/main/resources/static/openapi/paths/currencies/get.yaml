@@ -6,7 +6,8 @@ parameters:
   - $ref: ../../openapi.yaml#/components/parameters/paginationPageIndex
   - $ref: ../../openapi.yaml#/components/parameters/paginationPageSize
   - $ref: ../../openapi.yaml#/components/parameters/paginationSort
-security: []
+security:
+  - bearerAuth: []
 responses:
   "200":
     description: Returned a page of Currency objects.
@@ -33,5 +34,7 @@ responses:
                   type: integer
                 totalPages:
                   type: integer
+  "403":
+    $ref: ../../openapi.yaml#/components/responses/ForbiddenError
   "500":
     $ref: ../../openapi.yaml#/components/responses/InternalServerError

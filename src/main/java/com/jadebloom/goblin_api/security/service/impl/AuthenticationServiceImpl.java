@@ -18,123 +18,141 @@ import com.jadebloom.goblin_api.security.dto.RegistrationDto;
 import com.jadebloom.goblin_api.security.entity.RoleEntity;
 import com.jadebloom.goblin_api.security.entity.UserEntity;
 import com.jadebloom.goblin_api.security.error.IncorrectPasswordException;
-import com.jadebloom.goblin_api.security.error.UserEmailInUseException;
+import com.jadebloom.goblin_api.security.error.InvalidAuthenticationRequest;
+import com.jadebloom.goblin_api.security.error.EmailUnavailableException;
 import com.jadebloom.goblin_api.security.error.UserNotFoundException;
 import com.jadebloom.goblin_api.security.repository.RoleRepository;
 import com.jadebloom.goblin_api.security.repository.UserRepository;
 import com.jadebloom.goblin_api.security.service.AuthenticationService;
 import com.jadebloom.goblin_api.security.service.JwtService;
+import com.jadebloom.goblin_api.shared.validation.GenericValidator;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private final UserRepository userRepository;
+	private final UserRepository userRepository;
 
-    private final RoleRepository roleRepository;
+	private final RoleRepository roleRepository;
 
-    private final PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 
-    private final AuthenticationManager authenticationManager;
+	private final AuthenticationManager authenticationManager;
 
-    private final JwtService jwtService;
+	private final JwtService jwtService;
 
-    public AuthenticationServiceImpl(
-            UserRepository userRepository,
-            RoleRepository roleRepository,
-            PasswordEncoder passwordEncoder,
-            AuthenticationManager authenticationManager,
-            JwtService jwtService) {
-        this.userRepository = userRepository;
+	public AuthenticationServiceImpl(
+			UserRepository userRepository,
+			RoleRepository roleRepository,
+			PasswordEncoder passwordEncoder,
+			AuthenticationManager authenticationManager,
+			JwtService jwtService) {
+		this.userRepository = userRepository;
 
-        this.roleRepository = roleRepository;
+		this.roleRepository = roleRepository;
 
-        this.passwordEncoder = passwordEncoder;
+		this.passwordEncoder = passwordEncoder;
 
-        this.authenticationManager = authenticationManager;
+		this.authenticationManager = authenticationManager;
 
-        this.jwtService = jwtService;
-    }
+		this.jwtService = jwtService;
+	}
 
-    @Override
-    public JwtResponseDto register(RegistrationDto dto) throws UserEmailInUseException {
-        String email = dto.getEmail(), password = dto.getPassword();
+	@Override
+	public JwtResponseDto register(RegistrationDto dto)
+			throws InvalidAuthenticationRequest, EmailUnavailableException {
+		if (!GenericValidator.isValid(dto)) {
+			String message = GenericValidator.getValidationErrorMessage(dto);
 
-        if (userRepository.existsByEmail(email)) {
-            String f = "Email '%s' is already in use";
+			throw new InvalidAuthenticationRequest(message);
+		}
 
-            throw new UserEmailInUseException(String.format(f, email));
-        }
+		String email = dto.getEmail(), password = dto.getPassword();
 
-        Optional<RoleEntity> opt = roleRepository.findByName("ROLE_USER");
+		if (userRepository.existsByEmail(email)) {
+			String f = "Email '%s' is already in use";
 
-        if (opt.isEmpty()) {
-            throw new RuntimeException("Failed to load user roles");
-        }
+			throw new EmailUnavailableException(String.format(f, email));
+		}
 
-        Set<RoleEntity> userRoles = Set.of(opt.get());
+		Optional<RoleEntity> opt = roleRepository.findByName("ROLE_USER");
 
-        UserEntity user = new UserEntity(email, passwordEncoder.encode(password), userRoles);
+		if (opt.isEmpty()) {
+			throw new RuntimeException("Failed to load user roles");
+		}
 
-        userRepository.save(user);
+		Set<RoleEntity> userRoles = Set.of(opt.get());
 
-        Set<String> userRoleNames = new HashSet<>();
-        Set<GrantedAuthority> userGrantedAuthorities = new HashSet<>();
+		UserEntity user = new UserEntity(email, passwordEncoder.encode(password), userRoles);
 
-        for (RoleEntity role : user.getRoles()) {
-            userGrantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
+		userRepository.save(user);
 
-            userRoleNames.add(role.getName());
-        }
+		Set<String> userRoleNames = new HashSet<>();
+		Set<GrantedAuthority> userGrantedAuthorities = new HashSet<>();
 
-        Authentication request = new UsernamePasswordAuthenticationToken(
-                email,
-                password,
-                userGrantedAuthorities);
-        authenticationManager.authenticate(request);
+		for (RoleEntity role : user.getRoles()) {
+			userGrantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
 
-        String accessToken = jwtService.generateAccessToken(email, userRoleNames);
-        String refreshToken = jwtService.generateRefreshToken(email, userRoleNames);
+			userRoleNames.add(role.getName());
+		}
 
-        return new JwtResponseDto(accessToken, refreshToken);
-    }
+		Authentication request = new UsernamePasswordAuthenticationToken(
+				email,
+				password,
+				userGrantedAuthorities);
+		authenticationManager.authenticate(request);
 
-    @Override
-    public JwtResponseDto login(LoginDto dto) throws UserNotFoundException, IncorrectPasswordException {
-        String email = dto.getEmail(), password = dto.getPassword();
+		String accessToken = jwtService.generateAccessToken(email, userRoleNames);
+		String refreshToken = jwtService.generateRefreshToken(email, userRoleNames);
 
-        Optional<UserEntity> opt = userRepository.findByEmail(email);
+		return new JwtResponseDto(accessToken, refreshToken);
+	}
 
-        if (opt.isEmpty()) {
-            String f = "User with email '%s' wasn't found";
+	@Override
+	public JwtResponseDto login(LoginDto dto)
+			throws InvalidAuthenticationRequest,
+			UserNotFoundException,
+			IncorrectPasswordException {
+		if (!GenericValidator.isValid(dto)) {
+			String message = GenericValidator.getValidationErrorMessage(dto);
 
-            throw new UserNotFoundException(String.format(f, email));
-        }
+			throw new InvalidAuthenticationRequest(message);
+		}
 
-        UserEntity user = opt.get();
+		String email = dto.getEmail(), password = dto.getPassword();
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IncorrectPasswordException("Provided password is incorrect");
-        }
+		Optional<UserEntity> opt = userRepository.findByEmail(email);
 
-        Set<GrantedAuthority> userGrantedAuthorities = new HashSet<>();
-        Set<String> userRoleNames = new HashSet<>();
+		if (opt.isEmpty()) {
+			String f = "User with email '%s' wasn't found";
 
-        for (RoleEntity role : user.getRoles()) {
-            userGrantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
+			throw new UserNotFoundException(String.format(f, email));
+		}
 
-            userRoleNames.add(role.getName());
-        }
+		UserEntity user = opt.get();
 
-        Authentication request = new UsernamePasswordAuthenticationToken(
-                email,
-                password,
-                userGrantedAuthorities);
-        authenticationManager.authenticate(request);
+		if (!passwordEncoder.matches(password, user.getPassword())) {
+			throw new IncorrectPasswordException("Provided password is incorrect");
+		}
 
-        String accessToken = jwtService.generateAccessToken(email, userRoleNames);
-        String refreshToken = jwtService.generateRefreshToken(email, userRoleNames);
+		Set<GrantedAuthority> userGrantedAuthorities = new HashSet<>();
+		Set<String> userRoleNames = new HashSet<>();
 
-        return new JwtResponseDto(accessToken, refreshToken);
-    }
+		for (RoleEntity role : user.getRoles()) {
+			userGrantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
+
+			userRoleNames.add(role.getName());
+		}
+
+		Authentication request = new UsernamePasswordAuthenticationToken(
+				email,
+				password,
+				userGrantedAuthorities);
+		authenticationManager.authenticate(request);
+
+		String accessToken = jwtService.generateAccessToken(email, userRoleNames);
+		String refreshToken = jwtService.generateRefreshToken(email, userRoleNames);
+
+		return new JwtResponseDto(accessToken, refreshToken);
+	}
 
 }

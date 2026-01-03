@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.jadebloom</groupId>
 	<artifactId>goblin-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.1.0-SNAPSHOT</version>
 	<name>goblin-api</name>
 	<description>Goblin API - is a REST API application for expense tracking and analyzing. Dedicated for Goblin desktop application, built on Spring Boot. </description>
 	<url/>
