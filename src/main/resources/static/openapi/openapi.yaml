@@ -18,8 +18,8 @@ servers:
   - url: http://localhost:8080/api/v1
     description: Local development server.
 paths:
-  /auth/register:
-    $ref: paths/auth/register/index.yaml
+  /auth/registration:
+    $ref: paths/auth/registration/index.yaml
   /auth/login:
     $ref: paths/auth/login/index.yaml
   /currencies:
