@@ -6,7 +6,6 @@ The centralized log of tasks and improvements.
 
 Working on 1.1.2:
 
-1. Delete all expenses by its expense category ID.
 2. Delete all expenses by its currency ID.
 3. Delete current user.
 4. Update password.
