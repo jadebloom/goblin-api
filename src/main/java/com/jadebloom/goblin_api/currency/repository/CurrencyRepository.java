@@ -10,12 +10,10 @@ import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
 @Repository
 public interface CurrencyRepository extends JpaRepository<CurrencyEntity, Long> {
 
-    Page<CurrencyEntity> findAllByCreator_Email(String creatorEmail, Pageable pageable);
+	Page<CurrencyEntity> findAllByCreator_Id(Long creatorId, Pageable pageable);
 
-    boolean existsByName(String name);
+	boolean existsByName(String name);
 
-    boolean existsByIdNotAndName(Long id, String name);
-
-    boolean existsByIdAndCreator_Email(Long currencyId, String creatorEmail);
+	boolean existsByIdNotAndName(Long id, String name);
 
 }

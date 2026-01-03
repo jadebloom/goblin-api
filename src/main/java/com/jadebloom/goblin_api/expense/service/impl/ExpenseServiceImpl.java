@@ -1,7 +1,5 @@
 package com.jadebloom.goblin_api.expense.service.impl;
 
-import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -59,85 +57,73 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 	@Override
 	public ExpenseDto create(CreateExpenseDto createDto)
-			throws InvalidExpenseException,
-			ForbiddenException,
+			throws ForbiddenException,
+			InvalidExpenseException,
 			ExpenseCategoryNotFoundException,
 			CurrencyNotFoundException {
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
+
+		UserEntity user = userRepository.findById(userId)
+				.orElseThrow(() -> new ForbiddenException());
+
 		if (!GenericValidator.isValid(createDto)) {
 			String message = GenericValidator.getValidationErrorMessage(createDto);
 
 			throw new InvalidExpenseException(message);
 		}
 
-		Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
-		if (optCreatorEmail.isEmpty()) {
-			throw new ForbiddenException();
-		}
-		String creatorEmail = optCreatorEmail.get();
-
-		Optional<UserEntity> optCreator = userRepository.findByEmail(creatorEmail);
-		if (optCreator.isEmpty()) {
-			throw new ForbiddenException();
-		}
-		UserEntity creator = optCreator.get();
-
 		Long expenseCategoryId = createDto.getExpenseCategoryId();
-		Optional<ExpenseCategoryEntity> optExpenseCategory = expenseCategoryRepository.findById(
-				expenseCategoryId);
-		if (optExpenseCategory.isEmpty()) {
-			String f = "Expense category with the ID '%d' wasn't found";
+		ExpenseCategoryEntity expenseCategory = expenseCategoryRepository
+				.findById(expenseCategoryId)
+				.orElseThrow(() -> {
+					String f = "Expense category with the ID '%d' wasn't found";
+					String errorMessage = String.format(f, expenseCategoryId);
 
-			throw new ExpenseCategoryNotFoundException(String.format(f, expenseCategoryId));
-		}
-		ExpenseCategoryEntity expenseCategory = optExpenseCategory.get();
+					throw new ExpenseCategoryNotFoundException(errorMessage);
+				});
 
 		Long currencyId = createDto.getCurrencyId();
-		Optional<CurrencyEntity> optCurrency = currencyRepository.findById(currencyId);
-		if (optCurrency.isEmpty()) {
-			String f = "Currency with the ID '%d' wasn't found";
+		CurrencyEntity currency = currencyRepository
+				.findById(currencyId)
+				.orElseThrow(() -> {
+					String f = "Currency with the ID '%d' wasn't found";
+					String errorMessage = String.format(f, currencyId);
 
-			throw new CurrencyNotFoundException(String.format(f, currencyId));
-		}
-		CurrencyEntity currency = optCurrency.get();
+					throw new CurrencyNotFoundException(errorMessage);
+				});
 
 		ExpenseEntity expense = mapper.map(createDto);
 		expense.setExpenseCategory(expenseCategory);
 		expense.setCurrency(currency);
-		expense.setCreator(creator);
+		expense.setCreator(user);
 
 		return mapper.map(expenseRepository.saveAndFlush(expense));
 	}
 
 	@Override
 	public Page<ExpenseDto> findUserAuthenticatedExpenses(Pageable pageable) throws ForbiddenException {
-		Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
-		if (optCreatorEmail.isEmpty()) {
-			throw new ForbiddenException();
-		}
-		String creatorEmail = optCreatorEmail.get();
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
 
-		Page<ExpenseEntity> page = expenseRepository.findAllByCreator_Email(creatorEmail, pageable);
+		Page<ExpenseEntity> page = expenseRepository.findAllByCreator_Id(userId, pageable);
 
 		return page.map(mapper::map);
 	}
 
 	@Override
 	public ExpenseDto findById(Long expenseId) throws ForbiddenException, ExpenseNotFoundException {
-		Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
-		if (optCreatorEmail.isEmpty()) {
-			throw new ForbiddenException();
-		}
-		String creatorEmail = optCreatorEmail.get();
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
 
-		Optional<ExpenseEntity> optExpense = expenseRepository.findById(expenseId);
-		if (optExpense.isEmpty()) {
-			String f = "Expense with the ID '%d' wasn't found";
+		ExpenseEntity expense = expenseRepository.findById(expenseId)
+				.orElseThrow(() -> {
+					String f = "Expense with the ID '%d' wasn't found";
 
-			throw new ExpenseNotFoundException(String.format(f, expenseId));
-		}
+					throw new ExpenseNotFoundException(String.format(f, expenseId));
+				});
 
-		ExpenseEntity expense = optExpense.get();
-		if (!expense.getCreator().getEmail().equals(creatorEmail)) {
+		if (expense.getCreator().getId() != userId) {
 			throw new ForbiddenException();
 		}
 
@@ -145,66 +131,52 @@ public class ExpenseServiceImpl implements ExpenseService {
 	}
 
 	@Override
-	public boolean existsById(Long expenseId) throws ForbiddenException {
-		Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
-		if (optCreatorEmail.isEmpty()) {
-			throw new ForbiddenException();
-		}
-
-		return expenseRepository.existsById(expenseId);
-	}
-
-	@Override
 	public ExpenseDto update(UpdateExpenseDto updateDto)
-			throws InvalidExpenseException,
-			ForbiddenException,
+			throws ForbiddenException,
+			InvalidExpenseException,
 			ExpenseNotFoundException,
 			ExpenseCategoryNotFoundException,
 			CurrencyNotFoundException {
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
+
 		if (!GenericValidator.isValid(updateDto)) {
 			String message = GenericValidator.getValidationErrorMessage(updateDto);
 
 			throw new InvalidExpenseException(message);
 		}
 
-		Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
-		if (optCreatorEmail.isEmpty()) {
-			throw new ForbiddenException();
-		}
-		String creatorEmail = optCreatorEmail.get();
+		Long expenseId = updateDto.getId();
+		ExpenseEntity expense = expenseRepository.findById(expenseId)
+				.orElseThrow(() -> {
+					String f = "Expense with the ID '%d' wasn't found";
 
-		Optional<ExpenseEntity> optExpense = expenseRepository.findById(updateDto.getId());
-		if (optExpense.isEmpty()) {
-			String f = "Expense with the ID '%d' wasn't found";
+					throw new ExpenseNotFoundException(String.format(f, expenseId));
+				});
 
-			throw new ExpenseNotFoundException(String.format(f, updateDto.getId()));
-		}
-
-		ExpenseEntity expense = optExpense.get();
-		if (!expense.getCreator().getEmail().equals(creatorEmail)) {
+		if (expense.getCreator().getId() != userId) {
 			throw new ForbiddenException();
 		}
 
 		Long expenseCategoryId = updateDto.getExpenseCategoryId();
-		Optional<ExpenseCategoryEntity> optExpenseCategory = expenseCategoryRepository.findById(
-				expenseCategoryId);
-		if (optExpenseCategory.isEmpty()) {
-			String f = "Expense category with the ID '%d' wasn't found";
-			String message = String.format(f, expenseCategoryId);
+		ExpenseCategoryEntity expenseCategory = expenseCategoryRepository
+				.findById(expenseCategoryId)
+				.orElseThrow(() -> {
+					String f = "Expense category with the ID '%d' wasn't found";
+					String errorMessage = String.format(f, expenseCategoryId);
 
-			throw new ExpenseCategoryNotFoundException(message);
-		}
-		ExpenseCategoryEntity expenseCategory = optExpenseCategory.get();
+					throw new ExpenseCategoryNotFoundException(errorMessage);
+				});
 
 		Long currencyId = updateDto.getCurrencyId();
-		Optional<CurrencyEntity> optCurrency = currencyRepository.findById(currencyId);
-		if (optCurrency.isEmpty()) {
-			String f = "Currency with the ID '%d' wasn't found";
-			String message = String.format(f, currencyId);
+		CurrencyEntity currency = currencyRepository
+				.findById(currencyId)
+				.orElseThrow(() -> {
+					String f = "Currency with the ID '%d' wasn't found";
+					String errorMessage = String.format(f, currencyId);
 
-			throw new CurrencyNotFoundException(message);
-		}
-		CurrencyEntity currency = optCurrency.get();
+					throw new CurrencyNotFoundException(errorMessage);
+				});
 
 		expense.setName(updateDto.getName());
 		expense.setDescription(updateDto.getDescription());
@@ -217,9 +189,18 @@ public class ExpenseServiceImpl implements ExpenseService {
 	}
 
 	@Override
-	public void deleteById(Long expenseId) throws ForbiddenException {
-		Optional<String> optUserEmail = SecurityContextUtils.getAuthenticatedUserEmail();
-		if (optUserEmail.isEmpty()) {
+	public void deleteById(Long expenseId) throws ForbiddenException, ExpenseNotFoundException {
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
+
+		ExpenseEntity expense = expenseRepository.findById(expenseId)
+				.orElseThrow(() -> {
+					String f = "Expense with the ID '%d' wasn't found";
+
+					throw new ExpenseNotFoundException(String.format(f, expenseId));
+				});
+
+		if (expense.getCreator().getId() != userId) {
 			throw new ForbiddenException();
 		}
 

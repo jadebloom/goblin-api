@@ -2,7 +2,6 @@ package com.jadebloom.goblin_api.currency.repository;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -55,7 +54,8 @@ public class CurrencyRepositoryIntegrationTests {
 		CurrencyEntity created1 = underTest.save(toCreate1);
 		CurrencyEntity created2 = underTest.save(toCreate2);
 
-		Page<CurrencyEntity> page = underTest.findAllByCreator_Email(currencyCreator.getEmail(), PageRequest.of(0, 20));
+		Page<CurrencyEntity> page = underTest.findAllByCreator_Id(
+				currencyCreator.getId(), PageRequest.of(0, 20));
 
 		List<CurrencyEntity> currencies = page.getContent();
 
@@ -85,32 +85,6 @@ public class CurrencyRepositoryIntegrationTests {
 		boolean isExists = underTest.existsByIdNotAndName(created.getId() + 1, created.getName());
 
 		assertTrue(isExists);
-	}
-
-	@Test
-	@DisplayName("Return true when checking the existence of an existing currency by its name and creator's email")
-	public void GivenCurrency_WhenCheckingItsExistenceByNameAndCreatorEmail_ThenReturnTrue() {
-		CurrencyEntity toCreate = new CurrencyEntity("Tenge", currencyCreator);
-		CurrencyEntity created = underTest.save(toCreate);
-
-		boolean isExists = underTest.existsByIdAndCreator_Email(
-				created.getId(),
-				currencyCreator.getEmail());
-
-		assertTrue(isExists);
-	}
-
-	@Test
-	@DisplayName("Return false when checking the existence of an existing currency by its name and other creator's email")
-	public void GivenCurrency_WhenCheckingItsExistenceByNameAndOtherCreatorEmail_ThenReturnFalse() {
-		CurrencyEntity toCreate = new CurrencyEntity("Tenge", currencyCreator);
-		CurrencyEntity created = underTest.save(toCreate);
-
-		boolean isExists = underTest.existsByIdAndCreator_Email(
-				created.getId(),
-				currencyCreator.getEmail() + "m");
-
-		assertFalse(isExists);
 	}
 
 }

@@ -1,7 +1,6 @@
 package com.jadebloom.goblin_api.security.service.impl;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,31 +29,31 @@ import com.jadebloom.goblin_api.shared.validation.GenericValidator;
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-	private final UserRepository userRepository;
-
-	private final RoleRepository roleRepository;
+	private final JwtService jwtService;
 
 	private final PasswordEncoder passwordEncoder;
 
 	private final AuthenticationManager authenticationManager;
 
-	private final JwtService jwtService;
+	private final UserRepository userRepository;
+
+	private final RoleRepository roleRepository;
 
 	public AuthenticationServiceImpl(
-			UserRepository userRepository,
-			RoleRepository roleRepository,
+			JwtService jwtService,
 			PasswordEncoder passwordEncoder,
 			AuthenticationManager authenticationManager,
-			JwtService jwtService) {
-		this.userRepository = userRepository;
-
-		this.roleRepository = roleRepository;
+			UserRepository userRepository,
+			RoleRepository roleRepository) {
+		this.jwtService = jwtService;
 
 		this.passwordEncoder = passwordEncoder;
 
 		this.authenticationManager = authenticationManager;
 
-		this.jwtService = jwtService;
+		this.userRepository = userRepository;
+
+		this.roleRepository = roleRepository;
 	}
 
 	@Override
@@ -74,22 +73,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			throw new EmailUnavailableException(String.format(f, email));
 		}
 
-		Optional<RoleEntity> opt = roleRepository.findByName("ROLE_USER");
+		// Roles and permissions are loaded manually and always persist.
+		// So in case such role is not found, then the error must propagate as HTTP 500.
+		RoleEntity userRole = roleRepository.findByName("ROLE_USER")
+				.orElseThrow(() -> new RuntimeException("Failed to load user roles"));
 
-		if (opt.isEmpty()) {
-			throw new RuntimeException("Failed to load user roles");
-		}
+		UserEntity toRegister = new UserEntity(
+				email,
+				passwordEncoder.encode(password),
+				Set.of(userRole));
+		UserEntity registered = userRepository.save(toRegister);
 
-		Set<RoleEntity> userRoles = Set.of(opt.get());
-
-		UserEntity user = new UserEntity(email, passwordEncoder.encode(password), userRoles);
-
-		userRepository.save(user);
-
-		Set<String> userRoleNames = new HashSet<>();
 		Set<GrantedAuthority> userGrantedAuthorities = new HashSet<>();
-
-		for (RoleEntity role : user.getRoles()) {
+		Set<String> userRoleNames = new HashSet<>();
+		for (RoleEntity role : registered.getRoles()) {
 			userGrantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
 
 			userRoleNames.add(role.getName());
@@ -101,8 +98,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				userGrantedAuthorities);
 		authenticationManager.authenticate(request);
 
-		String accessToken = jwtService.generateAccessToken(email, userRoleNames);
-		String refreshToken = jwtService.generateRefreshToken(email, userRoleNames);
+		String accessToken = jwtService.generateAccessToken(
+				registered.getId(), email, userRoleNames);
+		String refreshToken = jwtService.generateRefreshToken(
+				registered.getId(), email, userRoleNames);
 
 		return new JwtResponseDto(accessToken, refreshToken);
 	}
@@ -120,15 +119,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 		String email = dto.getEmail(), password = dto.getPassword();
 
-		Optional<UserEntity> opt = userRepository.findByEmail(email);
+		UserEntity user = userRepository.findByEmail(email)
+				.orElseThrow(() -> {
+					String f = "User with the email '%s' wasn't found";
 
-		if (opt.isEmpty()) {
-			String f = "User with email '%s' wasn't found";
-
-			throw new UserNotFoundException(String.format(f, email));
-		}
-
-		UserEntity user = opt.get();
+					throw new UserNotFoundException(String.format(f, email));
+				});
 
 		if (!passwordEncoder.matches(password, user.getPassword())) {
 			throw new IncorrectPasswordException("Provided password is incorrect");
@@ -136,7 +132,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 		Set<GrantedAuthority> userGrantedAuthorities = new HashSet<>();
 		Set<String> userRoleNames = new HashSet<>();
-
 		for (RoleEntity role : user.getRoles()) {
 			userGrantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
 
@@ -149,8 +144,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				userGrantedAuthorities);
 		authenticationManager.authenticate(request);
 
-		String accessToken = jwtService.generateAccessToken(email, userRoleNames);
-		String refreshToken = jwtService.generateRefreshToken(email, userRoleNames);
+		String accessToken = jwtService.generateAccessToken(user.getId(), email, userRoleNames);
+		String refreshToken = jwtService.generateRefreshToken(user.getId(), email, userRoleNames);
 
 		return new JwtResponseDto(accessToken, refreshToken);
 	}

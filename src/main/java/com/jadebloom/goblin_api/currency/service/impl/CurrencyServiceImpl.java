@@ -1,7 +1,5 @@
 package com.jadebloom.goblin_api.currency.service.impl;
 
-import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -51,25 +49,20 @@ public class CurrencyServiceImpl implements CurrencyService {
 
 	@Override
 	public CurrencyDto create(CreateCurrencyDto createDto)
-			throws InvalidCurrencyException,
-			ForbiddenException,
+			throws ForbiddenException,
+			InvalidCurrencyException,
 			CurrencyNameUnavailableException {
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
+
+		UserEntity user = userRepository.findById(userId)
+				.orElseThrow(() -> new ForbiddenException());
+
 		if (!GenericValidator.isValid(createDto)) {
 			String message = GenericValidator.getValidationErrorMessage(createDto);
 
 			throw new InvalidCurrencyException(message);
 		}
-
-		Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
-		if (optCreatorEmail.isEmpty()) {
-			throw new ForbiddenException();
-		}
-
-		Optional<UserEntity> optCreator = userRepository.findByEmail(optCreatorEmail.get());
-		if (optCreator.isEmpty()) {
-			throw new ForbiddenException();
-		}
-		UserEntity creator = optCreator.get();
 
 		if (currencyRepository.existsByName(createDto.getName())) {
 			String f = "Currency with the name '%s' already exists";
@@ -79,7 +72,7 @@ public class CurrencyServiceImpl implements CurrencyService {
 		}
 
 		CurrencyEntity toCreate = mapper.map(createDto);
-		toCreate.setCreator(creator);
+		toCreate.setCreator(user);
 
 		return mapper.map(currencyRepository.saveAndFlush(toCreate));
 	}
@@ -87,13 +80,10 @@ public class CurrencyServiceImpl implements CurrencyService {
 	@Override
 	public Page<CurrencyDto> findAuthenticatedUserCurrencies(Pageable pageable)
 			throws ForbiddenException {
-		Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
-		if (optCreatorEmail.isEmpty()) {
-			throw new ForbiddenException();
-		}
-		String creatorEmail = optCreatorEmail.get();
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
 
-		Page<CurrencyEntity> page = currencyRepository.findAllByCreator_Email(creatorEmail, pageable);
+		Page<CurrencyEntity> page = currencyRepository.findAllByCreator_Id(userId, pageable);
 
 		return page.map(mapper::map);
 	}
@@ -101,22 +91,17 @@ public class CurrencyServiceImpl implements CurrencyService {
 	@Override
 	public CurrencyDto findById(Long currencyId)
 			throws ForbiddenException, CurrencyNotFoundException {
-		Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
-		System.out.println(optCreatorEmail);
-		if (optCreatorEmail.isEmpty()) {
-			throw new ForbiddenException();
-		}
-		String creatorEmail = optCreatorEmail.get();
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
 
-		Optional<CurrencyEntity> optCurrency = currencyRepository.findById(currencyId);
-		if (optCurrency.isEmpty()) {
-			String f = "Currency with the ID '%d' wasn't found";
+		CurrencyEntity currency = currencyRepository.findById(currencyId)
+				.orElseThrow(() -> {
+					String f = "Currency with the ID '%d' wasn't found";
 
-			throw new CurrencyNotFoundException(String.format(f, currencyId));
-		}
-		CurrencyEntity currency = optCurrency.get();
+					throw new CurrencyNotFoundException(String.format(f, currencyId));
+				});
 
-		if (!currency.getCreator().getEmail().equals(creatorEmail)) {
+		if (!currency.getCreator().getId().equals(userId)) {
 			throw new ForbiddenException();
 		}
 
@@ -124,43 +109,33 @@ public class CurrencyServiceImpl implements CurrencyService {
 	}
 
 	@Override
-	public boolean existsById(Long currencyId) throws ForbiddenException {
-		Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
-		if (optCreatorEmail.isEmpty()) {
-			throw new ForbiddenException();
-		}
-		String creatorEmail = optCreatorEmail.get();
-
-		return currencyRepository.existsByIdAndCreator_Email(currencyId, creatorEmail);
-	}
-
-	@Override
 	public CurrencyDto update(UpdateCurrencyDto updateDto)
-			throws InvalidCurrencyException,
-			ForbiddenException,
+			throws ForbiddenException,
+			InvalidCurrencyException,
 			CurrencyNotFoundException,
 			CurrencyNameUnavailableException {
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
+
 		if (!GenericValidator.isValid(updateDto)) {
 			String message = GenericValidator.getValidationErrorMessage(updateDto);
 
 			throw new InvalidCurrencyException(message);
 		}
 
-		Optional<String> optCreatorEmail = SecurityContextUtils.getAuthenticatedUserEmail();
-		if (optCreatorEmail.isEmpty()) {
+		CurrencyEntity currency = currencyRepository.findById(updateDto.getId())
+				.orElseThrow(() -> {
+					String f = "Currency with the ID '%d' doesn't exist";
+
+					throw new CurrencyNotFoundException(String.format(f, updateDto.getId()));
+				});
+
+		if (currency.getCreator().getId() != userId) {
 			throw new ForbiddenException();
 		}
 
-		Optional<CurrencyEntity> optCurrency = currencyRepository.findById(updateDto.getId());
-		if (optCurrency.isEmpty()) {
-			String f = "Currency with the ID '%d' doesn't exist";
-
-			throw new CurrencyNotFoundException(String.format(f, updateDto.getId()));
-		}
-
-		CurrencyEntity currency = optCurrency.get();
 		if (currencyRepository.existsByIdNotAndName(currency.getId(), updateDto.getName())) {
-			String f = "Other currency with name \"%s\" already exists";
+			String f = "Currency with the name '%s' already exists";
 			String errorMessage = String.format(f, updateDto.getName());
 
 			throw new CurrencyNameUnavailableException(errorMessage);
@@ -173,15 +148,20 @@ public class CurrencyServiceImpl implements CurrencyService {
 	}
 
 	@Override
-	public void deleteById(Long currencyId) throws ForbiddenException, CurrencyInUseException {
-		Optional<String> optUserEmail = SecurityContextUtils.getAuthenticatedUserEmail();
-		if (optUserEmail.isEmpty()) {
-			throw new ForbiddenException();
-		}
+	public void deleteById(Long currencyId)
+			throws ForbiddenException, CurrencyNotFoundException, CurrencyInUseException {
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
 
-		String userEmail = optUserEmail.get();
-		if (!currencyRepository.existsByIdAndCreator_Email(currencyId, userEmail)) {
-			return;
+		CurrencyEntity currency = currencyRepository.findById(currencyId)
+				.orElseThrow(() -> {
+					String f = "Currency with the ID '%d' doesn't exist";
+
+					throw new CurrencyNotFoundException(String.format(f, currencyId));
+				});
+
+		if (currency.getCreator().getId() != userId) {
+			throw new ForbiddenException();
 		}
 
 		if (expenseRepository.existsByCurrency_Id(currencyId)) {

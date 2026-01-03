@@ -37,11 +37,11 @@ public class AuthenticationControllerAdvice {
 
 	@ExceptionHandler(EmailUnavailableException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public ErrorResponse handleUserEmailInUseException(EmailUnavailableException ex) {
+	public ErrorResponse handleEmailUnavailableException(EmailUnavailableException ex) {
 		ErrorResponse errorResponse = ErrorResponse
 				.builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage())
 				.type(URI.create(API_DOCS_URI))
-				.title("Such user email is in use")
+				.title("User email is already in use")
 				.build();
 
 		return errorResponse;

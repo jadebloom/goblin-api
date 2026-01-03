@@ -15,8 +15,8 @@ import com.jadebloom.goblin_api.shared.error.ForbiddenException;
 public interface ExpenseService {
 
 	ExpenseDto create(CreateExpenseDto createDto)
-			throws InvalidExpenseException,
-			ForbiddenException,
+			throws ForbiddenException,
+			InvalidExpenseException,
 			ExpenseCategoryNotFoundException,
 			CurrencyNotFoundException;
 
@@ -24,15 +24,13 @@ public interface ExpenseService {
 
 	ExpenseDto findById(Long expenseId) throws ForbiddenException, ExpenseNotFoundException;
 
-	boolean existsById(Long expenseId) throws ForbiddenException;
-
 	ExpenseDto update(UpdateExpenseDto updateDto)
-			throws InvalidExpenseException,
-			ForbiddenException,
+			throws ForbiddenException,
+			InvalidExpenseException,
 			ExpenseNotFoundException,
 			ExpenseCategoryNotFoundException,
 			CurrencyNotFoundException;
 
-	void deleteById(Long expenseId) throws ForbiddenException;
+	void deleteById(Long expenseId) throws ForbiddenException, ExpenseNotFoundException;
 
 }

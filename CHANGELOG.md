@@ -7,7 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Added
 - For new features.
 ### Changed
-- For changes in the existing functionality.
+- Changed the JWT token subject to contain user's ID too.
+- Deleting a non-existing entity not returns HTTP 404, intead of a silent HTTP 204.
 ### Deprecated
 - For soon-to-be removed features.
 ### Removed

@@ -6,13 +6,19 @@ The centralized log of tasks and improvements.
 
 Working on 1.1.2:
 
-2. Delete all expenses by its currency ID.
-3. Delete current user.
-4. Update password.
-5. Add hexadecimal colors to expense categories.
-6. Add payment method for expenses.
-7. Integrate a relational database instead of H2.
-8. Update the license.
+1. Added expenses' deletion by their expense category's ID.
+1. Changed the endpoint "register" to "registration".
+1. Update /openapi to use "registration" instead of "register"
+1. Verify code logic in update and delete belonging.
+2. Work more on deletion checks.
+3. .....
+4. Delete all expenses by its currency ID.
+5. Delete current user.
+6. Update password.
+7. Add hexadecimal colors to expense categories.
+8. Add payment method for expenses.
+9. Integrate a relational database instead of H2.
+10. Update the license.
 
 ## Backlog
 

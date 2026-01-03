@@ -30,7 +30,7 @@ public class ExpenseCategoryRepositoryIntegrationTests {
 
 	private final UserTestUtils userTestUtils;
 
-	private UserEntity expenseCategoryCreator;
+	private UserEntity user;
 
 	@Autowired
 	public ExpenseCategoryRepositoryIntegrationTests(
@@ -43,7 +43,7 @@ public class ExpenseCategoryRepositoryIntegrationTests {
 
 	@BeforeEach
 	public void createExpenseCategoryCreator() {
-		expenseCategoryCreator = userTestUtils.createUserAndItsDependencies();
+		user = userTestUtils.createUserAndItsDependencies();
 	}
 
 	@Test
@@ -51,16 +51,16 @@ public class ExpenseCategoryRepositoryIntegrationTests {
 	public void GivenExpenseCategories_WhenFindingThemByTheirCreatorEmail_ThenReturnThem() {
 		ExpenseCategoryEntity toCreate1 = new ExpenseCategoryEntity(
 				"Daily",
-				expenseCategoryCreator);
+				user);
 		ExpenseCategoryEntity toCreate2 = new ExpenseCategoryEntity(
 				"Special",
-				expenseCategoryCreator);
+				user);
 
 		ExpenseCategoryEntity created1 = underTest.save(toCreate1);
 		ExpenseCategoryEntity created2 = underTest.save(toCreate2);
 
-		Page<ExpenseCategoryEntity> page = underTest.findAllByCreator_Email(
-				expenseCategoryCreator.getEmail(),
+		Page<ExpenseCategoryEntity> page = underTest.findAllByCreator_Id(
+				user.getId(),
 				PageRequest.of(0, 20));
 
 		List<ExpenseCategoryEntity> expenseCategories = page.getContent();
@@ -76,7 +76,7 @@ public class ExpenseCategoryRepositoryIntegrationTests {
 	public void GivenExpenseCategory_WhenCheckingItsExistenceByName_ThenReturnTrue() {
 		ExpenseCategoryEntity toCreate = new ExpenseCategoryEntity(
 				"Daily",
-				expenseCategoryCreator);
+				user);
 		ExpenseCategoryEntity created = underTest.save(toCreate);
 
 		boolean isExists = underTest.existsByName(created.getName());
@@ -85,41 +85,11 @@ public class ExpenseCategoryRepositoryIntegrationTests {
 	}
 
 	@Test
-	@DisplayName("Return true when checking the existence of an existing expense category by its name and creator's email")
-	public void GivenExpenseCategory_WhenCheckingItsExistenceByNameAndCreatorEmail_ThenReturnTrue() {
-		ExpenseCategoryEntity toCreate = new ExpenseCategoryEntity(
-				"Daily",
-				expenseCategoryCreator);
-		ExpenseCategoryEntity created = underTest.save(toCreate);
-
-		boolean isExists = underTest.existsByIdAndCreator_Email(
-				created.getId(),
-				expenseCategoryCreator.getEmail());
-
-		assertTrue(isExists);
-	}
-
-	@Test
-	@DisplayName("Return false when checking the existence of an existing expense category by its name and other creator's email")
-	public void GivenExpenseCategory_WhenCheckingItsExistenceByNameAndOtherCreatorEmail_ThenReturnFalse() {
-		ExpenseCategoryEntity toCreate = new ExpenseCategoryEntity(
-				"Daily",
-				expenseCategoryCreator);
-		ExpenseCategoryEntity created = underTest.save(toCreate);
-
-		boolean isExists = underTest.existsByIdAndCreator_Email(
-				created.getId(),
-				expenseCategoryCreator.getEmail() + "m");
-
-		assertFalse(isExists);
-	}
-
-	@Test
 	@DisplayName("Return true when checking the existence of an existing expense category by its name and other ID")
 	public void GivenExpenseCategory_WhenCheckingItsExistenceByNameAndOtherId_ThenReturnTrue() {
 		ExpenseCategoryEntity toCreate = new ExpenseCategoryEntity(
 				"Daily",
-				expenseCategoryCreator);
+				user);
 		ExpenseCategoryEntity created = underTest.save(toCreate);
 
 		boolean isExists = underTest.existsByIdNotAndName(
@@ -134,7 +104,7 @@ public class ExpenseCategoryRepositoryIntegrationTests {
 	public void GivenExpenseCategory_WhenCheckingItsExistenceByNameAndId_ThenReturnFalse() {
 		ExpenseCategoryEntity toCreate = new ExpenseCategoryEntity(
 				"Daily",
-				expenseCategoryCreator);
+				user);
 		ExpenseCategoryEntity created = underTest.save(toCreate);
 
 		boolean isExists = underTest.existsByIdNotAndName(

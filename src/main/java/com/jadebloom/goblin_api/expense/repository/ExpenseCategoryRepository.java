@@ -10,11 +10,9 @@ import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
 @Repository
 public interface ExpenseCategoryRepository extends JpaRepository<ExpenseCategoryEntity, Long> {
 
-	Page<ExpenseCategoryEntity> findAllByCreator_Email(String creatorEmail, Pageable pageable);
+	Page<ExpenseCategoryEntity> findAllByCreator_Id(Long creatorId, Pageable pageable);
 
 	boolean existsByName(String name);
-
-	boolean existsByIdAndCreator_Email(Long id, String creatorEmail);
 
 	boolean existsByIdNotAndName(Long id, String name);
 
