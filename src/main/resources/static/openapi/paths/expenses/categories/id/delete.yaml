@@ -8,9 +8,14 @@ parameters:
     description: Expense category ID
     schema:
       type: integer
-security: []
+security:
+  - bearerAuth: []
 responses:
   "204":
     $ref: ../../../../openapi.yaml#/components/responses/NoContent
+  "403":
+    $ref: ../../../../openapi.yaml#/components/responses/ForbiddenError
+  "409":
+    $ref: ../../../../openapi.yaml#/components/responses/EntityInUseError
   "500":
     $ref: ../../../../openapi.yaml#/components/responses/InternalServerError

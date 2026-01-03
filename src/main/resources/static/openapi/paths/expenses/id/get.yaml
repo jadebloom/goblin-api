@@ -8,7 +8,8 @@ parameters:
     description: Expense ID
     schema:
       type: integer
-security: []
+security:
+  - bearerAuth: []
 responses:
   "200":
     description: Returned the expense.
@@ -16,5 +17,7 @@ responses:
       application/json:
         schema:
           $ref: ../../../openapi.yaml#/components/schemas/ExpenseDto
+  "403":
+    $ref: ../../../openapi.yaml#/components/responses/ForbiddenError
   "500":
     $ref: ../../../openapi.yaml#/components/responses/InternalServerError

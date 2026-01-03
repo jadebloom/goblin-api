@@ -1,0 +1,33 @@
+operationId: register
+summary: Register
+tags:
+  - Authentication
+security: []
+requestBody:
+  description: A JSON RegistrationDto object.
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: ../../../openapi.yaml#/components/schemas/RegistrationDto
+      examples:
+        registration:
+          summary: An example of the registration data
+          value:
+            email: user@gmail.com
+            password: PasswordHasFormat123!
+responses:
+  "201":
+    description: Registered.
+    content:
+      application/json:
+        schema:
+          $ref: ../../../openapi.yaml#/components/schemas/JwtResponseDto
+  "400":
+    description: Invalid email, password or provided email is already in use.
+    content:
+      application/json:
+        schema:
+          $ref: ../../../openapi.yaml#/components/schemas/ErrorResponse
+  "500":
+    $ref: ../../../openapi.yaml#/components/responses/InternalServerError
