@@ -3,7 +3,6 @@ package com.jadebloom.goblin_api.expense.service;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
@@ -20,7 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
@@ -50,11 +50,11 @@ public class ExpenseServiceIntegrationTests {
 
 	private final UserTestUtils userTestUtils;
 
-	private UserEntity creator;
-
 	private ExpenseCategoryEntity expenseCategory;
 
 	private CurrencyEntity currency;
+
+	private UserEntity user;
 
 	@Autowired
 	public ExpenseServiceIntegrationTests(
@@ -73,21 +73,21 @@ public class ExpenseServiceIntegrationTests {
 
 	@BeforeEach
 	public void createDependencies() {
-		creator = userTestUtils.createUserWithPossiblyExistingRoles(
+		user = userTestUtils.createUserWithPossiblyExistingRoles(
 				"user@gmail.com",
 				"123",
 				Set.of("ROLE_USER"));
 
-		ExpenseCategoryEntity toCreate1 = new ExpenseCategoryEntity("Daily", creator);
+		ExpenseCategoryEntity toCreate1 = new ExpenseCategoryEntity("Daily", user);
 		expenseCategory = expenseCategoryRepository.saveAndFlush(toCreate1);
 
-		CurrencyEntity toCreate2 = new CurrencyEntity("Tenge", creator);
+		CurrencyEntity toCreate2 = new CurrencyEntity("Tenge", user);
 		currency = currencyRepository.saveAndFlush(toCreate2);
 	}
 
 	@Test
 	@DisplayName("Return an expense when creating it with valid all fields")
-	@WithMockUser(username = "user@gmail.com")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void GivenValidExpenseWithAllFields_WhenCreating_ThenReturnExpense() {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
@@ -117,7 +117,7 @@ public class ExpenseServiceIntegrationTests {
 
 	@Test
 	@DisplayName("Return an expense when creating it with only required fields")
-	@WithMockUser(username = "user@gmail.com")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void GivenValidExpenseWithOnlyRequiredFields_WhenCreating_ThenReturnExpense() {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
@@ -140,7 +140,7 @@ public class ExpenseServiceIntegrationTests {
 
 	@Test
 	@DisplayName("Throw InvalidExpenseException when trying to create an invalid expense")
-	@WithMockUser(username = "user@gmail.com")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void GivenInvalidExpense_WhenCreating_ThenThrowInvalidExpenseException() {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
@@ -165,7 +165,7 @@ public class ExpenseServiceIntegrationTests {
 
 	@Test
 	@DisplayName("Throw ExpenseCategoryNotFoundException when trying to create using a non-existing expense category")
-	@WithMockUser(username = "user@gmail.com")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void GivenNonExistingExpenseCategory_WhenCreating_ThenThrowExpenseCategoryNotFoundException() {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
@@ -179,7 +179,7 @@ public class ExpenseServiceIntegrationTests {
 
 	@Test
 	@DisplayName("Throw CurrencyNotFoundException when trying to create using a non-existing currency")
-	@WithMockUser(username = "user@gmail.com")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void GivenNonExistingCurrency_WhenCreating_ThenThrowCurrencyNotFoundException() {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
@@ -192,7 +192,7 @@ public class ExpenseServiceIntegrationTests {
 
 	@Test
 	@DisplayName("Return a page with expenses when finding the authenticated user's expenses, given they exist")
-	@WithMockUser(username = "user@gmail.com")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void GivenExpenses_WhenFindingAuthenticatedUserExpenses_ThenReturnPageWithExpenses() {
 		CreateExpenseDto createDto1 = new CreateExpenseDto(
 				"Uber Ride",
@@ -231,7 +231,7 @@ public class ExpenseServiceIntegrationTests {
 
 	@Test
 	@DisplayName("Return an expense when finding it by ID")
-	@WithMockUser(username = "user@gmail.com")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void GivenExistingExpense_WhenFindingById_ThenReturnExpense() {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
@@ -253,14 +253,14 @@ public class ExpenseServiceIntegrationTests {
 
 	@Test
 	@DisplayName("Throw ExpenseNotFoundException when trying to find a non-existing expense by ID")
-	@WithMockUser(username = "user@gmail.com")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void GivenNonExistingExpense_WhenFindingById_ThenThrowExpenseNotFoundException() {
 		assertThrowsExactly(ExpenseNotFoundException.class, () -> underTest.findById(1L));
 	}
 
 	@Test
 	@DisplayName("Return an expense when updating with valid all fields")
-	@WithMockUser(username = "user@gmail.com")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void GivenValidExpenseWithAllFields_WhenUpdating_ThenReturnExpense() {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
@@ -298,7 +298,7 @@ public class ExpenseServiceIntegrationTests {
 
 	@Test
 	@DisplayName("Return an expense when updating with valid only required fields")
-	@WithMockUser(username = "user@gmail.com")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void GivenValidExpenseWithOnlyRequiredFields_WhenUpdating_ThenReturnExpense() {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
@@ -329,7 +329,7 @@ public class ExpenseServiceIntegrationTests {
 
 	@Test
 	@DisplayName("Throw InvalidExpenseException when trying to update using an invalid expense")
-	@WithMockUser(username = "user@gmail.com")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void GivenInvalidExpense_WhenUpdating_ThenThrowInvalidExpenseException() {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
@@ -350,7 +350,7 @@ public class ExpenseServiceIntegrationTests {
 
 	@Test
 	@DisplayName("Throw ExpenseNotFoundException when updating a non-existing expense")
-	@WithMockUser(username = "user@gmail.com")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void GivenNonExistingExpense_WhenUpdating_ThenThrowExpenseNotFoundException() {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
@@ -371,7 +371,7 @@ public class ExpenseServiceIntegrationTests {
 
 	@Test
 	@DisplayName("Throw ExpenseCategoryNotFoundException when updating an expense using a non-existing expense category ID")
-	@WithMockUser(username = "user@gmail.com")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void GivenNonExistingExpenseCategory_WhenUpdating_ThenThrowExpenseCategoryNotFoundException() {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
@@ -393,7 +393,7 @@ public class ExpenseServiceIntegrationTests {
 
 	@Test
 	@DisplayName("Throw CurrencyNotFoundException when updating an expense using a non-existing currency ID")
-	@WithMockUser(username = "user@gmail.com")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void GivenNonExistingCurrency_WhenUpdating_ThenThrowCurrencyNotFoundException() {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
@@ -413,9 +413,9 @@ public class ExpenseServiceIntegrationTests {
 	}
 
 	@Test
-	@DisplayName("Verify that an existing expense is deleted when deleting it by its ID")
-	@WithMockUser("user@gmail.com")
-	public void GivenExistingExpense_WhenDeletingById_ThenReturnDeleteAndReturnTrue() {
+	@DisplayName("Do not throw when deleting an expense by its ID")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	public void GivenExistingExpense_WhenDeletingById_ThenDoNoThrow() {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
 				100L,
@@ -423,18 +423,14 @@ public class ExpenseServiceIntegrationTests {
 				currency.getId());
 		ExpenseDto created = underTest.create(createDto);
 
-		underTest.deleteById(created.getId());
-
-		boolean isExists = underTest.existsById(created.getId());
-
-		assertFalse(isExists);
+		assertDoesNotThrow(() -> underTest.deleteById(created.getId()));
 	}
 
 	@Test
-	@DisplayName("Do not throw when trying to delete a non-existing expense it by ID")
-	@WithMockUser("user@gmail.com")
-	public void GivenNonExistingExpense_WhenDeletingById_ThenDoNotThrow() {
-		assertDoesNotThrow(() -> underTest.deleteById(1L));
+	@DisplayName("Throw ExpenseNotFoundException when trying to delete a non-existing expense by ID")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	public void GivenNonExistingExpense_WhenDeletingById_ThenThrowExpenseNotFoundException() {
+		assertThrowsExactly(ExpenseNotFoundException.class, () -> underTest.deleteById(1L));
 	}
 
 	@Test

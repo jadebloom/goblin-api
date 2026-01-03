@@ -4,28 +4,51 @@ import java.util.Optional;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+
+import com.jadebloom.goblin_api.security.config.CustomUserDetails;
 
 public class SecurityContextUtils {
 
-    public static Optional<String> getAuthenticatedUserEmail() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	public static Optional<Authentication> getAuthentication() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth == null || auth.getPrincipal() == null) {
-            return Optional.empty();
-        }
+		return Optional.ofNullable(auth);
+	}
 
-        if (auth.getPrincipal() instanceof String) {
-            return Optional.of((String) auth.getPrincipal());
-        }
+	public static Optional<CustomUserDetails> getUserDetails() {
+		Authentication auth = getAuthentication().orElse(null);
 
-        if (auth.getPrincipal() instanceof User) {
-            User user = (User) auth.getPrincipal();
+		if (auth == null) {
+			return Optional.empty();
+		}
 
-            return Optional.of(user.getUsername());
-        }
+		Object principal = auth.getPrincipal();
 
-        return Optional.empty();
-    }
+		if (principal == null || !(principal instanceof CustomUserDetails)) {
+			return Optional.empty();
+		}
+
+		return Optional.of((CustomUserDetails) principal);
+	}
+
+	public static Optional<Long> getAuthenticatedUserId() {
+		CustomUserDetails userDetails = getUserDetails().orElse(null);
+
+		if (userDetails == null) {
+			return Optional.empty();
+		}
+
+		return Optional.ofNullable(userDetails.getId());
+	}
+
+	public static Optional<String> getAuthenticatedUserEmail() {
+		CustomUserDetails userDetails = getUserDetails().orElse(null);
+
+		if (userDetails == null) {
+			return Optional.empty();
+		}
+
+		return Optional.ofNullable(userDetails.getUsername());
+	}
 
 }

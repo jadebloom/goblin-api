@@ -15,9 +15,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.jadebloom.goblin_api.security.config.CustomUserDetails;
 
 @Service
 public class JwtService {
@@ -32,10 +32,10 @@ public class JwtService {
 		this.jwtSecret = jwtSecret;
 	}
 
-	public String generateAccessToken(String email, Set<String> roles) {
+	public String generateAccessToken(Long userId, String userEmail, Set<String> roles) {
 		return JWT.create()
-				.withSubject("User Details")
-				.withClaim("email", email)
+				.withSubject("" + userId)
+				.withClaim("email", userEmail)
 				.withClaim("roles", new ArrayList<>(roles))
 				.withIssuedAt(new Date())
 				.withIssuer("Goblin API")
@@ -43,8 +43,10 @@ public class JwtService {
 				.sign(Algorithm.HMAC256(jwtSecret));
 	}
 
-	public String generateRefreshToken(String email, Set<String> roles) {
+	public String generateRefreshToken(Long userId, String userEmail, Set<String> roles) {
 		return JWT.create()
+				.withSubject("" + userId)
+				.withClaim("email", userEmail)
 				.withClaim("roles", new ArrayList<>(roles))
 				.withIssuedAt(new Date())
 				.withIssuer("Goblin API")
@@ -53,24 +55,24 @@ public class JwtService {
 	}
 
 	public Authentication validateTokenAndRetrieveEmail(String token) {
-		JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(jwtSecret))
-				.withSubject("User Details")
-				.withIssuer("Goblin API")
-				.build();
-		DecodedJWT decodedJWT = jwtVerifier.verify(token);
+		DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(jwtSecret))
+				.build()
+				.verify(token);
 
-		String email = decodedJWT.getClaim("email").asString();
+		Long userId = decodedJWT.getClaim("sub").asLong();
+		String userEmail = decodedJWT.getClaim("email").asString();
 
-		List<String> roleNames = decodedJWT.getClaim("roles")
-				.asList(String.class);
+		List<String> roleNames = decodedJWT.getClaim("roles").asList(String.class);
 		Set<String> uniqueRoleNames = new HashSet<>(roleNames);
 
 		Set<GrantedAuthority> roles = uniqueRoleNames.stream()
 				.map(n -> new SimpleGrantedAuthority(n))
 				.collect(Collectors.toSet());
 
+		CustomUserDetails userDetails = new CustomUserDetails(userId, userEmail, "", roles);
+
 		UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-				email,
+				userDetails,
 				"",
 				roles);
 

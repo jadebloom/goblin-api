@@ -15,22 +15,21 @@ import com.jadebloom.goblin_api.shared.error.ForbiddenException;
 public interface CurrencyService {
 
 	CurrencyDto create(CreateCurrencyDto createDto)
-			throws InvalidCurrencyException,
-			ForbiddenException,
+			throws ForbiddenException,
+			InvalidCurrencyException,
 			CurrencyNameUnavailableException;
 
 	Page<CurrencyDto> findAuthenticatedUserCurrencies(Pageable pageable) throws ForbiddenException;
 
 	CurrencyDto findById(Long currencyId) throws ForbiddenException, CurrencyNotFoundException;
 
-	boolean existsById(Long currencyId) throws ForbiddenException;
-
 	CurrencyDto update(UpdateCurrencyDto updateDto)
-			throws InvalidCurrencyException,
-			ForbiddenException,
+			throws ForbiddenException,
+			InvalidCurrencyException,
 			CurrencyNotFoundException,
 			CurrencyNameUnavailableException;
 
-	void deleteById(Long currencyId) throws ForbiddenException, CurrencyInUseException;
+	void deleteById(Long currencyId)
+			throws ForbiddenException, CurrencyNotFoundException, CurrencyInUseException;
 
 }

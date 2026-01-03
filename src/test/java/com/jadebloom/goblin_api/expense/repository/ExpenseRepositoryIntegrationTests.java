@@ -38,11 +38,11 @@ public class ExpenseRepositoryIntegrationTests {
 
 	private final UserTestUtils userTestUtils;
 
-	private UserEntity user;
-
 	private ExpenseCategoryEntity expenseCategory;
 
 	private CurrencyEntity currency;
+
+	private UserEntity user;
 
 	@Autowired
 	public ExpenseRepositoryIntegrationTests(
@@ -91,8 +91,8 @@ public class ExpenseRepositoryIntegrationTests {
 		ExpenseEntity created1 = underTest.saveAndFlush(toCreate1);
 		ExpenseEntity created2 = underTest.saveAndFlush(toCreate2);
 
-		Page<ExpenseEntity> page = underTest.findAllByCreator_Email(
-				user.getEmail(),
+		Page<ExpenseEntity> page = underTest.findAllByCreator_Id(
+				user.getId(),
 				PageRequest.of(0, 20));
 
 		List<ExpenseEntity> expenses = page.getContent();
@@ -149,38 +149,6 @@ public class ExpenseRepositoryIntegrationTests {
 	@DisplayName("Return false when checking the existence of a valid expense non-existing expense category ID")
 	public void GivenExpenseWithNonExistingCurrency_WhenCheckingItsExistenceByItsCurrencyId_ThenReturnFalse() {
 		boolean isExists = underTest.existsByCurrency_Id(1L);
-
-		assertFalse(isExists);
-	}
-
-	@Test
-	@DisplayName("Return true when checking an expense's existence by its id and creator's email")
-	public void GivenExpense_WhenCheckingItsExistenceByValidCreatorEmail_ThenReturnTrue() {
-		ExpenseEntity toCreate = new ExpenseEntity(
-				"Uber Ride",
-				100L,
-				expenseCategory,
-				currency,
-				user);
-		ExpenseEntity created = underTest.save(toCreate);
-
-		boolean isExists = underTest.existsByIdAndCreator_Email(created.getId(), user.getEmail());
-
-		assertTrue(isExists);
-	}
-
-	@Test
-	@DisplayName("Return false when checking an expense's existence by its id and other user's email")
-	public void GivenExpense_WhenCheckingItsExistenceByOtherUserEmail_ThenReturnFalse() {
-		ExpenseEntity toCreate = new ExpenseEntity(
-				"Uber Ride",
-				100L,
-				expenseCategory,
-				currency,
-				user);
-		ExpenseEntity created = underTest.save(toCreate);
-
-		boolean isExists = underTest.existsByIdAndCreator_Email(created.getId(), user.getEmail() + ".");
 
 		assertFalse(isExists);
 	}

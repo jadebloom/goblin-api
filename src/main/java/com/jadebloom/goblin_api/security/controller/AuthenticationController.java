@@ -1,7 +1,6 @@
 package com.jadebloom.goblin_api.security.controller;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,24 +18,24 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
 
-    private final AuthenticationService authenticationService;
+	private final AuthenticationService authenticationService;
 
-    public AuthenticationController(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
-    }
+	public AuthenticationController(AuthenticationService authenticationService) {
+		this.authenticationService = authenticationService;
+	}
 
-    @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<JwtResponseDto> register(@Valid @RequestBody RegistrationDto dto) {
-        JwtResponseDto jwt = authenticationService.register(dto);
+	@PostMapping("/registration")
+	public ResponseEntity<JwtResponseDto> register(@Valid @RequestBody RegistrationDto dto) {
+		JwtResponseDto jwt = authenticationService.register(dto);
 
-        return new ResponseEntity<>(jwt, HttpStatus.CREATED);
-    }
+		return new ResponseEntity<>(jwt, HttpStatus.CREATED);
+	}
 
-    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<JwtResponseDto> login(@Valid @RequestBody LoginDto dto) {
-        JwtResponseDto jwt = authenticationService.login(dto);
+	@PostMapping("/login")
+	public ResponseEntity<JwtResponseDto> login(@Valid @RequestBody LoginDto dto) {
+		JwtResponseDto jwt = authenticationService.login(dto);
 
-        return new ResponseEntity<>(jwt, HttpStatus.OK);
-    }
+		return new ResponseEntity<>(jwt, HttpStatus.OK);
+	}
 
 }
