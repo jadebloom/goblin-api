@@ -20,7 +20,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 @NotBlank
-@Size(min = 1, max = 32)
+@Size(min = 1, max = 64)
 @Email
 @ReportAsSingleViolation
 @Target({ FIELD, METHOD, PARAMETER, ANNOTATION_TYPE, TYPE_USE })
@@ -29,10 +29,10 @@ import jakarta.validation.constraints.Size;
 @Constraint(validatedBy = {})
 public @interface ValidUserEmail {
 
-    String message() default "The user's email must be a valid email with 1 - 32 characters";
+	String message() default "The user's email must be a valid email with 1 - 64 characters";
 
-    Class<?>[] groups() default {};
+	Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default {};
+	Class<? extends Payload>[] payload() default {};
 
 }

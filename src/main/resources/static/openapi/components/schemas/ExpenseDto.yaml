@@ -6,6 +6,7 @@ required:
   - created_at
   - expense_category_id
   - currency_id
+  - creator_id
 properties:
   id:
     type: integer
@@ -44,3 +45,5 @@ properties:
   currency_id:
     type: integer
     description: The currency ID related to an expense.
+  creator_id:
+    type: integer

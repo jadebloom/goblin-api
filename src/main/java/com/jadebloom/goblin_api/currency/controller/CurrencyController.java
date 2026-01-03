@@ -25,50 +25,50 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/v1/currencies")
 public class CurrencyController {
 
-    private final CurrencyService currencyService;
+	private final CurrencyService currencyService;
 
-    public CurrencyController(CurrencyService currencyService) {
-        this.currencyService = currencyService;
-    }
+	public CurrencyController(CurrencyService currencyService) {
+		this.currencyService = currencyService;
+	}
 
-    @PreAuthorize("hasRole('USER')")
-    @PostMapping()
-    public ResponseEntity<CurrencyDto> createCurrency(@Valid @RequestBody CreateCurrencyDto createDto) {
-        CurrencyDto created = currencyService.create(createDto);
+	@PreAuthorize("hasRole('USER')")
+	@PostMapping()
+	public ResponseEntity<CurrencyDto> createCurrency(@Valid @RequestBody CreateCurrencyDto createDto) {
+		CurrencyDto created = currencyService.create(createDto);
 
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
-    }
+		return new ResponseEntity<>(created, HttpStatus.CREATED);
+	}
 
-    @PreAuthorize("hasRole('USER')")
-    @GetMapping()
-    public ResponseEntity<Page<CurrencyDto>> findAuthenticatedUserCurrencies(Pageable pageable) {
-        Page<CurrencyDto> page = currencyService.findAuthenticatedUserCurrencies(pageable);
+	@PreAuthorize("hasRole('USER')")
+	@GetMapping()
+	public ResponseEntity<Page<CurrencyDto>> findAuthenticatedUserCurrencies(Pageable pageable) {
+		Page<CurrencyDto> page = currencyService.findAuthenticatedUserCurrencies(pageable);
 
-        return new ResponseEntity<>(page, HttpStatus.OK);
-    }
+		return new ResponseEntity<>(page, HttpStatus.OK);
+	}
 
-    @PreAuthorize("hasRole('USER')")
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<CurrencyDto> findCurrencyById(@PathVariable(name = "id") Long currencyId) {
-        CurrencyDto found = currencyService.findById(currencyId);
+	@PreAuthorize("hasRole('USER')")
+	@GetMapping(value = "/{id}")
+	public ResponseEntity<CurrencyDto> findCurrencyById(@PathVariable(name = "id") Long currencyId) {
+		CurrencyDto found = currencyService.findById(currencyId);
 
-        return new ResponseEntity<>(found, HttpStatus.OK);
-    }
+		return new ResponseEntity<>(found, HttpStatus.OK);
+	}
 
-    @PreAuthorize("hasRole('USER')")
-    @PutMapping()
-    public ResponseEntity<CurrencyDto> updateCurrency(@Valid @RequestBody UpdateCurrencyDto updateDto) {
-        CurrencyDto updated = currencyService.update(updateDto);
+	@PreAuthorize("hasRole('USER')")
+	@PutMapping()
+	public ResponseEntity<CurrencyDto> updateCurrency(@Valid @RequestBody UpdateCurrencyDto updateDto) {
+		CurrencyDto updated = currencyService.update(updateDto);
 
-        return new ResponseEntity<>(updated, HttpStatus.OK);
-    }
+		return new ResponseEntity<>(updated, HttpStatus.OK);
+	}
 
-    @PreAuthorize("hasRole('USER')")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCurrencyById(@PathVariable(name = "id") Long currencyId) {
-        currencyService.deleteById(currencyId);
+	@PreAuthorize("hasRole('USER')")
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deleteCurrencyById(@PathVariable(name = "id") Long currencyId) {
+		currencyService.deleteById(currencyId);
 
-        return ResponseEntity.noContent().build();
-    }
+		return ResponseEntity.noContent().build();
+	}
 
 }

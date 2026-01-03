@@ -3,6 +3,7 @@ required:
   - id
   - name
   - created_at
+  - creator_id
 properties:
   id:
     type: integer
@@ -21,3 +22,5 @@ properties:
   created_at:
     type: string
     format: date-time
+  creator_id:
+    type: integer

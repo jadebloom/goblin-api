@@ -2,7 +2,8 @@ operationId: createExpense
 summary: Create an expense
 tags:
   - Expenses
-security: []
+security:
+  - bearerAuth: []
 requestBody:
   description: A JSON CreateExpenseDto object.
   required: true
@@ -42,5 +43,9 @@ responses:
       application/json:
         schema:
           $ref: ../../openapi.yaml#/components/schemas/ErrorResponse
+  "403":
+    $ref: ../../openapi.yaml#/components/responses/ForbiddenError
+  "404":
+    $ref: ../../openapi.yaml#/components/responses/NotFoundError
   "500":
     $ref: ../../openapi.yaml#/components/responses/InternalServerError
