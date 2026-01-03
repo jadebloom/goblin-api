@@ -1,4 +1,4 @@
-operationId: register
+operationId: registration
 summary: Register
 tags:
   - Authentication
