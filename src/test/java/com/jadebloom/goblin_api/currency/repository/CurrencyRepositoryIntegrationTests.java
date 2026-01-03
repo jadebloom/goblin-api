@@ -6,115 +6,111 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
-import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
+import com.jadebloom.goblin_api.security.entity.UserEntity;
+import com.jadebloom.goblin_api.security.test.PermissionTestUtils;
+import com.jadebloom.goblin_api.security.test.RoleTestUtils;
+import com.jadebloom.goblin_api.security.test.UserTestUtils;
 
 @DataJpaTest(showSql = false)
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@Import({ UserTestUtils.class, RoleTestUtils.class, PermissionTestUtils.class })
 public class CurrencyRepositoryIntegrationTests {
 
-    private final CurrencyRepository underTest;
+	private final CurrencyRepository underTest;
 
-    @Autowired
-    public CurrencyRepositoryIntegrationTests(CurrencyRepository underTest) {
-        this.underTest = underTest;
-    }
+	private final UserTestUtils userTestUtils;
 
-    @Test
-    public void canCreateAndFindCurrencies() {
-        CurrencyEntity e1 = new CurrencyEntity("American Dollar");
-        e1.setAlphabeticalCode("USD");
-        CurrencyEntity e2 = new CurrencyEntity("日本の円");
+	private UserEntity currencyCreator;
 
-        CurrencyEntity savedE1 = underTest.save(e1);
-        CurrencyEntity savedE2 = underTest.save(e2);
+	@Autowired
+	public CurrencyRepositoryIntegrationTests(
+			CurrencyRepository underTest,
+			UserTestUtils userTestUtils) {
+		this.underTest = underTest;
 
-        Page<CurrencyEntity> page = underTest.findAll(PageRequest.of(0, 20));
-        List<CurrencyEntity> entities = page.getContent();
+		this.userTestUtils = userTestUtils;
+	}
 
-        assertAll(
-                "Assert that currencies can be created and found",
-                () -> assertEquals(2, entities.size()),
-                () -> assertTrue(entities.contains(savedE1)),
-                () -> assertTrue(entities.contains(savedE2)));
-    }
+	@BeforeEach
+	public void createCurrencyCreator() {
+		currencyCreator = userTestUtils.createUserAndItsDependencies();
+	}
 
-    @Test
-    public void canCreateCurrencyAndFindItById() {
-        CurrencyEntity e = new CurrencyEntity("American Dollar");
-        e.setAlphabeticalCode("USD");
+	@Test
+	@DisplayName("Return currencies found by their creator email")
+	public void GivenCurrencies_WhenFindingThemByTheirCreatorEmail_ThenReturnCurrencies() {
+		CurrencyEntity toCreate1 = new CurrencyEntity("Tenge", currencyCreator);
+		CurrencyEntity toCreate2 = new CurrencyEntity("Dollar", currencyCreator);
 
-        CurrencyEntity savedE = underTest.save(e);
+		CurrencyEntity created1 = underTest.save(toCreate1);
+		CurrencyEntity created2 = underTest.save(toCreate2);
 
-        Optional<CurrencyEntity> foundE = underTest.findById(savedE.getId());
+		Page<CurrencyEntity> page = underTest.findAllByCreator_Email(currencyCreator.getEmail(), PageRequest.of(0, 20));
 
-        assertAll(
-                "Assert that a currency can be created and found",
-                () -> assertTrue(foundE.isPresent()),
-                () -> assertEquals(savedE, foundE.get()));
-    }
+		List<CurrencyEntity> currencies = page.getContent();
 
-    @Test
-    public void canCheckCurrencyForExistenceByName() {
-        CurrencyEntity e = new CurrencyEntity("Dollar");
-        CurrencyEntity savedE = underTest.save(e);
+		assertAll("Assert that currencies can be found be their creator's email",
+				() -> assertEquals(2, currencies.size()),
+				() -> assertTrue(currencies.contains(created1)),
+				() -> assertTrue(currencies.contains(created2)));
+	}
 
-        boolean b1 = underTest.existsByName(savedE.getName());
-        boolean b2 = underTest.existsByName(savedE.getName() + 1);
+	@Test
+	@DisplayName("Return true when checking the existence of an existing currency by its name")
+	public void GivenCurrency_WhenCheckingItsExistenceByName_ThenReturnTrue() {
+		CurrencyEntity toCreate = new CurrencyEntity("Tenge", currencyCreator);
+		CurrencyEntity created = underTest.save(toCreate);
 
-        assertAll("Assert that currencies can be checked for existence by name",
-                () -> assertTrue(b1),
-                () -> assertFalse(b2));
-    }
+		boolean isExists = underTest.existsByName(created.getName());
 
-    @Test
-    public void canCheckCurrencyForExistenceByIdNotAndName() {
-        CurrencyEntity e = new CurrencyEntity("Dollar");
-        CurrencyEntity savedE = underTest.save(e);
+		assertTrue(isExists);
+	}
 
-        boolean b1 = underTest.existsByIdNotAndName(savedE.getId(), savedE.getName());
-        boolean b2 = underTest.existsByIdNotAndName(savedE.getId() + 1, savedE.getName());
+	@Test
+	@DisplayName("Return true when checking the existence of an existing currency by its name, but not ID")
+	public void GivenCurrency_WhenCheckingItsExistenceByNameAndNotId_ThenReturnTrue() {
+		CurrencyEntity toCreate = new CurrencyEntity("Tenge", currencyCreator);
+		CurrencyEntity created = underTest.save(toCreate);
 
-        assertAll("Assert that currencies can be checked for existence by name and not id",
-                () -> assertFalse(b1),
-                () -> assertTrue(b2));
-    }
+		boolean isExists = underTest.existsByIdNotAndName(created.getId() + 1, created.getName());
 
-    @Test
-    public void canUpdateCurrencyAndFindItById() {
-        CurrencyEntity e = new CurrencyEntity("Tenge");
-        CurrencyEntity savedE = underTest.save(e);
+		assertTrue(isExists);
+	}
 
-        savedE.setName("Dollar");
-        underTest.save(savedE);
+	@Test
+	@DisplayName("Return true when checking the existence of an existing currency by its name and creator's email")
+	public void GivenCurrency_WhenCheckingItsExistenceByNameAndCreatorEmail_ThenReturnTrue() {
+		CurrencyEntity toCreate = new CurrencyEntity("Tenge", currencyCreator);
+		CurrencyEntity created = underTest.save(toCreate);
 
-        Optional<CurrencyEntity> foundE = underTest.findById(savedE.getId());
+		boolean isExists = underTest.existsByIdAndCreator_Email(
+				created.getId(),
+				currencyCreator.getEmail());
 
-        assertAll(
-                "Assert that a currency can be updated and found",
-                () -> assertTrue(foundE.isPresent()),
-                () -> assertEquals(savedE, foundE.get()));
-    }
+		assertTrue(isExists);
+	}
 
-    @Test
-    public void canDeleteCurrencyById() {
-        CurrencyEntity e = new CurrencyEntity("Dollar");
-        Long id = underTest.save(e).getId();
+	@Test
+	@DisplayName("Return false when checking the existence of an existing currency by its name and other creator's email")
+	public void GivenCurrency_WhenCheckingItsExistenceByNameAndOtherCreatorEmail_ThenReturnFalse() {
+		CurrencyEntity toCreate = new CurrencyEntity("Tenge", currencyCreator);
+		CurrencyEntity created = underTest.save(toCreate);
 
-        underTest.deleteById(id);
+		boolean isExists = underTest.existsByIdAndCreator_Email(
+				created.getId(),
+				currencyCreator.getEmail() + "m");
 
-        Optional<CurrencyEntity> foundE = underTest.findById(id);
-
-        assertTrue(foundE.isEmpty());
-    }
+		assertFalse(isExists);
+	}
 
 }

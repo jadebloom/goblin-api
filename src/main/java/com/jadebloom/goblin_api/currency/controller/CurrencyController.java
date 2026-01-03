@@ -1,11 +1,10 @@
 package com.jadebloom.goblin_api.currency.controller;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,38 +27,43 @@ public class CurrencyController {
 
     private final CurrencyService currencyService;
 
-    public CurrencyController(@Qualifier("currencyServiceImpl") CurrencyService currencyService) {
+    public CurrencyController(CurrencyService currencyService) {
         this.currencyService = currencyService;
     }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping()
     public ResponseEntity<CurrencyDto> createCurrency(@Valid @RequestBody CreateCurrencyDto createDto) {
         CurrencyDto created = currencyService.create(createDto);
 
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<CurrencyDto>> findCurrencies(Pageable pageable) {
-        Page<CurrencyDto> page = currencyService.findAll(pageable);
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping()
+    public ResponseEntity<Page<CurrencyDto>> findAuthenticatedUserCurrencies(Pageable pageable) {
+        Page<CurrencyDto> page = currencyService.findAuthenticatedUserCurrencies(pageable);
 
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<CurrencyDto> findCurrencyById(@PathVariable(name = "id") Long currencyId) {
         CurrencyDto found = currencyService.findById(currencyId);
 
         return new ResponseEntity<>(found, HttpStatus.OK);
     }
 
-    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping()
     public ResponseEntity<CurrencyDto> updateCurrency(@Valid @RequestBody UpdateCurrencyDto updateDto) {
         CurrencyDto updated = currencyService.update(updateDto);
 
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCurrencyById(@PathVariable(name = "id") Long currencyId) {
         currencyService.deleteById(currencyId);

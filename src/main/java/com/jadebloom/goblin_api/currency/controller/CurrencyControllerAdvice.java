@@ -5,21 +5,34 @@ import java.net.URI;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.ErrorResponse;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.jadebloom.goblin_api.currency.error.CurrencyInUseException;
 import com.jadebloom.goblin_api.currency.error.CurrencyNameUnavailableException;
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
+import com.jadebloom.goblin_api.currency.error.InvalidCurrencyException;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class CurrencyControllerAdvice {
 
     private final String API_DOCS_URI;
 
     public CurrencyControllerAdvice(@Value("${api.docs.uri}") String API_DOCS_URI) {
         this.API_DOCS_URI = API_DOCS_URI;
+    }
+
+    @ExceptionHandler(InvalidCurrencyException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleInvalidCurrencyException(InvalidCurrencyException ex) {
+        ErrorResponse errorResponse = ErrorResponse
+                .builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage())
+                .type(URI.create(API_DOCS_URI))
+                .title("Invalid currency")
+                .build();
+
+        return errorResponse;
     }
 
     @ExceptionHandler(CurrencyNameUnavailableException.class)

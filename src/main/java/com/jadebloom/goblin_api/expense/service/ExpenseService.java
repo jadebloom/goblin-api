@@ -8,26 +8,31 @@ import com.jadebloom.goblin_api.expense.dto.CreateExpenseDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseDto;
 import com.jadebloom.goblin_api.expense.dto.UpdateExpenseDto;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
-import com.jadebloom.goblin_api.expense.error.ExpenseNameUnavailableException;
 import com.jadebloom.goblin_api.expense.error.ExpenseNotFoundException;
+import com.jadebloom.goblin_api.expense.error.InvalidExpenseException;
+import com.jadebloom.goblin_api.shared.error.ForbiddenException;
 
 public interface ExpenseService {
 
 	ExpenseDto create(CreateExpenseDto createDto)
-			throws ExpenseNameUnavailableException,
+			throws InvalidExpenseException,
+			ForbiddenException,
 			ExpenseCategoryNotFoundException,
 			CurrencyNotFoundException;
 
-	Page<ExpenseDto> findAll(Pageable pageable);
+	Page<ExpenseDto> findUserAuthenticatedExpenses(Pageable pageable) throws ForbiddenException;
 
-	ExpenseDto findById(Long expenseId) throws ExpenseNotFoundException;
+	ExpenseDto findById(Long expenseId) throws ForbiddenException, ExpenseNotFoundException;
+
+	boolean existsById(Long expenseId) throws ForbiddenException;
 
 	ExpenseDto update(UpdateExpenseDto updateDto)
-			throws ExpenseNotFoundException,
-			ExpenseNameUnavailableException,
+			throws InvalidExpenseException,
+			ForbiddenException,
+			ExpenseNotFoundException,
 			ExpenseCategoryNotFoundException,
 			CurrencyNotFoundException;
 
-	void deleteById(Long expenseId);
+	void deleteById(Long expenseId) throws ForbiddenException;
 
 }

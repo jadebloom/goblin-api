@@ -1,10 +1,10 @@
 package com.jadebloom.goblin_api.expense.controller;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,10 +27,11 @@ public class ExpenseController {
 
     private final ExpenseService expenseService;
 
-    public ExpenseController(@Qualifier("expenseServiceImpl") ExpenseService expenseService) {
+    public ExpenseController(ExpenseService expenseService) {
         this.expenseService = expenseService;
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping
     public ResponseEntity<ExpenseDto> createExpense(
             @Valid @RequestBody CreateExpenseDto createDto) {
@@ -39,13 +40,15 @@ public class ExpenseController {
         return new ResponseEntity<>(dto, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping
-    public ResponseEntity<Page<ExpenseDto>> findExpenses(Pageable pageable) {
-        Page<ExpenseDto> page = expenseService.findAll(pageable);
+    public ResponseEntity<Page<ExpenseDto>> findAuthenticatedUserExpenses(Pageable pageable) {
+        Page<ExpenseDto> page = expenseService.findUserAuthenticatedExpenses(pageable);
 
         return new ResponseEntity<>(page, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{id}")
     public ResponseEntity<ExpenseDto> findExpenseById(
             @PathVariable(name = "id") Long expenseId) {
@@ -54,6 +57,7 @@ public class ExpenseController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PutMapping
     public ResponseEntity<ExpenseDto> updateExpense(
             @Valid @RequestBody UpdateExpenseDto updateDto) {
@@ -62,6 +66,7 @@ public class ExpenseController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteExpenseById(
             @PathVariable(name = "id") Long expenseCategoryId) {

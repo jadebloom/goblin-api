@@ -6,24 +6,34 @@ import org.springframework.data.domain.Pageable;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.UpdateExpenseCategoryDto;
+import com.jadebloom.goblin_api.expense.error.ExpenseCategoryInUseException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNameUnavailableException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
+import com.jadebloom.goblin_api.expense.error.InvalidExpenseCategoryException;
+import com.jadebloom.goblin_api.shared.error.ForbiddenException;
 
 public interface ExpenseCategoryService {
 
 	ExpenseCategoryDto create(CreateExpenseCategoryDto createDto)
-			throws ExpenseCategoryNameUnavailableException;
-
-	Page<ExpenseCategoryDto> findAll(Pageable pageable);
-
-	ExpenseCategoryDto findById(Long expenseCategoryId) throws ExpenseCategoryNotFoundException;
-
-	boolean existsById(Long expenseCategoryId);
-
-	ExpenseCategoryDto update(UpdateExpenseCategoryDto updateDto)
-			throws ExpenseCategoryNotFoundException,
+			throws InvalidExpenseCategoryException,
+			ForbiddenException,
 			ExpenseCategoryNameUnavailableException;
 
-	void deleteById(Long expenseCategoryId);
+	Page<ExpenseCategoryDto> findAuthenticatedUserExpenseCategories(Pageable pageable)
+			throws ForbiddenException;
+
+	ExpenseCategoryDto findById(Long expenseCategoryId)
+			throws ForbiddenException, ExpenseCategoryNotFoundException;
+
+	boolean existsById(Long expenseCategoryId) throws ForbiddenException;
+
+	ExpenseCategoryDto update(UpdateExpenseCategoryDto updateDto)
+			throws InvalidExpenseCategoryException,
+			ForbiddenException,
+			ExpenseCategoryNotFoundException,
+			ExpenseCategoryNameUnavailableException;
+
+	void deleteById(Long expenseCategoryId)
+			throws ForbiddenException, ExpenseCategoryInUseException;
 
 }

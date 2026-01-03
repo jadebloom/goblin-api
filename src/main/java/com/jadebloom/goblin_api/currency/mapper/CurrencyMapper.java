@@ -23,7 +23,7 @@ public class CurrencyMapper {
 				CurrencyEntity.class);
 
 		if (typeMap == null) {
-			typeMap = modelMapper.createTypeMap(
+			typeMap = modelMapper.emptyTypeMap(
 					CreateCurrencyDto.class,
 					CurrencyEntity.class);
 
@@ -42,7 +42,7 @@ public class CurrencyMapper {
 				CurrencyDto.class);
 
 		if (typeMap == null) {
-			typeMap = modelMapper.createTypeMap(
+			typeMap = modelMapper.emptyTypeMap(
 					CurrencyEntity.class,
 					CurrencyDto.class);
 
@@ -52,6 +52,8 @@ public class CurrencyMapper {
 					CurrencyEntity::getAlphabeticalCode,
 					CurrencyDto::setAlphabeticalCode);
 			typeMap.addMapping(CurrencyEntity::getCreatedAt, CurrencyDto::setCreatedAt);
+			typeMap.addMappings(
+					mapper -> mapper.map(src -> src.getCreator().getId(), CurrencyDto::setCreatorId));
 		}
 
 		return typeMap.map(currencyEntity);

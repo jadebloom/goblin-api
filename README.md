@@ -5,3 +5,5 @@
 ## Things to keep in mind?
 
 ## How to Use?
+
+.env

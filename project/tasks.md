@@ -4,9 +4,10 @@ The centralized log of tasks and improvements.
 
 ## Sprintlog
 
-Currently working on 1.0.0:
+Currently working on 1.1.0:
 
-3. Add OpenAPI tags to operations.
+3. Manage versions correctly.
+4. Update openapi.
 
 ## Backlog
 
@@ -26,6 +27,7 @@ Currently working on 1.0.0:
 11. Consider adding income functionality.
 12. Consider expenses reporting (maybe with emailing?).
 13. Add alerts and limits on expenses.
+14. Think about transactions.
 
 ## Technical Debt & Others
 
@@ -33,6 +35,5 @@ Currently working on 1.0.0:
 2. Integrate a relational database instead of H2.
 3. Consider deploy.
 4. Update the documentation (README).
-5. Consider the frontend part. 
 6. Optimize the queries and the Lighthouse or something.
 7. Add formatting.

@@ -14,131 +14,178 @@ import jakarta.validation.constraints.NotNull;
 
 public class ExpenseDto {
 
-    @NotNull(message = "The expense's ID must not be null")
-    private Long id;
+	@NotNull(message = "The expense's ID must not be null")
+	private Long id;
 
-    @ValidExpenseName
-    private String name;
+	@ValidExpenseName
+	private String name;
 
-    @ValidExpenseDescription
-    private String description;
+	@ValidExpenseDescription
+	private String description;
 
-    @ValidExpenseAmount
-    private Long amount;
+	@ValidExpenseAmount
+	private Long amount;
 
-    @ValidExpenseLabelsList
-    private List<@ValidExpenseLabel String> labels;
+	@ValidExpenseLabelsList
+	private List<@ValidExpenseLabel String> labels;
 
-    @JsonProperty("created_at")
-    private ZonedDateTime createdAt;
+	@JsonProperty("created_at")
+	private ZonedDateTime createdAt;
 
-    @NotNull
-    @JsonProperty("expense_category_id")
-    private Long expenseCategoryId;
+	@NotNull(message = "The expense's creator ID is not null")
+	@JsonProperty("expense_category_id")
+	private Long expenseCategoryId;
 
-    @NotNull
-    @JsonProperty("currency_id")
-    private Long currencyId;
+	@NotNull(message = "The expense's creator ID is not null")
+	@JsonProperty("currency_id")
+	private Long currencyId;
 
-    public ExpenseDto() {
-    }
+	@NotNull(message = "The expense's creator ID is not null")
+	@JsonProperty("creator_id")
+	private Long creatorId;
 
-    public ExpenseDto(
-            Long id,
-            String name,
-            Long amount,
-            ZonedDateTime createdAt,
-            Long expenseCategoryId,
-            Long currencyId) {
-        this.id = id;
+	public ExpenseDto() {
+	}
 
-        this.name = name;
+	public ExpenseDto(
+			Long id,
+			String name,
+			Long amount,
+			ZonedDateTime createdAt,
+			Long expenseCategoryId,
+			Long currencyId,
+			Long creatorId) {
+		this.id = id;
 
-        this.amount = amount;
+		this.name = name;
 
-        this.createdAt = createdAt;
+		this.amount = amount;
 
-        this.expenseCategoryId = expenseCategoryId;
+		this.createdAt = createdAt;
 
-        this.currencyId = currencyId;
-    }
+		this.expenseCategoryId = expenseCategoryId;
 
-    public Long getId() {
-        return id;
-    }
+		this.currencyId = currencyId;
 
-    public String getName() {
-        return name;
-    }
+		this.creatorId = creatorId;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public Long getAmount() {
-        return amount;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public List<String> getLabels() {
-        return labels;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public ZonedDateTime getCreatedAt() {
-        return createdAt;
-    }
+	public Long getAmount() {
+		return amount;
+	}
 
-    public Long getExpenseCategoryId() {
-        return expenseCategoryId;
-    }
+	public List<String> getLabels() {
+		return labels;
+	}
 
-    public Long getCurrencyId() {
-        return currencyId;
-    }
+	public ZonedDateTime getCreatedAt() {
+		return createdAt;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Long getExpenseCategoryId() {
+		return expenseCategoryId;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public Long getCurrencyId() {
+		return currencyId;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public Long getCreatorId() {
+		return creatorId;
+	}
 
-    public void setAmount(Long amount) {
-        this.amount = amount;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setLabels(List<String> labels) {
-        this.labels = labels;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setCreatedAt(ZonedDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public void setExpenseCategoryId(Long expenseCategoryId) {
-        this.expenseCategoryId = expenseCategoryId;
-    }
+	public void setAmount(Long amount) {
+		this.amount = amount;
+	}
 
-    public void setCurrencyId(Long currencyId) {
-        this.currencyId = currencyId;
-    }
+	public void setLabels(List<String> labels) {
+		this.labels = labels;
+	}
 
-    @Override
-    public String toString() {
-        String f = "ExpenseDto(id=" + id +
-                ", name=" + name +
-                ", description=" + description +
-                ", amount=" + amount +
-                ", labels=" + labels +
-                ", createdAt=" + createdAt +
-                ", expenseCategoryId=" + expenseCategoryId +
-                ", currencyId=" + currencyId + ")";
+	public void setCreatedAt(ZonedDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
 
-        return f;
-    }
+	public void setExpenseCategoryId(Long expenseCategoryId) {
+		this.expenseCategoryId = expenseCategoryId;
+	}
+
+	public void setCurrencyId(Long currencyId) {
+		this.currencyId = currencyId;
+	}
+
+	public void setCreatorId(Long creatorId) {
+		this.creatorId = creatorId;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+
+		if (getClass() != o.getClass()) {
+			return false;
+		}
+
+		ExpenseDto t = (ExpenseDto) o;
+
+		if (id != t.getId() || name != t.getName() || description != t.getDescription()) {
+			return false;
+		}
+
+		if (amount != t.getAmount() || createdAt != t.getCreatedAt()) {
+			return false;
+		}
+
+		if (labels != null && !labels.equals(t.getLabels())) {
+			return false;
+		}
+
+		if (creatorId != t.getCreatorId()) {
+			return false;
+		}
+
+		return expenseCategoryId == t.getExpenseCategoryId() && currencyId == t.getCurrencyId();
+	}
+
+	@Override
+	public String toString() {
+		String f = "ExpenseDto(id=" + id +
+				", name=" + name +
+				", description=" + description +
+				", amount=" + amount +
+				", labels=" + labels +
+				", createdAt=" + createdAt +
+				", expenseCategoryId=" + expenseCategoryId +
+				", currencyId=" + currencyId +
+				", creatorId=" + creatorId + ")";
+
+		return f;
+	}
 
 }

@@ -6,112 +6,142 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
-import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
+import com.jadebloom.goblin_api.security.entity.UserEntity;
+import com.jadebloom.goblin_api.security.test.PermissionTestUtils;
+import com.jadebloom.goblin_api.security.test.RoleTestUtils;
+import com.jadebloom.goblin_api.security.test.UserTestUtils;
 
-@DataJpaTest
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@DataJpaTest(showSql = false)
+@Import({ UserTestUtils.class, RoleTestUtils.class, PermissionTestUtils.class })
 public class ExpenseCategoryRepositoryIntegrationTests {
 
-    private final ExpenseCategoryRepository underTest;
+	private final ExpenseCategoryRepository underTest;
 
-    @Autowired
-    public ExpenseCategoryRepositoryIntegrationTests(ExpenseCategoryRepository underTest) {
-        this.underTest = underTest;
-    }
+	private final UserTestUtils userTestUtils;
 
-    @Test
-    public void canCreateAndFindExpenseCategories() {
-        ExpenseCategoryEntity e1 = new ExpenseCategoryEntity("Daily");
-        ExpenseCategoryEntity e2 = new ExpenseCategoryEntity("Debt");
+	private UserEntity expenseCategoryCreator;
 
-        ExpenseCategoryEntity savedE1 = underTest.save(e1);
-        ExpenseCategoryEntity savedE2 = underTest.save(e2);
+	@Autowired
+	public ExpenseCategoryRepositoryIntegrationTests(
+			ExpenseCategoryRepository underTest,
+			UserTestUtils userTestUtils) {
+		this.underTest = underTest;
 
-        Page<ExpenseCategoryEntity> page = underTest.findAll(PageRequest.of(0, 5));
-        List<ExpenseCategoryEntity> entities = page.getContent();
+		this.userTestUtils = userTestUtils;
+	}
 
-        assertAll(
-                "Assert that expense categories can be created and found",
-                () -> assertEquals(2, entities.size()),
-                () -> assertTrue(entities.contains(savedE1)),
-                () -> assertTrue(entities.contains(savedE2)));
-    }
+	@BeforeEach
+	public void createExpenseCategoryCreator() {
+		expenseCategoryCreator = userTestUtils.createUserAndItsDependencies();
+	}
 
-    @Test
-    public void canCreateExpenseCategoryAndFindItById() {
-        ExpenseCategoryEntity e = new ExpenseCategoryEntity("Daily");
-        ExpenseCategoryEntity savedE = underTest.save(e);
+	@Test
+	@DisplayName("Return expense categories found by their creator's email")
+	public void GivenExpenseCategories_WhenFindingThemByTheirCreatorEmail_ThenReturnThem() {
+		ExpenseCategoryEntity toCreate1 = new ExpenseCategoryEntity(
+				"Daily",
+				expenseCategoryCreator);
+		ExpenseCategoryEntity toCreate2 = new ExpenseCategoryEntity(
+				"Special",
+				expenseCategoryCreator);
 
-        Optional<ExpenseCategoryEntity> foundEntity = underTest.findById(savedE.getId());
+		ExpenseCategoryEntity created1 = underTest.save(toCreate1);
+		ExpenseCategoryEntity created2 = underTest.save(toCreate2);
 
-        assertAll(
-                "Assert that an expense category can be created and found",
-                () -> assertTrue(foundEntity.isPresent()),
-                () -> assertEquals(savedE, foundEntity.get()));
-    }
+		Page<ExpenseCategoryEntity> page = underTest.findAllByCreator_Email(
+				expenseCategoryCreator.getEmail(),
+				PageRequest.of(0, 20));
 
-    @Test
-    public void canCheckExpenseCategoryForExistenceByName() {
-        ExpenseCategoryEntity e = new ExpenseCategoryEntity("Dollar");
-        ExpenseCategoryEntity savedE = underTest.save(e);
+		List<ExpenseCategoryEntity> expenseCategories = page.getContent();
 
-        boolean b1 = underTest.existsByName(savedE.getName());
-        boolean b2 = underTest.existsByName(savedE.getName() + 1);
+		assertAll("Assert that expense categories can be found by their creator's email",
+				() -> assertEquals(2, expenseCategories.size()),
+				() -> assertTrue(expenseCategories.contains(created1)),
+				() -> assertTrue(expenseCategories.contains(created2)));
+	}
 
-        assertAll("Assert that expense categories can be checked for existence by name",
-                () -> assertTrue(b1),
-                () -> assertFalse(b2));
-    }
+	@Test
+	@DisplayName("Return true when checking the existence of an existing expense category by its name")
+	public void GivenExpenseCategory_WhenCheckingItsExistenceByName_ThenReturnTrue() {
+		ExpenseCategoryEntity toCreate = new ExpenseCategoryEntity(
+				"Daily",
+				expenseCategoryCreator);
+		ExpenseCategoryEntity created = underTest.save(toCreate);
 
-    @Test
-    public void canCheckExpenseCategoryForExistenceByIdNotAndName() {
-        ExpenseCategoryEntity e = new ExpenseCategoryEntity("Daily");
-        ExpenseCategoryEntity savedE = underTest.save(e);
+		boolean isExists = underTest.existsByName(created.getName());
 
-        boolean b1 = underTest.existsByIdNotAndName(savedE.getId(), savedE.getName());
-        boolean b2 = underTest.existsByIdNotAndName(savedE.getId() + 1, savedE.getName());
+		assertTrue(isExists);
+	}
 
-        assertAll("Assert that expense categories can be checked for existence by name and not id",
-                () -> assertFalse(b1),
-                () -> assertTrue(b2));
-    }
+	@Test
+	@DisplayName("Return true when checking the existence of an existing expense category by its name and creator's email")
+	public void GivenExpenseCategory_WhenCheckingItsExistenceByNameAndCreatorEmail_ThenReturnTrue() {
+		ExpenseCategoryEntity toCreate = new ExpenseCategoryEntity(
+				"Daily",
+				expenseCategoryCreator);
+		ExpenseCategoryEntity created = underTest.save(toCreate);
 
-    @Test
-    public void canUpdateExpenseCategoryAndFindItById() {
-        ExpenseCategoryEntity e = new ExpenseCategoryEntity("Daily");
-        ExpenseCategoryEntity savedE = underTest.save(e);
+		boolean isExists = underTest.existsByIdAndCreator_Email(
+				created.getId(),
+				expenseCategoryCreator.getEmail());
 
-        savedE.setDescription("Daily necessities");
-        underTest.save(savedE);
+		assertTrue(isExists);
+	}
 
-        Optional<ExpenseCategoryEntity> foundE = underTest.findById(savedE.getId());
+	@Test
+	@DisplayName("Return false when checking the existence of an existing expense category by its name and other creator's email")
+	public void GivenExpenseCategory_WhenCheckingItsExistenceByNameAndOtherCreatorEmail_ThenReturnFalse() {
+		ExpenseCategoryEntity toCreate = new ExpenseCategoryEntity(
+				"Daily",
+				expenseCategoryCreator);
+		ExpenseCategoryEntity created = underTest.save(toCreate);
 
-        assertAll(
-                "Assert that an expense category can be updated and found",
-                () -> assertTrue(foundE.isPresent()),
-                () -> assertEquals(savedE, foundE.get()));
-    }
+		boolean isExists = underTest.existsByIdAndCreator_Email(
+				created.getId(),
+				expenseCategoryCreator.getEmail() + "m");
 
-    @Test
-    public void canDeleteExpenseCategoryById() {
-        ExpenseCategoryEntity e = new ExpenseCategoryEntity("Daily");
-        Long id = underTest.save(e).getId();
+		assertFalse(isExists);
+	}
 
-        underTest.deleteById(id);
+	@Test
+	@DisplayName("Return true when checking the existence of an existing expense category by its name and other ID")
+	public void GivenExpenseCategory_WhenCheckingItsExistenceByNameAndOtherId_ThenReturnTrue() {
+		ExpenseCategoryEntity toCreate = new ExpenseCategoryEntity(
+				"Daily",
+				expenseCategoryCreator);
+		ExpenseCategoryEntity created = underTest.save(toCreate);
 
-        Optional<ExpenseCategoryEntity> foundE = underTest.findById(id);
+		boolean isExists = underTest.existsByIdNotAndName(
+				created.getId() + 1,
+				created.getName());
 
-        assertTrue(foundE.isEmpty());
-    }
+		assertTrue(isExists);
+	}
+
+	@Test
+	@DisplayName("Return false when checking the existence of an existing expense category by its name and ID")
+	public void GivenExpenseCategory_WhenCheckingItsExistenceByNameAndId_ThenReturnFalse() {
+		ExpenseCategoryEntity toCreate = new ExpenseCategoryEntity(
+				"Daily",
+				expenseCategoryCreator);
+		ExpenseCategoryEntity created = underTest.save(toCreate);
+
+		boolean isExists = underTest.existsByIdNotAndName(
+				created.getId(),
+				created.getName());
+
+		assertFalse(isExists);
+	}
 
 }
