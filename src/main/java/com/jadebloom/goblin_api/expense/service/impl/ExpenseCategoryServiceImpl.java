@@ -118,7 +118,8 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 			InvalidExpenseCategoryException,
 			ExpenseCategoryNameUnavailableException,
 			ExpenseCategoryNotFoundException {
-		SecurityContextUtils.getAuthenticatedUserId().orElseThrow(() -> new ForbiddenException());
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
 
 		if (!GenericValidator.isValid(updateDto)) {
 			String message = GenericValidator.getValidationErrorMessage(updateDto);
@@ -134,6 +135,10 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 
 					throw new ExpenseCategoryNotFoundException(errorMessage);
 				});
+
+		if (expenseCategory.getCreator().getId() != userId) {
+			throw new ForbiddenException();
+		}
 
 		if (expenseCategoryRepository.existsByIdNotAndName(
 				expenseCategory.getId(), updateDto.getName())) {
