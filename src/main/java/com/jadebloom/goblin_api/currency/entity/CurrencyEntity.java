@@ -22,107 +22,107 @@ import jakarta.validation.constraints.NotNull;
 @Table(name = "currency")
 public class CurrencyEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(updatable = false)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(updatable = false)
+	private Long id;
 
-    @Column(unique = true, nullable = false, length = 64)
-    @ValidCurrencyName
-    private String name;
+	@Column(unique = true, nullable = false, length = 64)
+	@ValidCurrencyName
+	private String name;
 
-    @Column(name = "alphabetical_code", length = 3)
-    @ValidCurrencyAlphabeticalCode
-    private String alphabeticalCode;
+	@Column(name = "alphabetical_code", length = 3)
+	@ValidCurrencyAlphabeticalCode
+	private String alphabeticalCode;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private ZonedDateTime createdAt;
+	@CreationTimestamp
+	@Column(name = "created_at", nullable = false, updatable = false)
+	private ZonedDateTime createdAt;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(referencedColumnName = "id", name = "user_id", nullable = false, updatable = false)
-    @NotNull(message = "The currency's creator must not be null")
-    private UserEntity creator;
+	@ManyToOne(optional = false)
+	@JoinColumn(referencedColumnName = "id", name = "user_id", nullable = false, updatable = false)
+	@NotNull(message = "The currency's creator must not be null")
+	private UserEntity creator;
 
-    public CurrencyEntity() {
-    }
+	public CurrencyEntity() {
+	}
 
-    public CurrencyEntity(String name, UserEntity creator) {
-        this.name = name;
+	public CurrencyEntity(String name, UserEntity creator) {
+		this.name = name;
 
-        this.creator = creator;
-    }
+		this.creator = creator;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getAlphabeticalCode() {
-        return alphabeticalCode;
-    }
+	public String getAlphabeticalCode() {
+		return alphabeticalCode;
+	}
 
-    public ZonedDateTime getCreatedAt() {
-        return createdAt;
-    }
+	public ZonedDateTime getCreatedAt() {
+		return createdAt;
+	}
 
-    public UserEntity getCreator() {
-        return creator;
-    }
+	public UserEntity getCreator() {
+		return creator;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setAlphabeticalCode(String alphabeticalCode) {
-        this.alphabeticalCode = alphabeticalCode;
-    }
+	public void setAlphabeticalCode(String alphabeticalCode) {
+		this.alphabeticalCode = alphabeticalCode;
+	}
 
-    public void setCreatedAt(ZonedDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+	public void setCreatedAt(ZonedDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
 
-    public void setCreator(UserEntity creator) {
-        this.creator = creator;
-    }
+	public void setCreator(UserEntity creator) {
+		this.creator = creator;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
 
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
-        CurrencyEntity currencyEntity = (CurrencyEntity) o;
+		CurrencyEntity currencyEntity = (CurrencyEntity) o;
 
-        if (id != currencyEntity.getId() || name != currencyEntity.getName()) {
-            return false;
-        }
+		if (id != currencyEntity.getId() || !name.equals(currencyEntity.getName())) {
+			return false;
+		}
 
-        if (createdAt != currencyEntity.createdAt) {
-            return false;
-        }
+		if (alphabeticalCode != null && !alphabeticalCode.equals(currencyEntity.getAlphabeticalCode())) {
+			return false;
+		}
 
-        return alphabeticalCode == currencyEntity.getAlphabeticalCode();
-    }
+		return createdAt == currencyEntity.getCreatedAt();
+	}
 
-    @Override
-    public String toString() {
-        return "CurrencyEntity(id=" + id +
-                ", name=" + name +
-                ", alphabeticalCode=" + alphabeticalCode +
-                ", createdAt=" + createdAt +
-                ", creatorId=" + creator.getId() + ")";
-    }
+	@Override
+	public String toString() {
+		return "CurrencyEntity(id=" + id +
+				", name=" + name +
+				", alphabeticalCode=" + alphabeticalCode +
+				", createdAt=" + createdAt +
+				", creatorId=" + creator.getId() + ")";
+	}
 
 }

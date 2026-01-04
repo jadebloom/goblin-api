@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryDescription;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryName;
 import com.jadebloom.goblin_api.security.entity.UserEntity;
+import com.jadebloom.goblin_api.shared.validation.ValidHexColorCode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,107 +23,123 @@ import jakarta.validation.constraints.NotNull;
 @Table(name = "expense_category")
 public class ExpenseCategoryEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(updatable = false)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(updatable = false)
+	private Long id;
 
-    @Column(unique = true, nullable = false, length = 64)
-    @ValidExpenseCategoryName
-    private String name;
+	@Column(unique = true, nullable = false, length = 64)
+	@ValidExpenseCategoryName
+	private String name;
 
-    @Column(length = 256)
-    @ValidExpenseCategoryDescription
-    private String description;
+	@Column(length = 256)
+	@ValidExpenseCategoryDescription
+	private String description;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private ZonedDateTime createdAt;
+	@Column(length = 7)
+	@ValidHexColorCode
+	private String hexColorCode;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "creator_id", referencedColumnName = "id", nullable = false, updatable = false)
-    @NotNull(message = "The expense category's creator must not be null")
-    private UserEntity creator;
+	@CreationTimestamp
+	@Column(name = "created_at", nullable = false, updatable = false)
+	private ZonedDateTime createdAt;
 
-    public ExpenseCategoryEntity() {
-    }
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "creator_id", referencedColumnName = "id", nullable = false, updatable = false)
+	@NotNull(message = "The expense category's creator must not be null")
+	private UserEntity creator;
 
-    public ExpenseCategoryEntity(String name, UserEntity creator) {
-        this.name = name;
+	public ExpenseCategoryEntity() {
+	}
 
-        this.creator = creator;
-    }
+	public ExpenseCategoryEntity(String name, UserEntity creator) {
+		this.name = name;
 
-    public Long getId() {
-        return id;
-    }
+		this.creator = creator;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public ZonedDateTime getCreatedAt() {
-        return createdAt;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public UserEntity getCreator() {
-        return creator;
-    }
+	public String getHexColorCode() {
+		return hexColorCode;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public ZonedDateTime getCreatedAt() {
+		return createdAt;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public UserEntity getCreator() {
+		return creator;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setCreatedAt(ZonedDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setCreator(UserEntity creator) {
-        this.creator = creator;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
+	public void setHexColorCode(String hexColorCode) {
+		this.hexColorCode = hexColorCode;
+	}
 
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+	public void setCreatedAt(ZonedDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
 
-        ExpenseCategoryEntity expenseCategory = (ExpenseCategoryEntity) o;
+	public void setCreator(UserEntity creator) {
+		this.creator = creator;
+	}
 
-        if (id != expenseCategory.getId() || name != expenseCategory.getName()) {
-            return false;
-        }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
 
-        if (createdAt != expenseCategory.createdAt) {
-            return false;
-        }
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
-        return description == expenseCategory.getDescription();
-    }
+		ExpenseCategoryEntity expenseCategory = (ExpenseCategoryEntity) o;
 
-    @Override
-    public String toString() {
-        return "ExpenseCategoryEntity(id=" + id +
-                ", name=" + name +
-                ", description=" + description +
-                ", createdAt=" + createdAt +
-                ", creatorId=" + creator.getId() + ")";
-    }
+		if (id != expenseCategory.getId() || !name.equals(expenseCategory.getName())) {
+			return false;
+		}
+
+		if (description != null && !description.equals(expenseCategory.getDescription())) {
+			return false;
+		}
+
+		if (hexColorCode != null && !hexColorCode.equals(expenseCategory.getHexColorCode())) {
+			return false;
+		}
+
+		return createdAt == expenseCategory.getCreatedAt();
+	}
+
+	@Override
+	public String toString() {
+		return "ExpenseCategoryEntity(id=" + id +
+				", name=" + name +
+				", description=" + description +
+				", hexColorCode=" + hexColorCode +
+				", createdAt=" + createdAt + ")";
+	}
 
 }

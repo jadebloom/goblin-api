@@ -1,42 +1,58 @@
 package com.jadebloom.goblin_api.expense.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryDescription;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryName;
+import com.jadebloom.goblin_api.shared.validation.ValidHexColorCode;
 
 public class CreateExpenseCategoryDto {
 
-    @ValidExpenseCategoryName
-    private String name;
+	@ValidExpenseCategoryName
+	private String name;
 
-    @ValidExpenseCategoryDescription
-    private String description;
+	@ValidExpenseCategoryDescription
+	private String description;
 
-    public CreateExpenseCategoryDto() {
-    }
+	@ValidHexColorCode
+	@JsonProperty("hex_color_code")
+	private String hexColorCode;
 
-    public CreateExpenseCategoryDto(String name) {
-        this.name = name;
-    }
+	public CreateExpenseCategoryDto() {
+	}
 
-    public String getName() {
-        return name;
-    }
+	public CreateExpenseCategoryDto(String name) {
+		this.name = name;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public String getHexColorCode() {
+		return hexColorCode;
+	}
 
-    @Override
-    public String toString() {
-        return "CreateExpenseCategoryDto(name=" + name + ", description=" + description + ")";
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setHexColorCode(String hexColorCode) {
+		this.hexColorCode = hexColorCode;
+	}
+
+	@Override
+	public String toString() {
+		return "CreateExpenseCategoryDto(name=" + name +
+				", description=" + description +
+				", hexColorCode=" + hexColorCode + ")";
+	}
 
 }

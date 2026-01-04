@@ -65,6 +65,7 @@ public class ExpenseCategoryServiceIntegrationTests {
 	public void GivenValidExpenseCategoryWithAllFields_WhenCreating_ThenReturnExpenseCategory() {
 		CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Daily");
 		createDto.setDescription("Magnificent ride");
+		createDto.setHexColorCode("#FF0000");
 
 		ExpenseCategoryDto created = underTest.create(createDto);
 
@@ -72,6 +73,7 @@ public class ExpenseCategoryServiceIntegrationTests {
 				() -> assertNotNull(created.getId()),
 				() -> assertEquals(createDto.getName(), created.getName()),
 				() -> assertEquals(createDto.getDescription(), created.getDescription()),
+				() -> assertEquals(createDto.getHexColorCode(), created.getHexColorCode()),
 				() -> assertNotNull(created.getCreatedAt()),
 				() -> assertEquals(user.getId(), created.getCreatorId()));
 	}
@@ -191,6 +193,7 @@ public class ExpenseCategoryServiceIntegrationTests {
 				created.getId(),
 				"Debt");
 		updateDto.setDescription("Daily expenses category");
+		updateDto.setHexColorCode("#FFF");
 
 		ExpenseCategoryDto updated = underTest.update(updateDto);
 
@@ -198,6 +201,7 @@ public class ExpenseCategoryServiceIntegrationTests {
 				() -> assertEquals(created.getId(), updated.getId()),
 				() -> assertEquals(updateDto.getName(), updated.getName()),
 				() -> assertEquals(updateDto.getDescription(), updated.getDescription()),
+				() -> assertEquals(updateDto.getHexColorCode(), updated.getHexColorCode()),
 				() -> assertEquals(created.getCreatedAt(), updated.getCreatedAt()),
 				() -> assertEquals(created.getCreatorId(), updated.getCreatorId()));
 	}

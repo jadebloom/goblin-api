@@ -80,6 +80,7 @@ public class ExpenseCategoryControllerUnitTests {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(dto.getId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(dto.getName()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.description").value(dto.getDescription()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.hex_color_code").value(dto.getHexColorCode()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
 	}
@@ -204,6 +205,7 @@ public class ExpenseCategoryControllerUnitTests {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(returned.getId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(returned.getName()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.description").value(returned.getDescription()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.hex_color_code").value(returned.getHexColorCode()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.creator_id").value(returned.getCreatorId()));
 	}

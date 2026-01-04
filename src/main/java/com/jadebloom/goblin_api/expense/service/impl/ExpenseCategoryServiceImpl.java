@@ -150,6 +150,7 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 
 		expenseCategory.setName(updateDto.getName());
 		expenseCategory.setDescription(updateDto.getDescription());
+		expenseCategory.setHexColorCode(updateDto.getHexColorCode());
 
 		return mapper.map(expenseCategoryRepository.saveAndFlush(expenseCategory));
 	}

@@ -5,6 +5,7 @@ import java.time.ZonedDateTime;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryDescription;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryName;
+import com.jadebloom.goblin_api.shared.validation.ValidHexColorCode;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -18,6 +19,10 @@ public class ExpenseCategoryDto {
 
 	@ValidExpenseCategoryDescription
 	private String description;
+
+	@ValidHexColorCode
+	@JsonProperty("hex_color_code")
+	private String hexColorCode;
 
 	@JsonProperty("created_at")
 	private ZonedDateTime createdAt;
@@ -51,6 +56,10 @@ public class ExpenseCategoryDto {
 		return description;
 	}
 
+	public String getHexColorCode() {
+		return hexColorCode;
+	}
+
 	public ZonedDateTime getCreatedAt() {
 		return createdAt;
 	}
@@ -69,6 +78,10 @@ public class ExpenseCategoryDto {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public void setHexColorCode(String hexColorCode) {
+		this.hexColorCode = hexColorCode;
 	}
 
 	public void setCreatedAt(ZonedDateTime createdAt) {
@@ -91,7 +104,15 @@ public class ExpenseCategoryDto {
 
 		ExpenseCategoryDto d = (ExpenseCategoryDto) o;
 
-		if (id != d.getId() || name != d.getName() || description != d.getDescription()) {
+		if (id != d.getId() || !name.equals(d.getName())) {
+			return false;
+		}
+
+		if (description != null && !description.equals(d.getDescription())) {
+			return false;
+		}
+
+		if (hexColorCode != null && !hexColorCode.equals(d.getHexColorCode())) {
 			return false;
 		}
 
@@ -103,6 +124,7 @@ public class ExpenseCategoryDto {
 		return "ExpenseCategoryDto(id=" + id +
 				", name=" + name +
 				", description=" + description +
+				", hexColorCode=" + hexColorCode +
 				", createdAt=" + createdAt +
 				", creatorId=" + creatorId + ")";
 	}

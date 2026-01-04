@@ -4,13 +4,13 @@ The centralized log of tasks and improvements.
 
 ## Springlog
 
-Working on 1.1.2:
+Working on 1.2.0:
 
 6. Update password.
-7. Add hexadecimal colors to expense categories.
 8. Add payment method for expenses.
 9. Integrate a relational database instead of H2.
 10. Update the license.
+11. Update README.md.
 
 ## Backlog
 
@@ -33,5 +33,4 @@ Working on 1.1.2:
 2.  Optimize the queries and the Lighthouse or something.
 3. Integrate JaCoCo.
 5. Consider deploy.
-6. Update the documentation (README).
 7. Add formatting.

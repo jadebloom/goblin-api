@@ -12,56 +12,56 @@ import jakarta.validation.constraints.NotBlank;
 @Table(name = "permission")
 public class PermissionEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(updatable = false)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(updatable = false)
+	private Long id;
 
-    @NotBlank
-    @Column(unique = true, nullable = false)
-    private String name;
+	@NotBlank
+	@Column(unique = true, nullable = false)
+	private String name;
 
-    public PermissionEntity() {
-    }
+	public PermissionEntity() {
+	}
 
-    public PermissionEntity(String name) {
-        this.name = name;
-    }
+	public PermissionEntity(String name) {
+		this.name = name;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
 
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
-        PermissionEntity e = (PermissionEntity) o;
+		PermissionEntity e = (PermissionEntity) o;
 
-        return id == e.getId() && name == e.getName();
-    }
+		return id == e.getId() && name.equals(e.getName());
+	}
 
-    @Override
-    public String toString() {
-        return "PermissionEntity(id=" + id + ", name=" + name + ")";
-    }
+	@Override
+	public String toString() {
+		return "PermissionEntity(id=" + id + ", name=" + name + ")";
+	}
 
 }

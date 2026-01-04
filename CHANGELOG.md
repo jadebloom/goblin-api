@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Added expenses' deletion based on their expense category's ID.
 - Added expenses' deletion based on their currency's ID.
 - Added account deletion.
+- Added color field to expense category.
 ### Changed
 - Changed the JWT token subject to contain user's ID too.
 - Deleting a non-existing entity now returns HTTP 404, instead of a silent HTTP 204.
@@ -16,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Removed
 - For now removed features.
 ### Fixed
-- For any bug fixes.
+- Fixed incorrect string equality checks.
 ### Security
 - In case of vulnerabilities.
 
