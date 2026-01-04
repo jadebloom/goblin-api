@@ -257,12 +257,11 @@ public class CurrencyControllerUnitTests {
 	}
 
 	@Test
-	@DisplayName("Return HTTP 204 when deleting a currency with a non-existing ID")
+	@DisplayName("Return HTTP 204 when deleting a currency by its ID")
 	@WithMockUser(roles = "USER")
-	public void GivenNonExistingCurrencyId_WhenDeletingCurrencyById_ThenReturnHttp204()
+	public void GivenExistingCurrencyId_WhenDeletingCurrencyById_ThenReturnHttp204()
 			throws Exception {
-		mockMvc.perform(
-				MockMvcRequestBuilders.delete("/api/v1/currencies/1").with(csrf()))
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/currencies/1").with(csrf()))
 				.andExpect(MockMvcResultMatchers.status().isNoContent());
 	}
 
@@ -274,6 +273,17 @@ public class CurrencyControllerUnitTests {
 		mockMvc.perform(
 				MockMvcRequestBuilders.delete("/api/v1/currencies/1").with(csrf()))
 				.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 404 when trying to delete a non-existing expense by ID")
+	@WithMockUser(roles = { "USER" })
+	public void GivenNonExistingCurrency_WhenDeletingById_ThenReturnHttp404() throws Exception {
+		doThrow(CurrencyNotFoundException.class).when(currencyService).deleteById(anyLong());
+
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/currencies/1")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isNotFound());
 	}
 
 	@Test

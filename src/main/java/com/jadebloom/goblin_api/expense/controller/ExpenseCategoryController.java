@@ -18,6 +18,7 @@ import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.UpdateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.service.ExpenseCategoryService;
+import com.jadebloom.goblin_api.expense.service.ExpenseService;
 
 import jakarta.validation.Valid;
 
@@ -25,55 +26,70 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/v1/expenses/categories")
 public class ExpenseCategoryController {
 
-    private final ExpenseCategoryService expenseCategoryService;
+	private final ExpenseCategoryService expenseCategoryService;
 
-    public ExpenseCategoryController(ExpenseCategoryService expenseCategoryService) {
-        this.expenseCategoryService = expenseCategoryService;
-    }
+	private final ExpenseService expenseService;
 
-    @PreAuthorize("hasRole('USER')")
-    @PostMapping
-    public ResponseEntity<ExpenseCategoryDto> createExpenseCategory(
-            @Valid @RequestBody CreateExpenseCategoryDto createDto) {
-        ExpenseCategoryDto result = expenseCategoryService.create(createDto);
+	public ExpenseCategoryController(
+			ExpenseCategoryService expenseCategoryService,
+			ExpenseService expenseService) {
+		this.expenseCategoryService = expenseCategoryService;
 
-        return new ResponseEntity<>(result, HttpStatus.CREATED);
-    }
+		this.expenseService = expenseService;
+	}
 
-    @PreAuthorize("hasRole('USER')")
-    @GetMapping
-    public ResponseEntity<Page<ExpenseCategoryDto>> findAuthenticatedUserExpenseCategories(Pageable pageable) {
-        Page<ExpenseCategoryDto> page = expenseCategoryService.findAuthenticatedUserExpenseCategories(
-                pageable);
+	@PreAuthorize("hasRole('USER')")
+	@PostMapping
+	public ResponseEntity<ExpenseCategoryDto> createExpenseCategory(
+			@Valid @RequestBody CreateExpenseCategoryDto createDto) {
+		ExpenseCategoryDto result = expenseCategoryService.create(createDto);
 
-        return new ResponseEntity<>(page, HttpStatus.OK);
-    }
+		return new ResponseEntity<>(result, HttpStatus.CREATED);
+	}
 
-    @PreAuthorize("hasRole('USER')")
-    @GetMapping("/{id}")
-    public ResponseEntity<ExpenseCategoryDto> findExpenseCategoryById(
-            @PathVariable(name = "id") Long expenseCategoryId) {
-        ExpenseCategoryDto dto = expenseCategoryService.findById(expenseCategoryId);
+	@PreAuthorize("hasRole('USER')")
+	@GetMapping
+	public ResponseEntity<Page<ExpenseCategoryDto>> findAuthenticatedUserExpenseCategories(Pageable pageable) {
+		Page<ExpenseCategoryDto> page = expenseCategoryService.findAuthenticatedUserExpenseCategories(
+				pageable);
 
-        return new ResponseEntity<>(dto, HttpStatus.OK);
-    }
+		return new ResponseEntity<>(page, HttpStatus.OK);
+	}
 
-    @PreAuthorize("hasRole('USER')")
-    @PutMapping
-    public ResponseEntity<ExpenseCategoryDto> updateExpenseCategory(
-            @Valid @RequestBody UpdateExpenseCategoryDto updateDto) {
-        ExpenseCategoryDto result = expenseCategoryService.update(updateDto);
+	@PreAuthorize("hasRole('USER')")
+	@GetMapping("/{id}")
+	public ResponseEntity<ExpenseCategoryDto> findExpenseCategoryById(
+			@PathVariable(name = "id") Long expenseCategoryId) {
+		ExpenseCategoryDto dto = expenseCategoryService.findById(expenseCategoryId);
 
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+		return new ResponseEntity<>(dto, HttpStatus.OK);
+	}
 
-    @PreAuthorize("hasRole('USER')")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteExpenseCategoryById(
-            @PathVariable(name = "id") Long expenseCategoryId) {
-        expenseCategoryService.deleteById(expenseCategoryId);
+	@PreAuthorize("hasRole('USER')")
+	@PutMapping
+	public ResponseEntity<ExpenseCategoryDto> updateExpenseCategory(
+			@Valid @RequestBody UpdateExpenseCategoryDto updateDto) {
+		ExpenseCategoryDto result = expenseCategoryService.update(updateDto);
 
-        return ResponseEntity.noContent().build();
-    }
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+
+	@PreAuthorize("hasRole('USER')")
+	@DeleteMapping("/{id}/expenses")
+	public ResponseEntity<Void> deleteAllExpensesByExpenseCategoryId(
+			@PathVariable(name = "id") Long expenseCategoryId) {
+		expenseService.deleteAllExpensesByExpenseCategoryId(expenseCategoryId);
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@PreAuthorize("hasRole('USER')")
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deleteExpenseCategoryById(
+			@PathVariable(name = "id") Long expenseCategoryId) {
+		expenseCategoryService.deleteById(expenseCategoryId);
+
+		return ResponseEntity.noContent().build();
+	}
 
 }

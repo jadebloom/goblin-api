@@ -31,6 +31,9 @@ public interface ExpenseService {
 			ExpenseCategoryNotFoundException,
 			CurrencyNotFoundException;
 
+	void deleteAllExpensesByExpenseCategoryId(Long expenseCategoryId)
+			throws ForbiddenException, ExpenseCategoryNotFoundException;
+
 	void deleteById(Long expenseId) throws ForbiddenException, ExpenseNotFoundException;
 
 }

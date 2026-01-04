@@ -1,5 +1,5 @@
 operationId: deleteExpenseCategoryById
-summary: Deletes an expense category by ID, regardless whether it exists or not
+summary: Delete an expense category by ID.
 tags:
   - Expense Categories
 parameters:
@@ -15,6 +15,8 @@ responses:
     $ref: ../../../../openapi.yaml#/components/responses/NoContent
   "403":
     $ref: ../../../../openapi.yaml#/components/responses/ForbiddenError
+  "404":
+    $ref: ../../../../openapi.yaml#/components/responses/NotFoundError
   "409":
     $ref: ../../../../openapi.yaml#/components/responses/EntityInUseError
   "500":

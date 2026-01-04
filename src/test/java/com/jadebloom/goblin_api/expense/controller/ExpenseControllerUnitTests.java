@@ -2,6 +2,7 @@ package com.jadebloom.goblin_api.expense.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
@@ -40,7 +41,7 @@ public class ExpenseControllerUnitTests {
 	private MockMvc mockMvc;
 
 	@MockitoBean
-	private ExpenseService service;
+	private ExpenseService expenseService;
 
 	@MockitoBean
 	private JwtService jwtService;
@@ -69,7 +70,7 @@ public class ExpenseControllerUnitTests {
 		dto.setDescription(createDto.getDescription());
 		dto.setLabels(createDto.getLabels());
 
-		when(service.create(any(CreateExpenseDto.class))).thenReturn(dto);
+		when(expenseService.create(any(CreateExpenseDto.class))).thenReturn(dto);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses")
 				.with(csrf())
@@ -108,7 +109,7 @@ public class ExpenseControllerUnitTests {
 				createDto.getCurrencyId(),
 				1L);
 
-		when(service.create(any(CreateExpenseDto.class))).thenReturn(dto);
+		when(expenseService.create(any(CreateExpenseDto.class))).thenReturn(dto);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses")
 				.with(csrf())
@@ -168,7 +169,7 @@ public class ExpenseControllerUnitTests {
 				1L,
 				1L);
 
-		when(service.create(any(CreateExpenseDto.class)))
+		when(expenseService.create(any(CreateExpenseDto.class)))
 				.thenThrow(ExpenseCategoryNotFoundException.class);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses")
@@ -188,7 +189,7 @@ public class ExpenseControllerUnitTests {
 				1L,
 				1L);
 
-		when(service.create(any(CreateExpenseDto.class)))
+		when(expenseService.create(any(CreateExpenseDto.class)))
 				.thenThrow(CurrencyNotFoundException.class);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses")
@@ -234,7 +235,7 @@ public class ExpenseControllerUnitTests {
 		dto.setDescription("Magnificent ride");
 		dto.setLabels(List.of("Label1", "Label2"));
 
-		when(service.findById(anyLong())).thenReturn(dto);
+		when(expenseService.findById(anyLong())).thenReturn(dto);
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/expenses/1")
 				.with(csrf()))
@@ -264,7 +265,7 @@ public class ExpenseControllerUnitTests {
 	@DisplayName("Return HTTP 404 when trying to find a non-existing expense by ID")
 	@WithMockUser(roles = { "USER" })
 	public void GivenNonExistingExpense_WhenFindingItById_ThenReturn404() throws Exception {
-		when(service.findById(anyLong())).thenThrow(ExpenseNotFoundException.class);
+		when(expenseService.findById(anyLong())).thenThrow(ExpenseNotFoundException.class);
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/expenses/1")
 				.with(csrf()))
@@ -296,7 +297,7 @@ public class ExpenseControllerUnitTests {
 		dto.setDescription(updateDto.getDescription());
 		dto.setLabels(updateDto.getLabels());
 
-		when(service.update(any(UpdateExpenseDto.class))).thenReturn(dto);
+		when(expenseService.update(any(UpdateExpenseDto.class))).thenReturn(dto);
 
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses")
 				.with(csrf())
@@ -336,7 +337,7 @@ public class ExpenseControllerUnitTests {
 				updateDto.getCurrencyId(),
 				1L);
 
-		when(service.update(any(UpdateExpenseDto.class))).thenReturn(dto);
+		when(expenseService.update(any(UpdateExpenseDto.class))).thenReturn(dto);
 
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses")
 				.with(csrf())
@@ -400,7 +401,7 @@ public class ExpenseControllerUnitTests {
 				1L,
 				1L);
 
-		when(service.update(any(UpdateExpenseDto.class))).thenThrow(ExpenseNotFoundException.class);
+		when(expenseService.update(any(UpdateExpenseDto.class))).thenThrow(ExpenseNotFoundException.class);
 
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses")
 				.with(csrf())
@@ -420,7 +421,7 @@ public class ExpenseControllerUnitTests {
 				1L,
 				1L);
 
-		when(service.update(any(UpdateExpenseDto.class)))
+		when(expenseService.update(any(UpdateExpenseDto.class)))
 				.thenThrow(ExpenseCategoryNotFoundException.class);
 
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses")
@@ -441,7 +442,7 @@ public class ExpenseControllerUnitTests {
 				1L,
 				1L);
 
-		when(service.update(any(UpdateExpenseDto.class)))
+		when(expenseService.update(any(UpdateExpenseDto.class)))
 				.thenThrow(CurrencyNotFoundException.class);
 
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses")
@@ -452,21 +453,32 @@ public class ExpenseControllerUnitTests {
 	}
 
 	@Test
-	@DisplayName("Return HTTP 204 when deleting an expense regardless if it exists or not")
+	@DisplayName("Return HTTP 204 when deleting an expense by its ID")
 	@WithMockUser(roles = { "USER" })
-	public void GivenNonExistingExpense_WhenDeletingById_ThenReturnHttp204() throws Exception {
+	public void GivenExistingExpense_WhenDeletingById_ThenReturnHttp204() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/1")
 				.with(csrf()))
 				.andExpect(MockMvcResultMatchers.status().isNoContent());
 	}
 
 	@Test
-	@DisplayName("Return HTTP 403 when deleting an expense as a user without valid roles")
+	@DisplayName("Return HTTP 403 when trying to delete an expense as a user without valid roles")
 	@WithMockUser(roles = { "SOME_INVALID_ROLE" })
 	public void GivenWithoutValidRoles_WhenDeletingById_ThenReturnHttp403() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/1")
 				.with(csrf()))
 				.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 404 when trying to delete a non-existing expense by ID")
+	@WithMockUser(roles = { "USER" })
+	public void GivenNonExistingExpense_WhenDeletingById_ThenReturnHttp404() throws Exception {
+		doThrow(ExpenseNotFoundException.class).when(expenseService).deleteById(anyLong());
+
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/1")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isNotFound());
 	}
 
 }

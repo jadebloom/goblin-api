@@ -153,4 +153,22 @@ public class ExpenseRepositoryIntegrationTests {
 		assertFalse(isExists);
 	}
 
+	@Test
+	@DisplayName("Verify that all possible expenses can be deleted by their category's ID")
+	public void GivenPossibleExpenses_WhenDeletingAllByExpenseCategoryId_ThenDoNotThrow() {
+		ExpenseEntity toCreate = new ExpenseEntity(
+				"Uber Ride",
+				1000L,
+				expenseCategory,
+				currency,
+				user);
+		underTest.save(toCreate);
+
+		underTest.deleteAllByExpenseCategory_Id(expenseCategory.getId());
+
+		List<ExpenseEntity> expenses = underTest.findAll();
+
+		assertEquals(0, expenses.size());
+	}
+
 }

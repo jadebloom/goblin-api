@@ -6,10 +6,7 @@ The centralized log of tasks and improvements.
 
 Working on 1.1.2:
 
-1. Added expenses' deletion by their expense category's ID.
 1. Added expenses' deletion by their currency's ID.
-2. Work more on deletion checks.
-3. .....
 4. Delete all expenses by its currency ID.
 5. Delete current user.
 6. Update password.
