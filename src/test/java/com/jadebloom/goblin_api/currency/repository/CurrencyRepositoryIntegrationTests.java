@@ -29,7 +29,7 @@ public class CurrencyRepositoryIntegrationTests {
 
 	private final UserTestUtils userTestUtils;
 
-	private UserEntity currencyCreator;
+	private UserEntity user;
 
 	@Autowired
 	public CurrencyRepositoryIntegrationTests(
@@ -42,20 +42,20 @@ public class CurrencyRepositoryIntegrationTests {
 
 	@BeforeEach
 	public void createCurrencyCreator() {
-		currencyCreator = userTestUtils.createUserAndItsDependencies();
+		user = userTestUtils.createUserAndItsDependencies();
 	}
 
 	@Test
 	@DisplayName("Return currencies found by their creator email")
 	public void GivenCurrencies_WhenFindingThemByTheirCreatorEmail_ThenReturnCurrencies() {
-		CurrencyEntity toCreate1 = new CurrencyEntity("Tenge", currencyCreator);
-		CurrencyEntity toCreate2 = new CurrencyEntity("Dollar", currencyCreator);
+		CurrencyEntity toCreate1 = new CurrencyEntity("Tenge", user);
+		CurrencyEntity toCreate2 = new CurrencyEntity("Dollar", user);
 
 		CurrencyEntity created1 = underTest.save(toCreate1);
 		CurrencyEntity created2 = underTest.save(toCreate2);
 
 		Page<CurrencyEntity> page = underTest.findAllByCreator_Id(
-				currencyCreator.getId(), PageRequest.of(0, 20));
+				user.getId(), PageRequest.of(0, 20));
 
 		List<CurrencyEntity> currencies = page.getContent();
 
@@ -68,7 +68,7 @@ public class CurrencyRepositoryIntegrationTests {
 	@Test
 	@DisplayName("Return true when checking the existence of an existing currency by its name")
 	public void GivenCurrency_WhenCheckingItsExistenceByName_ThenReturnTrue() {
-		CurrencyEntity toCreate = new CurrencyEntity("Tenge", currencyCreator);
+		CurrencyEntity toCreate = new CurrencyEntity("Tenge", user);
 		CurrencyEntity created = underTest.save(toCreate);
 
 		boolean isExists = underTest.existsByName(created.getName());
@@ -79,12 +79,25 @@ public class CurrencyRepositoryIntegrationTests {
 	@Test
 	@DisplayName("Return true when checking the existence of an existing currency by its name, but not ID")
 	public void GivenCurrency_WhenCheckingItsExistenceByNameAndNotId_ThenReturnTrue() {
-		CurrencyEntity toCreate = new CurrencyEntity("Tenge", currencyCreator);
+		CurrencyEntity toCreate = new CurrencyEntity("Tenge", user);
 		CurrencyEntity created = underTest.save(toCreate);
 
 		boolean isExists = underTest.existsByIdNotAndName(created.getId() + 1, created.getName());
 
 		assertTrue(isExists);
+	}
+
+	@Test
+	@DisplayName("Verify that all currencies can be deleted by their creator's ID")
+	public void GivenCurrencies_WhenDeletingAllByCreatorId_ThenDelete() {
+		CurrencyEntity toCreate = new CurrencyEntity("Tenge", user);
+		underTest.save(toCreate);
+
+		underTest.deleteAllByCreator_Id(user.getId());
+
+		List<CurrencyEntity> currencies = underTest.findAll();
+
+		assertEquals(0, currencies.size());
 	}
 
 }

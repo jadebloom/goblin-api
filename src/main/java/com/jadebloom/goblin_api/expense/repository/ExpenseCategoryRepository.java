@@ -16,4 +16,6 @@ public interface ExpenseCategoryRepository extends JpaRepository<ExpenseCategory
 
 	boolean existsByIdNotAndName(Long id, String name);
 
+	void deleteAllByCreator_Id(Long creatorId);
+
 }

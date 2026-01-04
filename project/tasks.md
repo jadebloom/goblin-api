@@ -6,7 +6,6 @@ The centralized log of tasks and improvements.
 
 Working on 1.1.2:
 
-5. Delete current user.
 6. Update password.
 7. Add hexadecimal colors to expense categories.
 8. Add payment method for expenses.

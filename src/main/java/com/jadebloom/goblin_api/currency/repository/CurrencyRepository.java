@@ -16,4 +16,6 @@ public interface CurrencyRepository extends JpaRepository<CurrencyEntity, Long> 
 
 	boolean existsByIdNotAndName(Long id, String name);
 
+	void deleteAllByCreator_Id(Long creatorId);
+
 }

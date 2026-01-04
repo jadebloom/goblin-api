@@ -114,4 +114,17 @@ public class ExpenseCategoryRepositoryIntegrationTests {
 		assertFalse(isExists);
 	}
 
+	@Test
+	@DisplayName("Verify that all expense categories can be deleted by their creator's ID")
+	public void GivenExpenseCategories_WhenDeletingAllByCreatorId_ThenDelete() {
+		ExpenseCategoryEntity toCreate = new ExpenseCategoryEntity("Daily", user);
+		underTest.save(toCreate);
+
+		underTest.deleteAllByCreator_Id(user.getId());
+
+		List<ExpenseCategoryEntity> expenseCategories = underTest.findAll();
+
+		assertEquals(0, expenseCategories.size());
+	}
+
 }

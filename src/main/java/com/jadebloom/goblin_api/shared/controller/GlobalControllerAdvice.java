@@ -44,7 +44,7 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
 		ErrorResponse errorResponse = ErrorResponse
 				.builder(ex, HttpStatus.BAD_REQUEST, errorMessage.trim())
 				.type(URI.create(API_DOCS_URI))
-				.title("Invalid Argument")
+				.title("Invalid argument")
 				.build();
 
 		return new ResponseEntity<>(errorResponse.getBody(), HttpStatus.BAD_REQUEST);
@@ -62,7 +62,7 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
 		ErrorResponse errorResponse = ErrorResponse
 				.builder(ex, HttpStatus.BAD_REQUEST, errorMessage)
 				.type(URI.create(API_DOCS_URI))
-				.title("Violated Constraints")
+				.title("Violated constraints")
 				.build();
 
 		return errorResponse;
