@@ -22,103 +22,103 @@ import jakarta.validation.constraints.NotNull;
 @Table(name = "\"user\"")
 public class UserEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(updatable = false)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(updatable = false)
+	private Long id;
 
-    @ValidUserEmail
-    @Column(unique = true)
-    private String email;
+	@ValidUserEmail
+	@Column(unique = true)
+	private String email;
 
-    @NotNull
-    private String password;
+	@NotNull
+	private String password;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private ZonedDateTime createdAt;
+	@CreationTimestamp
+	@Column(name = "created_at", updatable = false)
+	private ZonedDateTime createdAt;
 
-    @ManyToMany
-    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<RoleEntity> roles;
+	@ManyToMany
+	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	private Set<RoleEntity> roles;
 
-    public UserEntity() {
-    }
+	public UserEntity() {
+	}
 
-    public UserEntity(String email, String password, Set<RoleEntity> roles) {
-        this.email = email;
+	public UserEntity(String email, String password, Set<RoleEntity> roles) {
+		this.email = email;
 
-        this.password = password;
+		this.password = password;
 
-        this.roles = roles;
-    }
+		this.roles = roles;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public ZonedDateTime getCreatedAt() {
-        return createdAt;
-    }
+	public ZonedDateTime getCreatedAt() {
+		return createdAt;
+	}
 
-    public Set<RoleEntity> getRoles() {
-        return roles;
-    }
+	public Set<RoleEntity> getRoles() {
+		return roles;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public void setCreatedAt(ZonedDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+	public void setCreatedAt(ZonedDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
 
-    public void setRoles(Set<RoleEntity> roles) {
-        this.roles = roles;
-    }
+	public void setRoles(Set<RoleEntity> roles) {
+		this.roles = roles;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
 
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
-        UserEntity userEntity = (UserEntity) o;
+		UserEntity userEntity = (UserEntity) o;
 
-        if (id != userEntity.getId() || email != userEntity.getEmail()) {
-            return false;
-        }
+		if (id != userEntity.getId() || email != userEntity.getEmail()) {
+			return false;
+		}
 
-        return password == userEntity.getPassword() && createdAt == userEntity.getCreatedAt();
-    }
+		return password.equals(userEntity.getPassword()) && createdAt == userEntity.getCreatedAt();
+	}
 
-    @Override
-    public String toString() {
-        // Roles are skipped as a micro-optimization.
-        return "UserEntity(id=" + id +
-                ", email=" + email +
-                ", password=" + password +
-                ", createdAt=" + createdAt + ")";
-    }
+	@Override
+	public String toString() {
+		// Roles are skipped as a micro-optimization.
+		return "UserEntity(id=" + id +
+				", email=" + email +
+				", password=" + password +
+				", createdAt=" + createdAt + ")";
+	}
 
 }

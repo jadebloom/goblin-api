@@ -92,7 +92,11 @@ public class CurrencyDto {
 
 		CurrencyDto d = (CurrencyDto) o;
 
-		if (id != d.getId() || name != d.getName() || alphabeticalCode != d.getAlphabeticalCode()) {
+		if (id != d.getId() || !name.equals(d.getName())) {
+			return false;
+		}
+
+		if (alphabeticalCode != null && !alphabeticalCode.equals(d.getAlphabeticalCode())) {
 			return false;
 		}
 

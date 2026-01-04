@@ -33,6 +33,9 @@ public class ExpenseCategoryMapper {
 			typeMap.addMapping(
 					CreateExpenseCategoryDto::getDescription,
 					ExpenseCategoryEntity::setDescription);
+			typeMap.addMapping(
+					CreateExpenseCategoryDto::getHexColorCode,
+					ExpenseCategoryEntity::setHexColorCode);
 		}
 
 		return typeMap.map(createExpenseCategoryDto);
@@ -53,6 +56,9 @@ public class ExpenseCategoryMapper {
 			typeMap.addMapping(
 					ExpenseCategoryEntity::getDescription,
 					ExpenseCategoryDto::setDescription);
+			typeMap.addMapping(
+					ExpenseCategoryEntity::getHexColorCode,
+					ExpenseCategoryDto::setHexColorCode);
 			typeMap.addMapping(
 					ExpenseCategoryEntity::getCreatedAt,
 					ExpenseCategoryDto::setCreatedAt);

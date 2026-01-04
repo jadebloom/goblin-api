@@ -154,11 +154,11 @@ public class ExpenseDto {
 
 		ExpenseDto t = (ExpenseDto) o;
 
-		if (id != t.getId() || name != t.getName() || description != t.getDescription()) {
+		if (id != t.getId() || !name.equals(t.getName()) || amount != t.getAmount()) {
 			return false;
 		}
 
-		if (amount != t.getAmount() || createdAt != t.getCreatedAt()) {
+		if (description != null && !description.equals(t.getDescription())) {
 			return false;
 		}
 
@@ -166,11 +166,11 @@ public class ExpenseDto {
 			return false;
 		}
 
-		if (creatorId != t.getCreatorId()) {
+		if (expenseCategoryId != t.getExpenseCategoryId() || currencyId != t.getCurrencyId()) {
 			return false;
 		}
 
-		return expenseCategoryId == t.getExpenseCategoryId() && currencyId == t.getCurrencyId();
+		return creatorId == t.getCreatorId();
 	}
 
 	@Override

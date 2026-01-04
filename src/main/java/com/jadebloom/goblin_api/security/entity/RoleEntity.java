@@ -17,71 +17,71 @@ import jakarta.validation.constraints.NotBlank;
 @Table(name = "role")
 public class RoleEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(updatable = false)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(updatable = false)
+	private Long id;
 
-    @NotBlank
-    @Column(unique = true, nullable = false)
-    private String name;
+	@NotBlank
+	@Column(unique = true, nullable = false)
+	private String name;
 
-    @ManyToMany
-    @JoinTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
-    private Set<PermissionEntity> permissions;
+	@ManyToMany
+	@JoinTable(name = "role_permissions", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
+	private Set<PermissionEntity> permissions;
 
-    public RoleEntity() {
-    }
+	public RoleEntity() {
+	}
 
-    public RoleEntity(String name, Set<PermissionEntity> permissions) {
-        this.name = name;
+	public RoleEntity(String name, Set<PermissionEntity> permissions) {
+		this.name = name;
 
-        this.permissions = permissions;
-    }
+		this.permissions = permissions;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public Set<PermissionEntity> getPermissions() {
-        return permissions;
-    }
+	public Set<PermissionEntity> getPermissions() {
+		return permissions;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setPermissions(Set<PermissionEntity> permissions) {
-        this.permissions = permissions;
-    }
+	public void setPermissions(Set<PermissionEntity> permissions) {
+		this.permissions = permissions;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
 
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
-        RoleEntity e = (RoleEntity) o;
+		RoleEntity e = (RoleEntity) o;
 
-        return id == e.getId() && name == e.getName();
-    }
+		return id == e.getId() && name.equals(e.getName());
+	}
 
-    @Override
-    public String toString() {
-        // Permissions are skipped as a micro-optimization.
-        return "RoleEntity(id=" + id + ", name=" + name + ")";
-    }
+	@Override
+	public String toString() {
+		// Permissions are skipped as a micro-optimization.
+		return "RoleEntity(id=" + id + ", name=" + name + ")";
+	}
 
 }
