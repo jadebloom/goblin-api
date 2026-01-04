@@ -1,5 +1,5 @@
 operationId: deleteExpenseById
-summary: Deletes an expense by ID, regardless whether it exists or not
+summary: Deletes an expense by ID.
 tags:
   - Expenses
 parameters:
@@ -15,5 +15,7 @@ responses:
     $ref: ../../../openapi.yaml#/components/responses/NoContent
   "403":
     $ref: ../../../openapi.yaml#/components/responses/ForbiddenError
+  "404":
+    $ref: ../../../openapi.yaml#/components/responses/NotFoundError
   "500":
     $ref: ../../../openapi.yaml#/components/responses/InternalServerError

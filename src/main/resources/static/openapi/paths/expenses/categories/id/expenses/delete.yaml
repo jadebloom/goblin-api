@@ -1,0 +1,21 @@
+operationId: deleteAllExpensesByExpenseCategoryId
+summary: Delete all expenses by their expense category's ID
+tags:
+  - Expense Categories
+parameters:
+  - name: id
+    in: path
+    description: Expense category ID
+    schema:
+      type: integer
+security:
+  - bearerAuth: []
+responses:
+  "204":
+    $ref: ../../../../../openapi.yaml#/components/responses/NoContent
+  "403":
+    $ref: ../../../../../openapi.yaml#/components/responses/ForbiddenError
+  "404":
+    $ref: ../../../../../openapi.yaml#/components/responses/NotFoundError
+  "500":
+    $ref: ../../../../../openapi.yaml#/components/responses/InternalServerError

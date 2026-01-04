@@ -25,54 +25,54 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/v1/expenses")
 public class ExpenseController {
 
-    private final ExpenseService expenseService;
+	private final ExpenseService expenseService;
 
-    public ExpenseController(ExpenseService expenseService) {
-        this.expenseService = expenseService;
-    }
+	public ExpenseController(ExpenseService expenseService) {
+		this.expenseService = expenseService;
+	}
 
-    @PreAuthorize("hasRole('USER')")
-    @PostMapping
-    public ResponseEntity<ExpenseDto> createExpense(
-            @Valid @RequestBody CreateExpenseDto createDto) {
-        ExpenseDto dto = expenseService.create(createDto);
+	@PreAuthorize("hasRole('USER')")
+	@PostMapping
+	public ResponseEntity<ExpenseDto> createExpense(
+			@Valid @RequestBody CreateExpenseDto createDto) {
+		ExpenseDto dto = expenseService.create(createDto);
 
-        return new ResponseEntity<>(dto, HttpStatus.CREATED);
-    }
+		return new ResponseEntity<>(dto, HttpStatus.CREATED);
+	}
 
-    @PreAuthorize("hasRole('USER')")
-    @GetMapping
-    public ResponseEntity<Page<ExpenseDto>> findAuthenticatedUserExpenses(Pageable pageable) {
-        Page<ExpenseDto> page = expenseService.findUserAuthenticatedExpenses(pageable);
+	@PreAuthorize("hasRole('USER')")
+	@GetMapping
+	public ResponseEntity<Page<ExpenseDto>> findAuthenticatedUserExpenses(Pageable pageable) {
+		Page<ExpenseDto> page = expenseService.findUserAuthenticatedExpenses(pageable);
 
-        return new ResponseEntity<>(page, HttpStatus.OK);
-    }
+		return new ResponseEntity<>(page, HttpStatus.OK);
+	}
 
-    @PreAuthorize("hasRole('USER')")
-    @GetMapping("/{id}")
-    public ResponseEntity<ExpenseDto> findExpenseById(
-            @PathVariable(name = "id") Long expenseId) {
-        ExpenseDto dto = expenseService.findById(expenseId);
+	@PreAuthorize("hasRole('USER')")
+	@GetMapping("/{id}")
+	public ResponseEntity<ExpenseDto> findExpenseById(
+			@PathVariable(name = "id") Long expenseId) {
+		ExpenseDto dto = expenseService.findById(expenseId);
 
-        return new ResponseEntity<>(dto, HttpStatus.OK);
-    }
+		return new ResponseEntity<>(dto, HttpStatus.OK);
+	}
 
-    @PreAuthorize("hasRole('USER')")
-    @PutMapping
-    public ResponseEntity<ExpenseDto> updateExpense(
-            @Valid @RequestBody UpdateExpenseDto updateDto) {
-        ExpenseDto result = expenseService.update(updateDto);
+	@PreAuthorize("hasRole('USER')")
+	@PutMapping
+	public ResponseEntity<ExpenseDto> updateExpense(
+			@Valid @RequestBody UpdateExpenseDto updateDto) {
+		ExpenseDto result = expenseService.update(updateDto);
 
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
 
-    @PreAuthorize("hasRole('USER')")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteExpenseById(
-            @PathVariable(name = "id") Long expenseCategoryId) {
-        expenseService.deleteById(expenseCategoryId);
+	@PreAuthorize("hasRole('USER')")
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deleteExpenseById(
+			@PathVariable(name = "id") Long expenseCategoryId) {
+		expenseService.deleteById(expenseCategoryId);
 
-        return ResponseEntity.noContent().build();
-    }
+		return ResponseEntity.noContent().build();
+	}
 
 }

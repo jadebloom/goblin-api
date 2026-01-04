@@ -189,6 +189,28 @@ public class ExpenseServiceImpl implements ExpenseService {
 	}
 
 	@Override
+	public void deleteAllExpensesByExpenseCategoryId(Long expenseCategoryId)
+			throws ForbiddenException, ExpenseCategoryNotFoundException {
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
+
+		ExpenseCategoryEntity expenseCategory = expenseCategoryRepository
+				.findById(expenseCategoryId)
+				.orElseThrow(() -> {
+					String f = "Expense category with the ID '%d' doesn't exist";
+					String errorMessage = String.format(f, expenseCategoryId);
+
+					throw new ExpenseCategoryNotFoundException(errorMessage);
+				});
+
+		if (expenseCategory.getCreator().getId() != userId) {
+			throw new ForbiddenException();
+		}
+
+		expenseRepository.deleteAllByExpenseCategory_Id(expenseCategoryId);
+	}
+
+	@Override
 	public void deleteById(Long expenseId) throws ForbiddenException, ExpenseNotFoundException {
 		Long userId = SecurityContextUtils.getAuthenticatedUserId()
 				.orElseThrow(() -> new ForbiddenException());

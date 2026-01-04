@@ -15,7 +15,7 @@ import com.jadebloom.goblin_api.security.service.AuthenticationService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/v1/authentication")
 public class AuthenticationController {
 
 	private final AuthenticationService authenticationService;

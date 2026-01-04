@@ -110,8 +110,8 @@ public class CurrencyServiceIntegrationTests {
 	}
 
 	@Test
-	@DisplayName("Throw ForbiddenException when trying to create a currency without having the authenticated user email")
-	public void GivenWithoutAuthenticatedUserEmail_WhenCreating_ThenThrowForbiddenException() {
+	@DisplayName("Throw ForbiddenException when trying to create a currency without having the authenticated user")
+	public void GivenWithoutAuthenticatedUser_WhenCreating_ThenThrowForbiddenException() {
 		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
 
 		assertThrowsExactly(ForbiddenException.class, () -> underTest.create(createDto));
@@ -132,8 +132,8 @@ public class CurrencyServiceIntegrationTests {
 	}
 
 	@Test
-	@DisplayName("Throw ForbiddenException when trying to find the authenticated user currencies without its email")
-	public void GivenWithoutAuthenticatedUserEmail_WhenFindingAuthenticatedUserCurrencies_ThenThrowForbiddenException() {
+	@DisplayName("Throw ForbiddenException when trying to find the authenticated user currencies without the authenticated user")
+	public void GivenWithoutAuthenticatedUser_WhenFindingAuthenticatedUserCurrencies_ThenThrowForbiddenException() {
 		assertThrowsExactly(ForbiddenException.class,
 				() -> underTest.findAuthenticatedUserCurrencies(PageRequest.of(0, 20)));
 	}
@@ -267,8 +267,8 @@ public class CurrencyServiceIntegrationTests {
 	}
 
 	@Test
-	@DisplayName("Throw ForbiddenException when trying to delete a currency by its ID without the authenticated user's email")
-	public void GivenWithoutAuthenticatedUserEmail_WhenDeletingById_ThenThrowForbiddenException() {
+	@DisplayName("Throw ForbiddenException when trying to delete a currency by its ID without the authenticated user")
+	public void GivenWithoutAuthenticatedUser_WhenDeletingById_ThenThrowForbiddenException() {
 		assertThrowsExactly(ForbiddenException.class, () -> underTest.deleteById(1L));
 	}
 

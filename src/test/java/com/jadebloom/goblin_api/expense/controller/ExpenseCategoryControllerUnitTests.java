@@ -28,6 +28,7 @@ import com.jadebloom.goblin_api.expense.error.ExpenseCategoryInUseException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNameUnavailableException;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
 import com.jadebloom.goblin_api.expense.service.ExpenseCategoryService;
+import com.jadebloom.goblin_api.expense.service.ExpenseService;
 import com.jadebloom.goblin_api.security.service.JwtService;
 import com.jadebloom.goblin_api.test.MethodSecurityTestConfig;
 
@@ -37,256 +38,310 @@ import tools.jackson.databind.ObjectMapper;
 @Import(MethodSecurityTestConfig.class)
 public class ExpenseCategoryControllerUnitTests {
 
-    @Autowired
-    private MockMvc mockMvc;
+	@Autowired
+	private MockMvc mockMvc;
 
-    @MockitoBean
-    private ExpenseCategoryService service;
+	@MockitoBean
+	private ExpenseCategoryService expenseCategoryService;
 
-    @MockitoBean
-    private JwtService jwtService;
+	@MockitoBean
+	private ExpenseService expenseService;
 
-    private ObjectMapper objectMapper;
+	@MockitoBean
+	private JwtService jwtService;
 
-    @BeforeEach
-    public void createObjectMapper() {
-        objectMapper = new ObjectMapper();
-    }
+	private ObjectMapper objectMapper;
 
-    @Test
-    @DisplayName("Return HTTP 201 and expense category when creating expense category with only required fields")
-    @WithMockUser(roles = { "USER" })
-    public void GivenOnlyRequiredFields_WhenCreating_ThenReturnHttp201AndCreatedExpenseCategory()
-            throws Exception {
-        CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Daily");
+	@BeforeEach
+	public void createObjectMapper() {
+		objectMapper = new ObjectMapper();
+	}
 
-        ExpenseCategoryDto dto = new ExpenseCategoryDto(
-                1L,
-                createDto.getName(),
-                ZonedDateTime.now(),
-                1L);
+	@Test
+	@DisplayName("Return HTTP 201 and expense category when creating expense category with only required fields")
+	@WithMockUser(roles = { "USER" })
+	public void GivenOnlyRequiredFields_WhenCreating_ThenReturnHttp201AndCreatedExpenseCategory()
+			throws Exception {
+		CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Daily");
 
-        when(service.create(any(CreateExpenseCategoryDto.class))).thenReturn(dto);
+		ExpenseCategoryDto dto = new ExpenseCategoryDto(
+				1L,
+				createDto.getName(),
+				ZonedDateTime.now(),
+				1L);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses/categories")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createDto)))
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(dto.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(dto.getName()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(dto.getDescription()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
-    }
+		when(expenseCategoryService.create(any(CreateExpenseCategoryDto.class))).thenReturn(dto);
 
-    @Test
-    @DisplayName("Return HTTP 400 when creating an expense category with an invalid name")
-    @WithMockUser(roles = { "USER" })
-    public void GivenInvalidName_WhenCreating_ThenReturnHttp400() throws Exception {
-        CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("   ");
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses/categories")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(createDto)))
+				.andExpect(MockMvcResultMatchers.status().isCreated())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(dto.getId()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(dto.getName()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.description").value(dto.getDescription()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
+	}
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses/categories")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createDto)))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
+	@Test
+	@DisplayName("Return HTTP 400 when creating an expense category with an invalid name")
+	@WithMockUser(roles = { "USER" })
+	public void GivenInvalidName_WhenCreating_ThenReturnHttp400() throws Exception {
+		CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("   ");
 
-    @Test
-    @DisplayName("Return HTTP 400 when creating an expense category with an unavailable name")
-    @WithMockUser(roles = { "USER" })
-    public void GivenUnavailableName_WhenCreating_ThenReturnHttp400() throws Exception {
-        CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Daily");
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses/categories")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(createDto)))
+				.andExpect(MockMvcResultMatchers.status().isBadRequest());
+	}
 
-        when(service.create(any(CreateExpenseCategoryDto.class)))
-                .thenThrow(ExpenseCategoryNameUnavailableException.class);
+	@Test
+	@DisplayName("Return HTTP 400 when creating an expense category with an unavailable name")
+	@WithMockUser(roles = { "USER" })
+	public void GivenUnavailableName_WhenCreating_ThenReturnHttp400() throws Exception {
+		CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Daily");
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses/categories")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createDto)))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
+		when(expenseCategoryService.create(any(CreateExpenseCategoryDto.class)))
+				.thenThrow(ExpenseCategoryNameUnavailableException.class);
 
-    @Test
-    @DisplayName("Return HTTP 403 when creating new expense category as a user without valid roles")
-    @WithMockUser(roles = { "SOME_INVALID_ROLE" })
-    public void GivenWithoutValidRoles_WhenCreatingExpenseCategory_ThenReturnHttp403()
-            throws Exception {
-        CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Daily");
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses/categories")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(createDto)))
+				.andExpect(MockMvcResultMatchers.status().isBadRequest());
+	}
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses/categories")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createDto)))
-                .andExpect(MockMvcResultMatchers.status().isForbidden());
-    }
+	@Test
+	@DisplayName("Return HTTP 403 when creating new expense category as a user without valid roles")
+	@WithMockUser(roles = { "SOME_INVALID_ROLE" })
+	public void GivenWithoutValidRoles_WhenCreatingExpenseCategory_ThenReturnHttp403()
+			throws Exception {
+		CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Daily");
 
-    @Test
-    @DisplayName("Return HTTP 200 when finding the authenticated user expense categories")
-    @WithMockUser(roles = { "USER" })
-    public void GivenExpenseCategories_WhenFindingAuthenticatedUserExpenseCategories_ThenReturnHttp200()
-            throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/expenses/categories")
-                .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
-    }
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses/categories")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(createDto)))
+				.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
 
-    @Test
-    @DisplayName("Return HTTP 403 when finding the authenticated user expense categories without valid roles")
-    @WithMockUser(roles = { "SOME_INVALID_ROLE" })
-    public void GivenWithoutValidRoles_WhenFindingAuthenticatedUserExpenseCategories_ThenReturnHttp403()
-            throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/expenses/categories")
-                .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isForbidden());
-    }
+	@Test
+	@DisplayName("Return HTTP 200 when finding the authenticated user expense categories")
+	@WithMockUser(roles = { "USER" })
+	public void GivenExpenseCategories_WhenFindingAuthenticatedUserExpenseCategories_ThenReturnHttp200()
+			throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/expenses/categories")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isOk());
+	}
 
-    @Test
-    @DisplayName("Return HTTP 200 and the expense category when finding it by its ID")
-    @WithMockUser(roles = "USER")
-    public void GivenExpenseCategory_WhenFindingItById_ThenReturnHttp200AndExpenseCategory()
-            throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/expenses/categories/1")
-                .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
-    }
+	@Test
+	@DisplayName("Return HTTP 403 when finding the authenticated user expense categories without valid roles")
+	@WithMockUser(roles = { "SOME_INVALID_ROLE" })
+	public void GivenWithoutValidRoles_WhenFindingAuthenticatedUserExpenseCategories_ThenReturnHttp403()
+			throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/expenses/categories")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
 
-    @Test
-    @DisplayName("Return HTTP 403 when finding an expense category by ID without valid roles")
-    @WithMockUser(roles = { "SOME_INVALID_ROLE" })
-    public void GivenWithoutValidRoles_WhenFindingById_ThenReturnHttp403()
-            throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/expenses/categories/1")
-                .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isForbidden());
-    }
+	@Test
+	@DisplayName("Return HTTP 200 and the expense category when finding it by its ID")
+	@WithMockUser(roles = "USER")
+	public void GivenExpenseCategory_WhenFindingItById_ThenReturnHttp200AndExpenseCategory()
+			throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/expenses/categories/1")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isOk());
+	}
 
-    @Test
-    @DisplayName("Return HTTP 404 when finding a non-existing expense category by ID")
-    @WithMockUser(roles = { "USER" })
-    public void GivenNonExistingExpenseCategory_WhenFindingById_ThenReturnHttp404()
-            throws Exception {
-        when(service.findById(anyLong())).thenThrow(ExpenseCategoryNotFoundException.class);
+	@Test
+	@DisplayName("Return HTTP 403 when finding an expense category by ID without valid roles")
+	@WithMockUser(roles = { "SOME_INVALID_ROLE" })
+	public void GivenWithoutValidRoles_WhenFindingById_ThenReturnHttp403()
+			throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/expenses/categories/1")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/expenses/categories/1")
-                .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
-    }
+	@Test
+	@DisplayName("Return HTTP 404 when finding a non-existing expense category by ID")
+	@WithMockUser(roles = { "USER" })
+	public void GivenNonExistingExpenseCategory_WhenFindingById_ThenReturnHttp404()
+			throws Exception {
+		when(expenseCategoryService.findById(anyLong()))
+				.thenThrow(ExpenseCategoryNotFoundException.class);
 
-    @Test
-    @DisplayName("Return HTTP 200 and expense category when updating")
-    @WithMockUser(roles = { "USER" })
-    public void GivenExpenseCategory_WhenUpdating_ThenReturnHttp200AndExpenseCategory()
-            throws Exception {
-        UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(1L, "Daily");
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/expenses/categories/1")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isNotFound());
+	}
 
-        ExpenseCategoryDto returned = new ExpenseCategoryDto(
-                updateDto.getId(),
-                updateDto.getName(),
-                ZonedDateTime.now(),
-                1L);
+	@Test
+	@DisplayName("Return HTTP 200 and expense category when updating")
+	@WithMockUser(roles = { "USER" })
+	public void GivenExpenseCategory_WhenUpdating_ThenReturnHttp200AndExpenseCategory()
+			throws Exception {
+		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(1L, "Daily");
 
-        when(service.update(any(UpdateExpenseCategoryDto.class))).thenReturn(returned);
+		ExpenseCategoryDto returned = new ExpenseCategoryDto(
+				updateDto.getId(),
+				updateDto.getName(),
+				ZonedDateTime.now(),
+				1L);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/categories")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateDto)))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(returned.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(returned.getName()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(returned.getDescription()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.creator_id").value(returned.getCreatorId()));
-    }
+		when(expenseCategoryService.update(any(UpdateExpenseCategoryDto.class)))
+				.thenReturn(returned);
 
-    @Test
-    @DisplayName("Return HTTP 400 when updating an expense category with an invalid name")
-    @WithMockUser(roles = { "USER" })
-    public void GivenInvalidName_WhenUpdating_ThenReturnHttp400() throws Exception {
-        UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(1L, "   ");
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/categories")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updateDto)))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(returned.getId()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(returned.getName()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.description").value(returned.getDescription()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.creator_id").value(returned.getCreatorId()));
+	}
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/categories")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateDto)))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
+	@Test
+	@DisplayName("Return HTTP 400 when updating an expense category with an invalid name")
+	@WithMockUser(roles = { "USER" })
+	public void GivenInvalidName_WhenUpdating_ThenReturnHttp400() throws Exception {
+		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(1L, "   ");
 
-    @Test
-    @DisplayName("Return HTTP 400 when updating an expense category with an unavailable name")
-    @WithMockUser(roles = { "USER" })
-    public void GivenUnavailableName_WhenUpdating_ThenReturnHttp400() throws Exception {
-        UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(1L, "Daily");
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/categories")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updateDto)))
+				.andExpect(MockMvcResultMatchers.status().isBadRequest());
+	}
 
-        when(service.update(any(UpdateExpenseCategoryDto.class)))
-                .thenThrow(ExpenseCategoryNameUnavailableException.class);
+	@Test
+	@DisplayName("Return HTTP 400 when updating an expense category with an unavailable name")
+	@WithMockUser(roles = { "USER" })
+	public void GivenUnavailableName_WhenUpdating_ThenReturnHttp400() throws Exception {
+		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(1L, "Daily");
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/categories")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateDto)))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
+		when(expenseCategoryService.update(any(UpdateExpenseCategoryDto.class)))
+				.thenThrow(ExpenseCategoryNameUnavailableException.class);
 
-    @Test
-    @DisplayName("Return HTTP 403 when updating an expense category as a user without valid roles")
-    @WithMockUser(roles = { "SOME_INVALID_ROLE" })
-    public void GivenWithoutValidRoles_WhenUpdating_ThenReturnHttp403() throws Exception {
-        UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(1L, "Daily");
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/categories")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updateDto)))
+				.andExpect(MockMvcResultMatchers.status().isBadRequest());
+	}
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/categories")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateDto)))
-                .andExpect(MockMvcResultMatchers.status().isForbidden());
-    }
+	@Test
+	@DisplayName("Return HTTP 403 when updating an expense category as a user without valid roles")
+	@WithMockUser(roles = { "SOME_INVALID_ROLE" })
+	public void GivenWithoutValidRoles_WhenUpdating_ThenReturnHttp403() throws Exception {
+		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(1L, "Daily");
 
-    @Test
-    @DisplayName("Return HTTP 404 when updating a non-existing expense category")
-    @WithMockUser(roles = { "USER" })
-    public void GivenNonExistingExpenseCategory_WhenUpdatingIt_ThenReturnHttp400() throws Exception {
-        UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(1L, "Daily");
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/categories")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updateDto)))
+				.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
 
-        when(service.update(any(UpdateExpenseCategoryDto.class)))
-                .thenThrow(ExpenseCategoryNotFoundException.class);
+	@Test
+	@DisplayName("Return HTTP 404 when updating a non-existing expense category")
+	@WithMockUser(roles = { "USER" })
+	public void GivenNonExistingExpenseCategory_WhenUpdatingIt_ThenReturnHttp400() throws Exception {
+		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(1L, "Daily");
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/categories")
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateDto)))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
-    }
+		when(expenseCategoryService.update(any(UpdateExpenseCategoryDto.class)))
+				.thenThrow(ExpenseCategoryNotFoundException.class);
 
-    @Test
-    @DisplayName("Return HTTP 204 when deleting an expense category by ID regardless if it exists or not")
-    @WithMockUser(roles = { "USER" })
-    public void GivenNoExpenseCategory_WhenDeletingById_ThenReturnHttp204() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/1")
-                .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isNoContent());
-    }
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/categories")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updateDto)))
+				.andExpect(MockMvcResultMatchers.status().isNotFound());
+	}
 
-    @Test
-    @DisplayName("Return HTTP 403 when deleting an expense category by ID without valid roles")
-    @WithMockUser(roles = { "SOME_INVALID_ROLE" })
-    public void GivenWithoutValidRoles_WhenDeletingById_ThenReturnHttp204() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/1")
-                .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isForbidden());
-    }
+	@Test
+	@DisplayName("Return HTTP 204 when deleting all possible expenses by their category's ID")
+	@WithMockUser(roles = { "USER" })
+	public void GivenPossibleExpenses_WhenDeletingAllExpensesByExpenseCategoryId_ThenReturnHttp204()
+			throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/1/expenses")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isNoContent());
+	}
 
-    @Test
-    @DisplayName("Return HTTP 409 when trying to delete an expense category that is in use")
-    @WithMockUser(roles = { "USER" })
-    public void GivenExpenseCategoryInUse_WhenDeletingById_ThenReturnHttp409() throws Exception {
-        doThrow(ExpenseCategoryInUseException.class).when(service).deleteById(anyLong());
+	@Test
+	@DisplayName("Return HTTP 404 when trying to delete all possible expenses by a non-existing category's ID")
+	@WithMockUser(roles = { "USER" })
+	public void GivenNonExistingExpenseCategory_WhenDeletingAllExpensesByExpenseCategoryId_ThenReturnHttp404()
+			throws Exception {
+		doThrow(ExpenseCategoryNotFoundException.class)
+				.when(expenseService)
+				.deleteAllExpensesByExpenseCategoryId(anyLong());
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/1")
-                .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isConflict());
-    }
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/1/expenses")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isNotFound());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 403 when trying to delete all expenses by their category's ID without valid roles")
+	@WithMockUser(roles = { "SOME_INVALID_ROLE" })
+	public void GivenWithoutValidRoles_WhenDeletingAllExpensesByExpenseCategoryId_ThenReturnHttp403()
+			throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/1/expenses")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 204 when deleting an expense category by its ID")
+	@WithMockUser(roles = { "USER" })
+	public void GivenExistingExpenseCategory_WhenDeletingById_ThenReturnHttp204() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/1")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isNoContent());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 403 when trying to delete an expense category by ID without valid roles")
+	@WithMockUser(roles = { "SOME_INVALID_ROLE" })
+	public void GivenWithoutValidRoles_WhenDeletingById_ThenReturnHttp403() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/1")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 404 when trying to delete a non-existing expense category by ID")
+	@WithMockUser(roles = { "USER" })
+	public void GivenNonExistingExpenseCategory_WhenDeletingById_ThenReturnHttp404() throws Exception {
+		doThrow(ExpenseCategoryNotFoundException.class)
+				.when(expenseCategoryService)
+				.deleteById(anyLong());
+
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/1")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isNotFound());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 409 when trying to delete an expense category that is in use")
+	@WithMockUser(roles = { "USER" })
+	public void GivenExpenseCategoryInUse_WhenDeletingById_ThenReturnHttp409() throws Exception {
+		doThrow(ExpenseCategoryInUseException.class)
+				.when(expenseCategoryService)
+				.deleteById(anyLong());
+
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/1")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isConflict());
+	}
 
 }

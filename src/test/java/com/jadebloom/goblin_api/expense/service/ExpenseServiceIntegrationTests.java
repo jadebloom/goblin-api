@@ -152,8 +152,8 @@ public class ExpenseServiceIntegrationTests {
 	}
 
 	@Test
-	@DisplayName("Throw ForbiddenException when trying to create without the authenticated user's email")
-	public void GivenWithoutAuthenticatedUserEmail_WhenCreating_ThenThrowForbiddenException() {
+	@DisplayName("Throw ForbiddenException when trying to create without the authenticated user")
+	public void GivenWithoutAuthenticatedUser_WhenCreating_ThenThrowForbiddenException() {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
 				1000L,
@@ -223,8 +223,8 @@ public class ExpenseServiceIntegrationTests {
 	}
 
 	@Test
-	@DisplayName("Throw ForbiddenException when trying to find the authenticated user's expenses without its email")
-	public void GivenWithoutAuthenticatedUserEmail_WhenFindingAuthenticatedUserExpenses_ThenThrowForbiddenException() {
+	@DisplayName("Throw ForbiddenException when trying to find the authenticated user's expenses without the authenticated user")
+	public void GivenWithoutAuthenticatedUser_WhenFindingAuthenticatedUserExpenses_ThenThrowForbiddenException() {
 		assertThrowsExactly(ForbiddenException.class,
 				() -> underTest.findUserAuthenticatedExpenses(PageRequest.of(0, 20)));
 	}
@@ -246,8 +246,8 @@ public class ExpenseServiceIntegrationTests {
 	}
 
 	@Test
-	@DisplayName("Throw ForbiddenException when trying to find an expense by ID without the authenticated user's email")
-	public void GivenWithoutAuthenticatedUserEmail_WhenFindingById_ThenThrowForbiddenException() {
+	@DisplayName("Throw ForbiddenException when trying to find an expense by ID without the authenticated user")
+	public void GivenWithoutAuthenticatedUser_WhenFindingById_ThenThrowForbiddenException() {
 		assertThrowsExactly(ForbiddenException.class, () -> underTest.findById(1L));
 	}
 
@@ -413,6 +413,29 @@ public class ExpenseServiceIntegrationTests {
 	}
 
 	@Test
+	@DisplayName("Do not throw when deleting all possible expenses by their category's ID")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	public void GivenPossibleExpenses_WhenDeletingAllExpensesByExpenseCategoryId_ThenDoNotThrow() {
+		assertDoesNotThrow(
+				() -> underTest.deleteAllExpensesByExpenseCategoryId(expenseCategory.getId()));
+	}
+
+	@Test
+	@DisplayName("Throw ForbiddenException when trying to delete all expenses by their category's ID without the authenticated user")
+	public void GivenWithoutAuthenticatedUser_WhenDeletingAllExpensesByExpenseCategoryId_ThenThrowForbiddenException() {
+		assertThrowsExactly(ForbiddenException.class,
+				() -> underTest.deleteAllExpensesByExpenseCategoryId(expenseCategory.getId()));
+	}
+
+	@Test
+	@DisplayName("Throw ExpenseCategoryNotFoundException when trying to delete all possible expenses by a non-existing expense category ID")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	public void GivenNonExistingExpenseCategory_WhenDeletingAllExpensesByExpenseCategoryId_ThenThrowExpenseCategoryNotFoundException() {
+		assertThrowsExactly(ExpenseCategoryNotFoundException.class,
+				() -> underTest.deleteAllExpensesByExpenseCategoryId(expenseCategory.getId() + 1L));
+	}
+
+	@Test
 	@DisplayName("Do not throw when deleting an expense by its ID")
 	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void GivenExistingExpense_WhenDeletingById_ThenDoNoThrow() {
@@ -434,8 +457,8 @@ public class ExpenseServiceIntegrationTests {
 	}
 
 	@Test
-	@DisplayName("Throw ForbiddenException when trying to delete by ID without the authenticated user's email")
-	public void GivenWithoutAuthenticatedUserEmail_WhenDeletingById_ThenThrowForbiddenException() {
+	@DisplayName("Throw ForbiddenException when trying to delete by ID without the authenticated user")
+	public void GivenWithoutAuthenticatedUser_WhenDeletingById_ThenThrowForbiddenException() {
 		assertThrowsExactly(ForbiddenException.class, () -> underTest.deleteById(1L));
 	}
 
