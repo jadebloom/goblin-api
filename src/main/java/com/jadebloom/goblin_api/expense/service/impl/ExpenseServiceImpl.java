@@ -211,6 +211,27 @@ public class ExpenseServiceImpl implements ExpenseService {
 	}
 
 	@Override
+	public void deleteAllExpensesByCurrencyId(Long currencyId) throws ForbiddenException, CurrencyNotFoundException {
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
+
+		CurrencyEntity currency = currencyRepository
+				.findById(currencyId)
+				.orElseThrow(() -> {
+					String f = "Currency with the ID '%d' doesn't exist";
+					String errorMessage = String.format(f, currencyId);
+
+					throw new CurrencyNotFoundException(errorMessage);
+				});
+
+		if (currency.getCreator().getId() != userId) {
+			throw new ForbiddenException();
+		}
+
+		expenseRepository.deleteAllByCurrency_Id(currencyId);
+	}
+
+	@Override
 	public void deleteById(Long expenseId) throws ForbiddenException, ExpenseNotFoundException {
 		Long userId = SecurityContextUtils.getAuthenticatedUserId()
 				.orElseThrow(() -> new ForbiddenException());

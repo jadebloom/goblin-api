@@ -277,6 +277,16 @@ public class ExpenseCategoryControllerUnitTests {
 	}
 
 	@Test
+	@DisplayName("Return HTTP 403 when trying to delete all expenses by their category's ID without valid roles")
+	@WithMockUser(roles = { "SOME_INVALID_ROLE" })
+	public void GivenWithoutValidRoles_WhenDeletingAllExpensesByExpenseCategoryId_ThenReturnHttp403()
+			throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/1/expenses")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
+
+	@Test
 	@DisplayName("Return HTTP 404 when trying to delete all possible expenses by a non-existing category's ID")
 	@WithMockUser(roles = { "USER" })
 	public void GivenNonExistingExpenseCategory_WhenDeletingAllExpensesByExpenseCategoryId_ThenReturnHttp404()
@@ -288,16 +298,6 @@ public class ExpenseCategoryControllerUnitTests {
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/1/expenses")
 				.with(csrf()))
 				.andExpect(MockMvcResultMatchers.status().isNotFound());
-	}
-
-	@Test
-	@DisplayName("Return HTTP 403 when trying to delete all expenses by their category's ID without valid roles")
-	@WithMockUser(roles = { "SOME_INVALID_ROLE" })
-	public void GivenWithoutValidRoles_WhenDeletingAllExpensesByExpenseCategoryId_ThenReturnHttp403()
-			throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/1/expenses")
-				.with(csrf()))
-				.andExpect(MockMvcResultMatchers.status().isForbidden());
 	}
 
 	@Test
