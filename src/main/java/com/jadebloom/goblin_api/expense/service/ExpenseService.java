@@ -34,6 +34,9 @@ public interface ExpenseService {
 	void deleteAllExpensesByExpenseCategoryId(Long expenseCategoryId)
 			throws ForbiddenException, ExpenseCategoryNotFoundException;
 
+	void deleteAllExpensesByCurrencyId(Long currencyId)
+			throws ForbiddenException, CurrencyNotFoundException;
+
 	void deleteById(Long expenseId) throws ForbiddenException, ExpenseNotFoundException;
 
 }

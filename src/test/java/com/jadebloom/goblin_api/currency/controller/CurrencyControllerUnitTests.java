@@ -27,6 +27,7 @@ import com.jadebloom.goblin_api.currency.error.CurrencyInUseException;
 import com.jadebloom.goblin_api.currency.error.CurrencyNameUnavailableException;
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
 import com.jadebloom.goblin_api.currency.service.CurrencyService;
+import com.jadebloom.goblin_api.expense.service.ExpenseService;
 import com.jadebloom.goblin_api.security.service.JwtService;
 import com.jadebloom.goblin_api.test.MethodSecurityTestConfig;
 
@@ -41,6 +42,9 @@ public class CurrencyControllerUnitTests {
 
 	@MockitoBean
 	private CurrencyService currencyService;
+
+	@MockitoBean
+	private ExpenseService expenseService;
 
 	@MockitoBean
 	private JwtService jwtService;
@@ -253,6 +257,40 @@ public class CurrencyControllerUnitTests {
 				MockMvcRequestBuilders.put("/api/v1/currencies").with(csrf())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(new ObjectMapper().writeValueAsString(updateDto)))
+				.andExpect(MockMvcResultMatchers.status().isNotFound());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 204 when deleting all possible expenses by their currency's ID")
+	@WithMockUser(roles = { "USER" })
+	public void GivenPossibleExpenses_WhenDeletingAllExpensesByCurrencyId_ThenReturnHttp204()
+			throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/currencies/1/expenses")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isNoContent());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 403 when trying to delete all expenses by their currency's ID without valid roles")
+	@WithMockUser(roles = { "SOME_INVALID_ROLE" })
+	public void GivenWithoutValidRoles_WhenDeletingAllExpensesByCurrencyId_ThenReturnHttp403()
+			throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/currencies/1/expenses")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 404 when trying to delete all possible expenses by a non-existing currency's ID")
+	@WithMockUser(roles = { "USER" })
+	public void GivenNonExistingCurrency_WhenDeletingAllExpensesByCurrencyId_ThenReturnHttp404()
+			throws Exception {
+		doThrow(CurrencyNotFoundException.class)
+				.when(expenseService)
+				.deleteAllExpensesByCurrencyId(anyLong());
+
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/currencies/1/expenses")
+				.with(csrf()))
 				.andExpect(MockMvcResultMatchers.status().isNotFound());
 	}
 

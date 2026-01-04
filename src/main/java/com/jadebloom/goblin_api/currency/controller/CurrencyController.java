@@ -18,6 +18,7 @@ import com.jadebloom.goblin_api.currency.dto.CreateCurrencyDto;
 import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
 import com.jadebloom.goblin_api.currency.dto.UpdateCurrencyDto;
 import com.jadebloom.goblin_api.currency.service.CurrencyService;
+import com.jadebloom.goblin_api.expense.service.ExpenseService;
 
 import jakarta.validation.Valid;
 
@@ -27,8 +28,12 @@ public class CurrencyController {
 
 	private final CurrencyService currencyService;
 
-	public CurrencyController(CurrencyService currencyService) {
+	private final ExpenseService expenseService;
+
+	public CurrencyController(CurrencyService currencyService, ExpenseService expenseService) {
 		this.currencyService = currencyService;
+
+		this.expenseService = expenseService;
 	}
 
 	@PreAuthorize("hasRole('USER')")
@@ -61,6 +66,15 @@ public class CurrencyController {
 		CurrencyDto updated = currencyService.update(updateDto);
 
 		return new ResponseEntity<>(updated, HttpStatus.OK);
+	}
+
+	@PreAuthorize("hasRole('USER')")
+	@DeleteMapping("/{id}/expenses")
+	public ResponseEntity<Void> deleteAllExpensesByCurrencyId(
+			@PathVariable(name = "id") Long expenseCategoryId) {
+		expenseService.deleteAllExpensesByCurrencyId(expenseCategoryId);
+
+		return ResponseEntity.noContent().build();
 	}
 
 	@PreAuthorize("hasRole('USER')")

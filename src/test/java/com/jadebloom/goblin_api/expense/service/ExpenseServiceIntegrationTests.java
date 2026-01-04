@@ -436,6 +436,29 @@ public class ExpenseServiceIntegrationTests {
 	}
 
 	@Test
+	@DisplayName("Do not throw when deleting all possible expenses by their currency's ID")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	public void GivenPossibleExpenses_WhenDeletingAllExpensesByCurrencyId_ThenDoNotThrow() {
+		assertDoesNotThrow(
+				() -> underTest.deleteAllExpensesByCurrencyId(currency.getId()));
+	}
+
+	@Test
+	@DisplayName("Throw ForbiddenException when trying to delete all expenses by their currency's ID without the authenticated user")
+	public void GivenWithoutAuthenticatedUser_WhenDeletingAllExpensesByCurrencyId_ThenThrowForbiddenException() {
+		assertThrowsExactly(ForbiddenException.class,
+				() -> underTest.deleteAllExpensesByCurrencyId(currency.getId()));
+	}
+
+	@Test
+	@DisplayName("Throw CurrencyNotFoundException when trying to delete all possible expenses by a non-existing currency ID")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	public void GivenNonExistingCurrency_WhenDeletingAllExpensesByCurrencyId_ThenThrowCurrencyNotFoundException() {
+		assertThrowsExactly(CurrencyNotFoundException.class,
+				() -> underTest.deleteAllExpensesByCurrencyId(currency.getId() + 1L));
+	}
+
+	@Test
 	@DisplayName("Do not throw when deleting an expense by its ID")
 	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void GivenExistingExpense_WhenDeletingById_ThenDoNoThrow() {

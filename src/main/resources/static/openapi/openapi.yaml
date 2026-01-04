@@ -26,6 +26,8 @@ paths:
     $ref: paths/currencies/index.yaml
   /currencies/{id}:
     $ref: paths/currencies/id/index.yaml
+  /currencies/{id}/expenses:
+    $ref: paths/currencies/id/expenses/index.yaml
   /expenses/categories:
     $ref: paths/expenses/categories/index.yaml
   /expenses/categories/{id}:
