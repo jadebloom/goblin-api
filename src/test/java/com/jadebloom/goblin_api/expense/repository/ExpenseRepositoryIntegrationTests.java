@@ -155,7 +155,7 @@ public class ExpenseRepositoryIntegrationTests {
 
 	@Test
 	@DisplayName("Verify that all possible expenses can be deleted by their category's ID")
-	public void GivenPossibleExpenses_WhenDeletingAllByExpenseCategoryId_ThenDoNotThrow() {
+	public void GivenPossibleExpenses_WhenDeletingAllByExpenseCategoryId_ThenDelete() {
 		ExpenseEntity toCreate = new ExpenseEntity(
 				"Uber Ride",
 				1000L,
@@ -173,7 +173,7 @@ public class ExpenseRepositoryIntegrationTests {
 
 	@Test
 	@DisplayName("Verify that all possible expenses can be deleted by their currency's ID")
-	public void GivenPossibleExpenses_WhenDeletingAllByCurrencyId_ThenDoNotThrow() {
+	public void GivenPossibleExpenses_WhenDeletingAllByCurrencyId_ThenDelete() {
 		ExpenseEntity toCreate = new ExpenseEntity(
 				"Uber Ride",
 				1000L,
@@ -183,6 +183,24 @@ public class ExpenseRepositoryIntegrationTests {
 		underTest.save(toCreate);
 
 		underTest.deleteAllByCurrency_Id(currency.getId());
+
+		List<ExpenseEntity> expenses = underTest.findAll();
+
+		assertEquals(0, expenses.size());
+	}
+
+	@Test
+	@DisplayName("Verify that all possible expenses can be deleted by their creator's ID")
+	public void GivenExpenses_WhenDeletingAllByCreatorId_ThenDelete() {
+		ExpenseEntity toCreate = new ExpenseEntity(
+				"Uber Ride",
+				1000L,
+				expenseCategory,
+				currency,
+				user);
+		underTest.save(toCreate);
+
+		underTest.deleteAllByCreator_Id(user.getId());
 
 		List<ExpenseEntity> expenses = underTest.findAll();
 

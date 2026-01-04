@@ -314,7 +314,7 @@ public class CurrencyControllerUnitTests {
 	}
 
 	@Test
-	@DisplayName("Return HTTP 404 when trying to delete a non-existing expense by ID")
+	@DisplayName("Return HTTP 404 when trying to delete a non-existing currency by ID")
 	@WithMockUser(roles = { "USER" })
 	public void GivenNonExistingCurrency_WhenDeletingById_ThenReturnHttp404() throws Exception {
 		doThrow(CurrencyNotFoundException.class).when(currencyService).deleteById(anyLong());
