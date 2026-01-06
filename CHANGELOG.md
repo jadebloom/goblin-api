@@ -5,10 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 ### Added
-- Added expenses' deletion based on their expense category's ID.
-- Added expenses' deletion based on their currency's ID.
-- Added account deletion.
-- Added color field to expense category.
+- Expenses can now be deleted based on their expense category's ID.
+- Expenses can now be deleted based on their currency's ID.
+- Users can now delete their account all of their personal data.
+- Expense category can now have its own associated color.
+- Users can now updated their password.
 ### Changed
 - Changed the JWT token subject to contain user's ID too.
 - Deleting a non-existing entity now returns HTTP 404, instead of a silent HTTP 204.

@@ -29,5 +29,7 @@ responses:
       application/json:
         schema:
           $ref: ../../../openapi.yaml#/components/schemas/ErrorResponse
+  "403":
+    $ref: ../../../openapi.yaml#/components/responses/ForbiddenError
   "500":
     $ref: ../../../openapi.yaml#/components/responses/InternalServerError

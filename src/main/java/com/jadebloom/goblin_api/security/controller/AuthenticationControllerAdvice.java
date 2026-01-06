@@ -39,8 +39,7 @@ public class AuthenticationControllerAdvice {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ErrorResponse handleEmailUnavailableException(EmailUnavailableException ex) {
 		ErrorResponse errorResponse = ErrorResponse
-				.builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage())
-				.type(URI.create(API_DOCS_URI))
+				.builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage()).type(URI.create(API_DOCS_URI))
 				.title("User email is already in use")
 				.build();
 
@@ -48,13 +47,13 @@ public class AuthenticationControllerAdvice {
 	}
 
 	@ExceptionHandler(IncorrectPasswordException.class)
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseStatus(HttpStatus.FORBIDDEN)
 	public ErrorResponse handleIncorrectPasswordException(IncorrectPasswordException ex) {
-		ErrorResponse errorResponse = ErrorResponse
-				.builder(ex, HttpStatus.BAD_REQUEST, ex.getMessage())
-				.type(URI.create(API_DOCS_URI))
-				.title("Incorrect password")
-				.build();
+		ErrorResponse errorResponse =
+				ErrorResponse.builder(ex, HttpStatus.FORBIDDEN, ex.getMessage())
+						.type(URI.create(API_DOCS_URI))
+						.title("Incorrect password")
+						.build();
 
 		return errorResponse;
 	}
@@ -62,11 +61,11 @@ public class AuthenticationControllerAdvice {
 	@ExceptionHandler(UserNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ErrorResponse handleUserNotFoundException(UserNotFoundException ex) {
-		ErrorResponse errorResponse = ErrorResponse
-				.builder(ex, HttpStatus.NOT_FOUND, ex.getMessage())
-				.type(URI.create(API_DOCS_URI))
-				.title("User wasn't found")
-				.build();
+		ErrorResponse errorResponse =
+				ErrorResponse.builder(ex, HttpStatus.NOT_FOUND, ex.getMessage())
+						.type(URI.create(API_DOCS_URI))
+						.title("User wasn't found")
+						.build();
 
 		return errorResponse;
 	}

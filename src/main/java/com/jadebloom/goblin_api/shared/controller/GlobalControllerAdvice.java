@@ -33,7 +33,8 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
 	}
 
 	@Override
-	protected @Nullable ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+	protected @Nullable ResponseEntity<Object> handleMethodArgumentNotValid(
+			MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 		String errorMessage = "";
 
