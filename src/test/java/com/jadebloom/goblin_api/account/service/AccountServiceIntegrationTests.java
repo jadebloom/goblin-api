@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
-
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Set;
 
@@ -13,10 +13,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.jadebloom.goblin_api.account.dto.UpdatePasswordDto;
+import com.jadebloom.goblin_api.account.errors.InvalidPasswordException;
 import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
 import com.jadebloom.goblin_api.currency.repository.CurrencyRepository;
 import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
@@ -24,6 +26,7 @@ import com.jadebloom.goblin_api.expense.entity.ExpenseEntity;
 import com.jadebloom.goblin_api.expense.repository.ExpenseCategoryRepository;
 import com.jadebloom.goblin_api.expense.repository.ExpenseRepository;
 import com.jadebloom.goblin_api.security.entity.UserEntity;
+import com.jadebloom.goblin_api.security.error.IncorrectPasswordException;
 import com.jadebloom.goblin_api.security.repository.UserRepository;
 import com.jadebloom.goblin_api.security.test.UserTestUtils;
 import com.jadebloom.goblin_api.shared.error.ForbiddenException;
@@ -34,27 +37,32 @@ public class AccountServiceIntegrationTests {
 
 	private final AccountService underTest;
 
+	private final PasswordEncoder passwordEncoder;
+
 	private final ExpenseCategoryRepository expenseCategoryRepository;
 
 	private final CurrencyRepository currencyRepository;
 
 	private final ExpenseRepository expenseRepository;
 
-	private final UserTestUtils userTestUtils;
-
 	private final UserRepository userRepository;
+
+	private final UserTestUtils userTestUtils;
 
 	private UserEntity user;
 
 	@Autowired
 	public AccountServiceIntegrationTests(
 			AccountService underTest,
-			UserTestUtils userTestUtils,
+			PasswordEncoder passwordEncoder,
 			ExpenseCategoryRepository expenseCategoryRepository,
 			CurrencyRepository currencyRepository,
 			ExpenseRepository expenseRepository,
-			UserRepository userRepository) {
+			UserRepository userRepository,
+			UserTestUtils userTestUtils) {
 		this.underTest = underTest;
+
+		this.passwordEncoder = passwordEncoder;
 
 		this.expenseCategoryRepository = expenseCategoryRepository;
 
@@ -71,7 +79,7 @@ public class AccountServiceIntegrationTests {
 	public void createUserAndItsData() {
 		user = userTestUtils.createUserWithPossiblyExistingRoles(
 				"user@gmail.com",
-				"123",
+				passwordEncoder.encode("Qwerty123!"),
 				Set.of("ROLE_USER"));
 
 		ExpenseCategoryEntity toCreate1 = new ExpenseCategoryEntity("Daily", user);
@@ -87,6 +95,37 @@ public class AccountServiceIntegrationTests {
 				created2,
 				user);
 		expenseRepository.save(toCreate3);
+	}
+
+	@Test
+	@DisplayName("Verify that a user's password is updated given valid and correct passwords")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	public void GivenValidCorrectPasswords_WhenUpdatingPassword_ThenUpdatePassword() {
+		UpdatePasswordDto updateDto = new UpdatePasswordDto("Qwerty123!", "Qwerty321!");
+
+		underTest.updatePassword(updateDto);
+
+		assertTrue(passwordEncoder.matches(updateDto.getNewPassword(), user.getPassword()));
+	}
+
+	@Test
+	@DisplayName("Throw InvalidPasswordException when trying to update using an invalid new password")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	public void GivenInvalidNewPassword_WhenUpdatingPassword_ThenThrowInvalidPasswordException() {
+		UpdatePasswordDto updateDto = new UpdatePasswordDto("Qwerty123!", "invalid!");
+
+		assertThrowsExactly(InvalidPasswordException.class,
+				() -> underTest.updatePassword(updateDto));
+	}
+
+	@Test
+	@DisplayName("Throw IncorrectPasswordException when trying to update using an incorrect old password")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	public void GivenIncorrectOldPassword_WhenUpdatingPassword_ThenThrowIncorrectPasswordException() {
+		UpdatePasswordDto updateDto = new UpdatePasswordDto("Qwerty123!!", "Qwerty321!");
+
+		assertThrowsExactly(IncorrectPasswordException.class,
+				() -> underTest.updatePassword(updateDto));
 	}
 
 	@Test

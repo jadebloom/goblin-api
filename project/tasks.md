@@ -6,7 +6,6 @@ The centralized log of tasks and improvements.
 
 Working on 1.2.0:
 
-6. Update password.
 8. Add payment method for expenses.
 9. Integrate a relational database instead of H2.
 10. Update the license.
@@ -29,8 +28,8 @@ Working on 1.2.0:
 
 ### Technical Debt & Others
 
-1.  Think about transactions.
-2.  Optimize the queries and the Lighthouse or something.
+1. Think about transactions.
+2. Optimize the queries and the Lighthouse or something.
 3. Integrate JaCoCo.
-5. Consider deploy.
-7. Add formatting.
+4. Consider deploy.
+5. Add formatting and linting.
