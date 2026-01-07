@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Angular](https://github.com/angular/angular/blob/main/CHANGELOG.md).
 
-## [Unreleased]
+## [1.2.0] - 2026-01-07
 ### Added
 - Expenses can now be deleted based on their expense category's ID.
 - Expenses can now be deleted based on their currency's ID.
@@ -14,12 +14,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Changed
 - Changed the JWT token subject to contain user's ID too.
 - Deleting a non-existing entity now returns HTTP 404, instead of a silent HTTP 204.
+- Updated the README.md
 ### Removed
 - Removed H2 as the production in-memory database.
 ### Fixed
 - Fixed incorrect string equality checks.
-### Security
-- In case of vulnerabilities.
 
 ## [1.1.1] - 2026-01-02
 ### Fixed

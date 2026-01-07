@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Goblin API
-  version: 1.1.1
+  version: 1.2.0
   description: Goblin API - is a REST API application for expense tracking and analyzing. Dedicated for Goblin desktop application, built on Spring Boot.
   # termsOfService:
   contact:
@@ -22,6 +22,8 @@ paths:
     $ref: paths/authentication/registration/index.yaml
   /authentication/login:
     $ref: paths/authentication/login/index.yaml
+  /account:
+    $ref: paths/account/index.yaml
   /currencies:
     $ref: paths/currencies/index.yaml
   /currencies/{id}:
@@ -46,6 +48,8 @@ components:
       $ref: components/schemas/LoginDto.yaml
     JwtResponseDto:
       $ref: components/schemas/JwtResponseDto.yaml
+    UpdatePasswordDto:
+      $ref: components/schemas/UpdatePasswordDto.yaml
     CreateCurrencyDto:
       $ref: components/schemas/CreateCurrencyDto.yaml
     UpdateCurrencyDto:

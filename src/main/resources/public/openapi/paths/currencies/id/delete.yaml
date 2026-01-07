@@ -1,5 +1,5 @@
 operationId: deleteCurrencyById
-summary: Delete a currency by ID.
+summary: Delete a currency by ID
 tags:
   - Currencies
 parameters:

@@ -43,7 +43,7 @@ public class AccountControllerUnitTests {
 	public void GivenValidPasswords_WhenUpdatingPassword_ThenReturnHttp204() throws Exception {
 		UpdatePasswordDto updateDto = new UpdatePasswordDto("Qwerty123!", "Qwerty321!");
 
-		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/account").with(csrf())
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/account").with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(updateDto)))
 				.andExpect(MockMvcResultMatchers.status().isNoContent());
@@ -57,7 +57,7 @@ public class AccountControllerUnitTests {
 
 		doThrow(InvalidPasswordException.class).when(accountService).updatePassword(updateDto);
 
-		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/account").with(csrf())
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/account").with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(updateDto)))
 				.andExpect(MockMvcResultMatchers.status().isBadRequest());
@@ -70,7 +70,7 @@ public class AccountControllerUnitTests {
 			throws Exception {
 		UpdatePasswordDto updateDto = new UpdatePasswordDto("Qwerty123!", "Qwerty123!");
 
-		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/account").with(csrf())
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/account").with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(updateDto)))
 				.andExpect(MockMvcResultMatchers.status().isForbidden());
@@ -87,7 +87,7 @@ public class AccountControllerUnitTests {
 				.when(accountService)
 				.updatePassword(any(UpdatePasswordDto.class));
 
-		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/account").with(csrf())
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/account").with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(updateDto)))
 				.andExpect(MockMvcResultMatchers.status().isForbidden());

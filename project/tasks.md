@@ -2,13 +2,6 @@
 
 The centralized log of tasks and improvements.
 
-## Springlog
-
-Working on 1.2.0:
-
-10. Update the license.
-11. Update README.md.
-
 ## Backlog
 
 ### Features

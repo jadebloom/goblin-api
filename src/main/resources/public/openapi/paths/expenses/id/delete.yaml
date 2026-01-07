@@ -1,5 +1,5 @@
 operationId: deleteExpenseById
-summary: Deletes an expense by ID.
+summary: Deletes an expense by ID
 tags:
   - Expenses
 parameters:

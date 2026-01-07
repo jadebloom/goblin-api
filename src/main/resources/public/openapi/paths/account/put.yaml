@@ -1,0 +1,32 @@
+operationId: updatePassword
+summary: Update the authenticated user's password
+tags:
+  - Account
+security:
+  - bearerAuth: []
+requestBody:
+  description: A JSON UpdatePasswordDto object.
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: ../../openapi.yaml#/components/schemas/UpdatePasswordDto
+      examples:
+        required:
+          summary: An example with only required fields.
+          value:
+            old_password: PasswordHasFormat123!
+            new_password: PasswordHasFormat123!
+responses:
+  "204":
+    $ref: ../../openapi.yaml#/components/responses/NoContent
+  "400":
+    description: Invalid old or new password.
+    content:
+      application/json:
+        schema:
+          $ref: ../../openapi.yaml#/components/schemas/ErrorResponse
+  "403":
+    $ref: ../../openapi.yaml#/components/responses/ForbiddenError
+  "500":
+    $ref: ../../openapi.yaml#/components/responses/InternalServerError
