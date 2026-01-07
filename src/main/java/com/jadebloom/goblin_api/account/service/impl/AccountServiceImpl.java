@@ -44,7 +44,7 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public void updatePassword(UpdatePasswordDto updateDto)
-			throws ForbiddenException, IncorrectPasswordException, IncorrectPasswordException {
+			throws ForbiddenException, InvalidPasswordException, IncorrectPasswordException {
 		if (!GenericValidator.isValid(updateDto)) {
 			String message = GenericValidator.getValidationErrorMessage(updateDto);
 

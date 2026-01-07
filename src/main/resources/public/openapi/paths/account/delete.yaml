@@ -1,0 +1,13 @@
+operationId: deleteAccount
+summary: Delete the authenticated user's account
+tags:
+  - Account
+security:
+  - bearerAuth: []
+responses:
+  "204":
+    $ref: ../../openapi.yaml#/components/responses/NoContent
+  "403":
+    $ref: ../../openapi.yaml#/components/responses/ForbiddenError
+  "500":
+    $ref: ../../openapi.yaml#/components/responses/InternalServerError
