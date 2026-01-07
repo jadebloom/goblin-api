@@ -6,8 +6,6 @@ The centralized log of tasks and improvements.
 
 Working on 1.2.0:
 
-8. Add payment method for expenses.
-9. Integrate a relational database instead of H2.
 10. Update the license.
 11. Update README.md.
 

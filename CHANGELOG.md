@@ -10,13 +10,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Users can now delete their account all of their personal data.
 - Expense category can now have its own associated color.
 - Users can now updated their password.
+- Integrated PostgreSQL as the new database.
 ### Changed
 - Changed the JWT token subject to contain user's ID too.
 - Deleting a non-existing entity now returns HTTP 404, instead of a silent HTTP 204.
-### Deprecated
-- For soon-to-be removed features.
 ### Removed
-- For now removed features.
+- Removed H2 as the production in-memory database.
 ### Fixed
 - Fixed incorrect string equality checks.
 ### Security
