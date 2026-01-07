@@ -7,11 +7,12 @@ spring:
     problemdetails:
       enabled: true
   datasource:
-    url: jdbc:h2:mem:goblin;DATABASE_TO_UPPER=false
+    url: jdbc:h2:mem:goblin;DATABASE_TO_UPPER=false;MODE=PostgreSQL;
     driverClassname: org.h2.Driver
     username: sa
-    password: password
+    password: sa
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: create-drop
 api:
