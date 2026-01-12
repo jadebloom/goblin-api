@@ -10,7 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.jadebloom.goblin_api.security.dto.JwtResponseDto;
 import com.jadebloom.goblin_api.security.dto.LoginDto;
 import com.jadebloom.goblin_api.security.dto.RegistrationDto;
@@ -100,8 +100,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 		String accessToken = jwtService.generateAccessToken(
 				registered.getId(), email, userRoleNames);
-		String refreshToken = jwtService.generateRefreshToken(
-				registered.getId(), email, userRoleNames);
+		String refreshToken = jwtService.generateRefreshToken(registered.getId());
 
 		return new JwtResponseDto(accessToken, refreshToken);
 	}
@@ -145,9 +144,40 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		authenticationManager.authenticate(request);
 
 		String accessToken = jwtService.generateAccessToken(user.getId(), email, userRoleNames);
-		String refreshToken = jwtService.generateRefreshToken(user.getId(), email, userRoleNames);
+		String refreshToken = jwtService.generateRefreshToken(user.getId());
 
 		return new JwtResponseDto(accessToken, refreshToken);
+	}
+
+	@Override
+	public JwtResponseDto refresh(String refreshToken) throws JWTVerificationException {
+		Long userId = jwtService.validateRefreshTokenAndRetrieveUserId(refreshToken);
+
+		UserEntity user = userRepository.findById(userId).orElseThrow(() -> {
+			String f = "User with the id '%d' wasn't found";
+
+			throw new UserNotFoundException(String.format(f, userId));
+		});
+
+		Set<GrantedAuthority> userGrantedAuthorities = new HashSet<>();
+		Set<String> userRoleNames = new HashSet<>();
+		for (RoleEntity role : user.getRoles()) {
+			userGrantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
+
+			userRoleNames.add(role.getName());
+		}
+
+		Authentication request = new UsernamePasswordAuthenticationToken(
+				user.getEmail(),
+				user.getPassword(),
+				userGrantedAuthorities);
+		authenticationManager.authenticate(request);
+
+		String accessToken =
+				jwtService.generateAccessToken(user.getId(), user.getEmail(), userRoleNames);
+		String newRefreshToken = jwtService.generateRefreshToken(user.getId());
+
+		return new JwtResponseDto(accessToken, newRefreshToken);
 	}
 
 }

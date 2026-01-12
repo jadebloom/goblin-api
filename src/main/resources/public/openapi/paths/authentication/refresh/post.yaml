@@ -1,0 +1,23 @@
+operationId: refresh
+summary: Refresh
+tags:
+  - Authentication
+security: []
+parameters:
+  - in: cookie
+    name: refresh_token
+    required: true
+    schema:
+      type: string
+    description: The refresh token.
+responses:
+  "200":
+    description: Successful refresh.
+    content:
+      application/json:
+        schema:
+          $ref: ../../../openapi.yaml#/components/schemas/JwtResponseDto
+  "403":
+    $ref: ../../../openapi.yaml#/components/responses/ForbiddenError
+  "500":
+    $ref: ../../../openapi.yaml#/components/responses/InternalServerError

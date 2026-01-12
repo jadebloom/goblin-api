@@ -1,5 +1,6 @@
 package com.jadebloom.goblin_api.security.service;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.jadebloom.goblin_api.security.dto.JwtResponseDto;
 import com.jadebloom.goblin_api.security.dto.LoginDto;
 import com.jadebloom.goblin_api.security.dto.RegistrationDto;
@@ -18,8 +19,8 @@ public interface AuthenticationService {
 			UserNotFoundException,
 			IncorrectPasswordException;
 
-	// logout
+	JwtResponseDto refresh(String refreshToken) throws JWTVerificationException;
 
-	// account deletion
+	// logout
 
 }
