@@ -29,6 +29,7 @@ import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
 import com.jadebloom.goblin_api.currency.service.CurrencyService;
 import com.jadebloom.goblin_api.expense.service.ExpenseService;
 import com.jadebloom.goblin_api.security.service.JwtService;
+import com.jadebloom.goblin_api.shared.service.HttpResponseService;
 import com.jadebloom.goblin_api.test.MethodSecurityTestConfig;
 
 import tools.jackson.databind.ObjectMapper;
@@ -49,6 +50,9 @@ public class CurrencyControllerUnitTests {
 	@MockitoBean
 	private JwtService jwtService;
 
+	@MockitoBean
+	private HttpResponseService httpResponseService;
+
 	@Test
 	@DisplayName("Return HTTP 201 and currency when creating it with required fields")
 	@WithMockUser(roles = { "USER" })
@@ -68,7 +72,8 @@ public class CurrencyControllerUnitTests {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(currencyDto.getId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(currencyDto.getName()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.creator_id").value(currencyDto.getCreatorId()));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.creator_id")
+						.value(currencyDto.getCreatorId()));
 	}
 
 	@Test
@@ -89,7 +94,8 @@ public class CurrencyControllerUnitTests {
 	@Test
 	@DisplayName("Return HTTP 400 when creating new currency with unavailable name")
 	@WithMockUser(roles = "USER")
-	public void GivenUnavailableCurrencyName_WhenCreatingCurrency_ThenReturnHttp400() throws Exception {
+	public void GivenUnavailableCurrencyName_WhenCreatingCurrency_ThenReturnHttp400()
+			throws Exception {
 		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
 
 		when(currencyService.create(any(CreateCurrencyDto.class)))
@@ -130,7 +136,8 @@ public class CurrencyControllerUnitTests {
 	@Test
 	@DisplayName("Return HTTP 403 when finding currencies as user with invalid permissions")
 	@WithMockUser(roles = "SOME_ROLE_THAT_IS_NOT_USER")
-	public void GivenInvalidUserRole_WhenFindingAuthenticatedUserCurrencies_ThenReturnHttp403() throws Exception {
+	public void GivenInvalidUserRole_WhenFindingAuthenticatedUserCurrencies_ThenReturnHttp403()
+			throws Exception {
 		mockMvc.perform(
 				MockMvcRequestBuilders.get("/api/v1/currencies").with(csrf()))
 				.andExpect(MockMvcResultMatchers.status().isForbidden());
@@ -139,25 +146,30 @@ public class CurrencyControllerUnitTests {
 	@Test
 	@DisplayName("Return HTTP 200 and currency when finding it by its ID")
 	@WithMockUser(roles = "USER")
-	public void GivenCurrency_WhenFindingItById_ThenReturnHttp200AndThatCurrency() throws Exception {
+	public void GivenCurrency_WhenFindingItById_ThenReturnHttp200AndThatCurrency()
+			throws Exception {
 		CurrencyDto dto = new CurrencyDto(1L, "Tenge", ZonedDateTime.now(), 1L);
 		dto.setAlphabeticalCode("KZT");
 
 		when(currencyService.findById(anyLong())).thenReturn(dto);
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/currencies/" + dto.getId()).with(csrf()))
+		mockMvc.perform(
+				MockMvcRequestBuilders.get("/api/v1/currencies/" + dto.getId()).with(csrf()))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(dto.getId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(dto.getName()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.alphabetical_code").value(dto.getAlphabeticalCode()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.alphabetical_code")
+						.value(dto.getAlphabeticalCode()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
 	}
 
 	@Test
 	@DisplayName("Return HTTP 404 when finding non-existing currency by its ID")
 	@WithMockUser(roles = "USER")
-	public void GivenNonExistingCurrency_WhenFindingCurrencyById_ThenReturnHttp404() throws Exception {
+	public void GivenNonExistingCurrency_WhenFindingCurrencyById_ThenReturnHttp404()
+			throws Exception {
 		when(currencyService.findById(anyLong())).thenThrow(CurrencyNotFoundException.class);
 
 		mockMvc.perform(
@@ -168,7 +180,8 @@ public class CurrencyControllerUnitTests {
 	@Test
 	@DisplayName("Return HTTP 403 when finding currency by ID as a user with an invalid role")
 	@WithMockUser(roles = "SOME_ROLE_THAT_IS_NOT_USER")
-	public void GivenUserWithInvalidRole_WhenFindingCurrencyById_ThenReturnHttp403() throws Exception {
+	public void GivenUserWithInvalidRole_WhenFindingCurrencyById_ThenReturnHttp403()
+			throws Exception {
 		mockMvc.perform(
 				MockMvcRequestBuilders.get("/api/v1/currencies/1").with(csrf()))
 				.andExpect(MockMvcResultMatchers.status().isForbidden());
@@ -196,7 +209,8 @@ public class CurrencyControllerUnitTests {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(dto.getId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(dto.getName()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
 	}
 
 	@Test

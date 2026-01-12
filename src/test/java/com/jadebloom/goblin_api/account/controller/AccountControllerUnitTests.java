@@ -21,6 +21,7 @@ import com.jadebloom.goblin_api.security.controller.AuthenticationControllerAdvi
 import com.jadebloom.goblin_api.security.error.IncorrectPasswordException;
 import com.jadebloom.goblin_api.security.service.JwtService;
 import com.jadebloom.goblin_api.shared.error.ForbiddenException;
+import com.jadebloom.goblin_api.shared.service.HttpResponseService;
 import com.jadebloom.goblin_api.test.MethodSecurityTestConfig;
 import tools.jackson.databind.ObjectMapper;
 
@@ -36,6 +37,9 @@ public class AccountControllerUnitTests {
 
 	@MockitoBean
 	private JwtService jwtService;
+
+	@MockitoBean
+	private HttpResponseService httpResponseService;
 
 	@Test
 	@DisplayName("Return HTTP 204 when successfuly updating the authenticated user's password")

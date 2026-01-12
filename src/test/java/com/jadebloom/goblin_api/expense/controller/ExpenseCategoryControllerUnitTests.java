@@ -30,6 +30,7 @@ import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
 import com.jadebloom.goblin_api.expense.service.ExpenseCategoryService;
 import com.jadebloom.goblin_api.expense.service.ExpenseService;
 import com.jadebloom.goblin_api.security.service.JwtService;
+import com.jadebloom.goblin_api.shared.service.HttpResponseService;
 import com.jadebloom.goblin_api.test.MethodSecurityTestConfig;
 
 import tools.jackson.databind.ObjectMapper;
@@ -49,6 +50,9 @@ public class ExpenseCategoryControllerUnitTests {
 
 	@MockitoBean
 	private JwtService jwtService;
+
+	@MockitoBean
+	private HttpResponseService httpResponseService;
 
 	private ObjectMapper objectMapper;
 
@@ -79,10 +83,13 @@ public class ExpenseCategoryControllerUnitTests {
 				.andExpect(MockMvcResultMatchers.status().isCreated())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(dto.getId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(dto.getName()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.description").value(dto.getDescription()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.hex_color_code").value(dto.getHexColorCode()))
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.description").value(dto.getDescription()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.hex_color_code")
+						.value(dto.getHexColorCode()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
 	}
 
 	@Test
@@ -204,10 +211,13 @@ public class ExpenseCategoryControllerUnitTests {
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(returned.getId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(returned.getName()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.description").value(returned.getDescription()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.hex_color_code").value(returned.getHexColorCode()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.description")
+						.value(returned.getDescription()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.hex_color_code")
+						.value(returned.getHexColorCode()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.creator_id").value(returned.getCreatorId()));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.creator_id")
+						.value(returned.getCreatorId()));
 	}
 
 	@Test
@@ -255,7 +265,8 @@ public class ExpenseCategoryControllerUnitTests {
 	@Test
 	@DisplayName("Return HTTP 404 when updating a non-existing expense category")
 	@WithMockUser(roles = { "USER" })
-	public void GivenNonExistingExpenseCategory_WhenUpdatingIt_ThenReturnHttp400() throws Exception {
+	public void GivenNonExistingExpenseCategory_WhenUpdatingIt_ThenReturnHttp400()
+			throws Exception {
 		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(1L, "Daily");
 
 		when(expenseCategoryService.update(any(UpdateExpenseCategoryDto.class)))
@@ -323,7 +334,8 @@ public class ExpenseCategoryControllerUnitTests {
 	@Test
 	@DisplayName("Return HTTP 404 when trying to delete a non-existing expense category by ID")
 	@WithMockUser(roles = { "USER" })
-	public void GivenNonExistingExpenseCategory_WhenDeletingById_ThenReturnHttp404() throws Exception {
+	public void GivenNonExistingExpenseCategory_WhenDeletingById_ThenReturnHttp404()
+			throws Exception {
 		doThrow(ExpenseCategoryNotFoundException.class)
 				.when(expenseCategoryService)
 				.deleteById(anyLong());
