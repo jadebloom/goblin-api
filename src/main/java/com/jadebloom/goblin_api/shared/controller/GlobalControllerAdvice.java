@@ -18,7 +18,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.jadebloom.goblin_api.shared.error.ForbiddenException;
 
 import jakarta.validation.ConstraintViolationException;
@@ -92,6 +93,31 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
 
 		return errorResponse;
 	}
+
+	@ExceptionHandler(JWTVerificationException.class)
+	@ResponseStatus(HttpStatus.FORBIDDEN)
+	public ErrorResponse handleJWTVerificationException(JWTVerificationException ex) {
+		ErrorResponse errorResponse = ErrorResponse
+				.builder(ex, HttpStatus.FORBIDDEN, "Invalid token")
+				.type(URI.create(API_DOCS_URI))
+				.title("Invalid token")
+				.build();
+
+		return errorResponse;
+	}
+
+	@ExceptionHandler(JWTCreationException.class)
+	@ResponseStatus(HttpStatus.FORBIDDEN)
+	public ErrorResponse handleJWTCreationException(JWTCreationException ex) {
+		ErrorResponse errorResponse = ErrorResponse
+				.builder(ex, HttpStatus.FORBIDDEN, ex.getMessage())
+				.type(URI.create(API_DOCS_URI))
+				.title("Invalid token data")
+				.build();
+
+		return errorResponse;
+	}
+
 
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

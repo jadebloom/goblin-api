@@ -16,8 +16,11 @@ import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.jadebloom.goblin_api.security.config.CustomUserDetails;
+import com.jadebloom.goblin_api.security.enums.JwtTokenUseType;
 
 @Service
 public class JwtService {
@@ -32,30 +35,34 @@ public class JwtService {
 		this.jwtSecret = jwtSecret;
 	}
 
-	public String generateAccessToken(Long userId, String userEmail, Set<String> roles) {
+	public String generateAccessToken(Long userId, String userEmail, Set<String> roles)
+			throws JWTCreationException {
 		return JWT.create()
 				.withSubject("" + userId)
 				.withClaim("email", userEmail)
 				.withClaim("roles", new ArrayList<>(roles))
+				.withClaim("token_use", JwtTokenUseType.ACCESS.getName())
 				.withIssuedAt(new Date())
 				.withIssuer("Goblin API")
 				.withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION))
 				.sign(Algorithm.HMAC256(jwtSecret));
 	}
 
-	public String generateRefreshToken(Long userId, String userEmail, Set<String> roles) {
+	public String generateRefreshToken(Long userId) throws JWTCreationException {
 		return JWT.create()
 				.withSubject("" + userId)
-				.withClaim("email", userEmail)
-				.withClaim("roles", new ArrayList<>(roles))
+				.withClaim("token_use", JwtTokenUseType.REFRESH.getName())
 				.withIssuedAt(new Date())
 				.withIssuer("Goblin API")
 				.withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
 				.sign(Algorithm.HMAC256(jwtSecret));
 	}
 
-	public Authentication validateTokenAndRetrieveEmail(String token) {
+	public Authentication validateAccessTokenAndPrepareUserDetails(String token)
+			throws JWTVerificationException {
 		DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(jwtSecret))
+				.withClaim("token_use", JwtTokenUseType.ACCESS.getName())
+				.withIssuer("Goblin API")
 				.build()
 				.verify(token);
 
@@ -77,6 +84,19 @@ public class JwtService {
 				roles);
 
 		return auth;
+	}
+
+	public Long validateRefreshTokenAndRetrieveUserId(String token)
+			throws JWTVerificationException {
+		DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(jwtSecret))
+				.withClaim("token_use", JwtTokenUseType.ACCESS.getName())
+				.withIssuer("Goblin API")
+				.build()
+				.verify(token);
+
+		Long userId = decodedJWT.getClaim("sub").asLong();
+
+		return userId;
 	}
 
 }

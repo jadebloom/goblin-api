@@ -6,9 +6,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.jadebloom.goblin_api.security.service.JwtService;
-
+import com.jadebloom.goblin_api.shared.service.HttpResponseService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,8 +19,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
 	private final JwtService jwtService;
 
-	public JwtFilter(JwtService jwtService) {
+	private final HttpResponseService httpResponseService;
+
+	public JwtFilter(JwtService jwtService, HttpResponseService httpResponseService) {
 		this.jwtService = jwtService;
+
+		this.httpResponseService = httpResponseService;
 	}
 
 	@Override
@@ -37,10 +41,15 @@ public class JwtFilter extends OncePerRequestFilter {
 		}
 		String token = bearer.substring(7);
 
-		Authentication auth = jwtService.validateTokenAndRetrieveEmail(token);
-		SecurityContextHolder.getContext().setAuthentication(auth);
+		try {
+			Authentication auth = jwtService.validateAccessTokenAndPrepareUserDetails(token);
 
-		filterChain.doFilter(request, response);
+			SecurityContextHolder.getContext().setAuthentication(auth);
+
+			filterChain.doFilter(request, response);
+		} catch (JWTVerificationException e) {
+			httpResponseService.writeHttpErrorResponse(response, e);
+		}
 	}
 
 }

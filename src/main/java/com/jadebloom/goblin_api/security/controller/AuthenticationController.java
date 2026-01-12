@@ -2,6 +2,7 @@ package com.jadebloom.goblin_api.security.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +35,14 @@ public class AuthenticationController {
 	@PostMapping("/login")
 	public ResponseEntity<JwtResponseDto> login(@Valid @RequestBody LoginDto dto) {
 		JwtResponseDto jwt = authenticationService.login(dto);
+
+		return new ResponseEntity<>(jwt, HttpStatus.OK);
+	}
+
+	@PostMapping("/refresh")
+	public ResponseEntity<JwtResponseDto> refresh(
+			@CookieValue("refresh_token") String refreshToken) {
+		JwtResponseDto jwt = authenticationService.refresh(refreshToken);
 
 		return new ResponseEntity<>(jwt, HttpStatus.OK);
 	}

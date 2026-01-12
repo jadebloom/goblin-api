@@ -22,6 +22,8 @@ paths:
     $ref: paths/authentication/registration/index.yaml
   /authentication/login:
     $ref: paths/authentication/login/index.yaml
+  /authentication/refresh:
+    $ref: paths/authentication/refresh/index.yaml
   /account:
     $ref: paths/account/index.yaml
   /currencies:
