@@ -31,6 +31,7 @@ import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
 import com.jadebloom.goblin_api.expense.error.ExpenseNotFoundException;
 import com.jadebloom.goblin_api.expense.service.ExpenseService;
 import com.jadebloom.goblin_api.security.service.JwtService;
+import com.jadebloom.goblin_api.shared.service.HttpResponseService;
 import com.jadebloom.goblin_api.test.MethodSecurityTestConfig;
 
 @WebMvcTest(ExpenseController.class)
@@ -45,6 +46,9 @@ public class ExpenseControllerUnitTests {
 
 	@MockitoBean
 	private JwtService jwtService;
+
+	@MockitoBean
+	private HttpResponseService httpResponseService;
 
 	@Test
 	@DisplayName("Return HTTP 201 and expense when creating it with all fields")
@@ -79,14 +83,18 @@ public class ExpenseControllerUnitTests {
 				.andExpect(MockMvcResultMatchers.status().isCreated())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(dto.getId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(dto.getName()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.description").value(dto.getDescription()))
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.description").value(dto.getDescription()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.amount").value(dto.getAmount()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.labels")
 						.value(Matchers.containsInAnyOrder(dto.getLabels().toArray())))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id").value(dto.getExpenseCategoryId()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id")
+						.value(dto.getExpenseCategoryId()))
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
 	}
 
 	@Test
@@ -120,9 +128,12 @@ public class ExpenseControllerUnitTests {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(dto.getName()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.amount").value(dto.getAmount()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id").value(dto.getExpenseCategoryId()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id")
+						.value(dto.getExpenseCategoryId()))
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
 	}
 
 	@Test
@@ -242,14 +253,18 @@ public class ExpenseControllerUnitTests {
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(dto.getId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(dto.getName()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.description").value(dto.getDescription()))
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.description").value(dto.getDescription()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.amount").value(dto.getAmount()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.labels")
 						.value(Matchers.containsInAnyOrder(dto.getLabels().toArray())))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id").value(dto.getExpenseCategoryId()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id")
+						.value(dto.getExpenseCategoryId()))
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
 	}
 
 	@Test
@@ -306,14 +321,18 @@ public class ExpenseControllerUnitTests {
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(dto.getId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(dto.getName()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.description").value(dto.getDescription()))
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.description").value(dto.getDescription()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.amount").value(dto.getAmount()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.labels")
 						.value(Matchers.containsInAnyOrder(dto.getLabels().toArray())))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id").value(dto.getExpenseCategoryId()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id")
+						.value(dto.getExpenseCategoryId()))
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
 	}
 
 	@Test
@@ -348,9 +367,12 @@ public class ExpenseControllerUnitTests {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(dto.getName()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.amount").value(dto.getAmount()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
-				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id").value(dto.getExpenseCategoryId()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id")
+						.value(dto.getExpenseCategoryId()))
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
 	}
 
 	@Test
@@ -401,7 +423,8 @@ public class ExpenseControllerUnitTests {
 				1L,
 				1L);
 
-		when(expenseService.update(any(UpdateExpenseDto.class))).thenThrow(ExpenseNotFoundException.class);
+		when(expenseService.update(any(UpdateExpenseDto.class)))
+				.thenThrow(ExpenseNotFoundException.class);
 
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses")
 				.with(csrf())
