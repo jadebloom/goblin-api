@@ -6,7 +6,9 @@ The centralized log of tasks and improvements.
 
 ### Features
 
-2. Refresh token functionality.
+1. Add logout.
+1. Add token rotations.
+2. Use different token secrets.
 3. Delete multiple currencies at once.
 4. Delete multiple expense categories at once.
 5. Delete multiple expenses at once.
