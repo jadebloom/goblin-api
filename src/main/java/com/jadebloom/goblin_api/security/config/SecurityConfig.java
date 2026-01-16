@@ -15,6 +15,8 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -34,12 +36,13 @@ public class SecurityConfig {
 			AuthenticationEntryPoint authEntryPoint,
 			AccessDeniedHandler accessDeniedHandler) throws Exception {
 		http.csrf(csrf -> csrf.disable())
-				.cors(cors -> cors.disable())
+				.cors(cors -> {
+				})
 				.httpBasic(httpBasic -> httpBasic.disable())
 				.formLogin(formLogin -> formLogin.disable())
 				.authenticationManager(authManager)
 				.authorizeHttpRequests((auth) -> auth
-						.requestMatchers("/api/v1/auth/**",
+						.requestMatchers("/api/v1/authentication/**",
 								"/v3/api-docs/**",
 								"/swagger-ui/**",
 								"/swagger-ui.html",
@@ -61,13 +64,28 @@ public class SecurityConfig {
 	public AuthenticationManager authenticationManager(
 			UserDetailsService userDetailsService,
 			PasswordEncoder passwordEncoder) {
-		DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(userDetailsService);
+		DaoAuthenticationProvider daoAuthenticationProvider =
+				new DaoAuthenticationProvider(userDetailsService);
 		daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
 
 		ProviderManager providerManager = new ProviderManager(daoAuthenticationProvider);
 		providerManager.setEraseCredentialsAfterAuthentication(true);
 
 		return providerManager;
+	}
+
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**")
+						.allowedOrigins("http://localhost:4200")
+						.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+						.allowedHeaders("*")
+						.allowCredentials(true);
+			}
+		};
 	}
 
 	@Bean

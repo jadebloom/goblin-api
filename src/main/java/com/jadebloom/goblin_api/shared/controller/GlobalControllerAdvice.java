@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.ErrorResponse;
@@ -118,10 +119,21 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
 		return errorResponse;
 	}
 
+	@ExceptionHandler(BadCredentialsException.class)
+	@ResponseStatus(HttpStatus.FORBIDDEN)
+	public ErrorResponse handleBadCredentialsException(BadCredentialsException ex) {
+		ErrorResponse errorResponse = ErrorResponse
+				.builder(ex, HttpStatus.FORBIDDEN, ex.getMessage())
+				.type(URI.create(API_DOCS_URI))
+				.title("Bad credentials")
+				.build();
+
+		return errorResponse;
+	}
 
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public ErrorResponse handleGenericException(Exception ex) {
+	public ErrorResponse handleException(Exception ex) {
 		ErrorResponse errorResponse = ErrorResponse
 				.builder(ex, HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong")
 				.type(URI.create(API_DOCS_URI))

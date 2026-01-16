@@ -2,7 +2,11 @@
 
 The centralized log of tasks and improvements.
 
-## Backlog
+## Working on
+
+1. What about flag for token strategy? 
+2. Check JWtFilter for th bypass (if not including bearae)
+3. Log
 
 ### Features
 

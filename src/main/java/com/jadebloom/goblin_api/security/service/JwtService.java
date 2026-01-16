@@ -27,9 +27,9 @@ public class JwtService {
 
 	private String jwtSecret;
 
-	private static final long ACCESS_TOKEN_EXPIRATION = 15 * 60 * 1000; // 15 min
+	public static final long ACCESS_TOKEN_EXPIRATION = 15 * 60 * 1000; // 15 min
 
-	private static final long REFRESH_TOKEN_EXPIRATION = 7 * 24 * 60 * 60 * 1000; // 7 days
+	public static final long REFRESH_TOKEN_EXPIRATION = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 	public JwtService(@Value("${JWT_SECRET}") String jwtSecret) {
 		this.jwtSecret = jwtSecret;
@@ -89,14 +89,22 @@ public class JwtService {
 	public Long validateRefreshTokenAndRetrieveUserId(String token)
 			throws JWTVerificationException {
 		DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(jwtSecret))
-				.withClaim("token_use", JwtTokenUseType.ACCESS.getName())
+				.withClaim("token_use", JwtTokenUseType.REFRESH.getName())
 				.withIssuer("Goblin API")
 				.build()
 				.verify(token);
 
-		Long userId = decodedJWT.getClaim("sub").asLong();
+		String userId = decodedJWT.getSubject();
 
-		return userId;
+		if (userId == null || userId.isBlank()) {
+			throw new JWTVerificationException("Token is missing subject claim");
+		}
+
+		try {
+			return Long.parseLong(userId);
+		} catch (NumberFormatException e) {
+			throw new JWTVerificationException("Token subject is not a valid number", e);
+		}
 	}
 
 }

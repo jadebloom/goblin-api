@@ -13,4 +13,4 @@ properties:
     type: string
     minLength: 8
     maxLength: 32
-    description: Password must be 8 - 32 latin characters long and contain at least one uppercase letter, one lowercase letter, number and special symbol ('!', '?', '_', '$', '#', '%', '^', '&', '*').
+    description: "Password must be 8 - 32 latin characters long and contain at least one: uppercase letter, lowercase letter, number and special symbol ('!', '?', '_', '$', '#', '%', '^', '&', '*')."

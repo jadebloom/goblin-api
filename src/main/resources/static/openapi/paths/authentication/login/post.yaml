@@ -19,10 +19,13 @@ requestBody:
 responses:
   "201":
     description: Successful login.
+    headers:
+      Set-Cookie:
+        $ref: ../../../openapi.yaml#/components/headers/RefreshTokenCookie
     content:
       application/json:
         schema:
-          $ref: ../../../openapi.yaml#/components/schemas/JwtResponseDto
+          $ref: ../../../openapi.yaml#/components/schemas/AuthenticationResponseDto
   "400":
     description: Invalid email, password or provided email is already in use.
     content:

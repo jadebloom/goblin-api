@@ -48,8 +48,8 @@ components:
       $ref: components/schemas/RegistrationDto.yaml
     LoginDto:
       $ref: components/schemas/LoginDto.yaml
-    JwtResponseDto:
-      $ref: components/schemas/JwtResponseDto.yaml
+    AuthenticationResponseDto:
+      $ref: components/schemas/AuthenticationResponseDto.yaml
     UpdatePasswordDto:
       $ref: components/schemas/UpdatePasswordDto.yaml
     CreateCurrencyDto:
@@ -97,8 +97,9 @@ components:
       $ref: components/responses/EntityInUseError.yaml
     InternalServerError:
       $ref: components/responses/InternalServerError.yaml
-  # headers:
-  #   ?
+  headers:
+    RefreshTokenCookie:
+      $ref: components/headers/RefreshTokenCookie.yaml
   # examples:
   #   ?
   # links:

@@ -8,10 +8,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.jadebloom.goblin_api.security.dto.JwtResponseDto;
+import com.jadebloom.goblin_api.security.config.CustomUserDetails;
+import com.jadebloom.goblin_api.security.dto.JwtTokensDto;
 import com.jadebloom.goblin_api.security.dto.LoginDto;
 import com.jadebloom.goblin_api.security.dto.RegistrationDto;
 import com.jadebloom.goblin_api.security.entity.RoleEntity;
@@ -57,7 +59,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	@Override
-	public JwtResponseDto register(RegistrationDto dto)
+	public JwtTokensDto register(RegistrationDto dto)
 			throws InvalidAuthenticationRequest, EmailUnavailableException {
 		if (!GenericValidator.isValid(dto)) {
 			String message = GenericValidator.getValidationErrorMessage(dto);
@@ -102,11 +104,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				registered.getId(), email, userRoleNames);
 		String refreshToken = jwtService.generateRefreshToken(registered.getId());
 
-		return new JwtResponseDto(accessToken, refreshToken);
+		return new JwtTokensDto(accessToken, refreshToken);
 	}
 
 	@Override
-	public JwtResponseDto login(LoginDto dto)
+	public JwtTokensDto login(LoginDto dto)
 			throws InvalidAuthenticationRequest,
 			UserNotFoundException,
 			IncorrectPasswordException {
@@ -146,38 +148,38 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		String accessToken = jwtService.generateAccessToken(user.getId(), email, userRoleNames);
 		String refreshToken = jwtService.generateRefreshToken(user.getId());
 
-		return new JwtResponseDto(accessToken, refreshToken);
+		return new JwtTokensDto(accessToken, refreshToken);
 	}
 
 	@Override
-	public JwtResponseDto refresh(String refreshToken) throws JWTVerificationException {
+	public JwtTokensDto refresh(String refreshToken) throws JWTVerificationException {
 		Long userId = jwtService.validateRefreshTokenAndRetrieveUserId(refreshToken);
 
-		UserEntity user = userRepository.findById(userId).orElseThrow(() -> {
-			String f = "User with the id '%d' wasn't found";
+		UserEntity user = userRepository.findById(userId)
+				.orElseThrow(() -> {
+					String f = "User with the ID '%s' wasn't found";
 
-			throw new UserNotFoundException(String.format(f, userId));
-		});
+					throw new UserNotFoundException(String.format(f, userId));
+				});
 
-		Set<GrantedAuthority> userGrantedAuthorities = new HashSet<>();
-		Set<String> userRoleNames = new HashSet<>();
+		Set<GrantedAuthority> authorities = new HashSet<>();
+		Set<String> roleNames = new HashSet<>();
 		for (RoleEntity role : user.getRoles()) {
-			userGrantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
-
-			userRoleNames.add(role.getName());
+			authorities.add(new SimpleGrantedAuthority(role.getName()));
+			roleNames.add(role.getName());
 		}
 
-		Authentication request = new UsernamePasswordAuthenticationToken(
-				user.getEmail(),
-				user.getPassword(),
-				userGrantedAuthorities);
-		authenticationManager.authenticate(request);
+		Authentication auth = new UsernamePasswordAuthenticationToken(
+				new CustomUserDetails(user.getId(), user.getEmail(), null, authorities),
+				null,
+				authorities);
+		SecurityContextHolder.getContext().setAuthentication(auth);
 
 		String accessToken =
-				jwtService.generateAccessToken(user.getId(), user.getEmail(), userRoleNames);
+				jwtService.generateAccessToken(user.getId(), user.getEmail(), roleNames);
 		String newRefreshToken = jwtService.generateRefreshToken(user.getId());
 
-		return new JwtResponseDto(accessToken, newRefreshToken);
+		return new JwtTokensDto(accessToken, newRefreshToken);
 	}
 
 }

@@ -1,13 +1,9 @@
 type: object
 required:
   - access_token
-  - refresh_token
 properties:
   access_token:
     type: string
     description: JWT token which contains user's ID and email.
     format: jwt_token
-  refresh_token:
-    type: string
-    description: JWT token which contains user's ID and email.
-    format: jwt_token
+
