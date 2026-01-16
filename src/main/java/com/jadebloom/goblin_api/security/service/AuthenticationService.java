@@ -8,6 +8,7 @@ import com.jadebloom.goblin_api.security.error.IncorrectPasswordException;
 import com.jadebloom.goblin_api.security.error.InvalidAuthenticationRequest;
 import com.jadebloom.goblin_api.security.error.EmailUnavailableException;
 import com.jadebloom.goblin_api.security.error.UserNotFoundException;
+import com.jadebloom.goblin_api.shared.error.ForbiddenException;
 
 public interface AuthenticationService {
 
@@ -21,6 +22,6 @@ public interface AuthenticationService {
 
 	JwtTokensDto refresh(String refreshToken) throws JWTVerificationException;
 
-	// logout
+	void logout() throws ForbiddenException, UserNotFoundException, InvalidAuthenticationRequest;
 
 }

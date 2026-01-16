@@ -84,4 +84,20 @@ public class AuthenticationController {
 				.body(response);
 	}
 
+	@PostMapping("/logout")
+	public ResponseEntity<Void> logout() {
+		ResponseCookie cookie = ResponseCookie.from("refresh_token", "")
+				.httpOnly(true)
+				.secure(false)
+				.path("/")
+				.maxAge(0)
+				.sameSite("Lax")
+				.build();
+
+		return ResponseEntity.noContent()
+				.header("Set-Cookie", cookie.toString())
+				.build();
+	}
+
+
 }

@@ -26,6 +26,8 @@ import com.jadebloom.goblin_api.security.repository.RoleRepository;
 import com.jadebloom.goblin_api.security.repository.UserRepository;
 import com.jadebloom.goblin_api.security.service.AuthenticationService;
 import com.jadebloom.goblin_api.security.service.JwtService;
+import com.jadebloom.goblin_api.security.util.SecurityContextUtils;
+import com.jadebloom.goblin_api.shared.error.ForbiddenException;
 import com.jadebloom.goblin_api.shared.validation.GenericValidator;
 
 @Service
@@ -180,6 +182,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		String newRefreshToken = jwtService.generateRefreshToken(user.getId());
 
 		return new JwtTokensDto(accessToken, newRefreshToken);
+	}
+
+	@Override
+	public void logout() throws InvalidAuthenticationRequest {
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
+
+		userRepository.findById(userId)
+				.orElseThrow(() -> {
+					String f = "User with the ID '%s' wasn't found";
+
+					throw new UserNotFoundException(String.format(f, userId));
+				});
 	}
 
 }
