@@ -23,7 +23,7 @@ public interface CurrencyService {
 
 	CurrencyDto findById(Long currencyId) throws ForbiddenException, CurrencyNotFoundException;
 
-	CurrencyDto update(UpdateCurrencyDto updateDto)
+	CurrencyDto update(Long currencyId, UpdateCurrencyDto updateDto)
 			throws ForbiddenException,
 			InvalidCurrencyException,
 			CurrencyNotFoundException,

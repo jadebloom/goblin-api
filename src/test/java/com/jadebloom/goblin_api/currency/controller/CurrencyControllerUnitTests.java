@@ -192,17 +192,17 @@ public class CurrencyControllerUnitTests {
 	@WithMockUser(roles = "USER")
 	public void GivenRequiredFields_WhenUpdatingCurrency_ThenReturnHttp200AndUpdatedCurrency()
 			throws Exception {
-		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(1L, "New Tenge");
+		UpdateCurrencyDto updateDto = new UpdateCurrencyDto("New Tenge");
 		CurrencyDto dto = new CurrencyDto(
-				updateDto.getId(),
+				1L,
 				updateDto.getName(),
 				ZonedDateTime.now(),
 				1L);
 
-		when(currencyService.update(any(UpdateCurrencyDto.class))).thenReturn(dto);
+		when(currencyService.update(anyLong(), any(UpdateCurrencyDto.class))).thenReturn(dto);
 
 		mockMvc.perform(
-				MockMvcRequestBuilders.put("/api/v1/currencies").with(csrf())
+				MockMvcRequestBuilders.put("/api/v1/currencies/" + dto.getId()).with(csrf())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(new ObjectMapper().writeValueAsString(updateDto)))
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -218,10 +218,10 @@ public class CurrencyControllerUnitTests {
 	@WithMockUser(roles = "USER")
 	public void GivenInvalidFields_WhenUpdatingCurrency_ThenReturnHttp400()
 			throws Exception {
-		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(1L, "    ");
+		UpdateCurrencyDto updateDto = new UpdateCurrencyDto("    ");
 
 		mockMvc.perform(
-				MockMvcRequestBuilders.put("/api/v1/currencies").with(csrf())
+				MockMvcRequestBuilders.put("/api/v1/currencies/" + 1L).with(csrf())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(new ObjectMapper().writeValueAsString(updateDto)))
 				.andExpect(MockMvcResultMatchers.status().isBadRequest());
@@ -232,13 +232,13 @@ public class CurrencyControllerUnitTests {
 	@WithMockUser(roles = "USER")
 	public void GivenUnavailableCurrencyName_WhenUpdatingCurrency_ThenReturnHttp400()
 			throws Exception {
-		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(1L, "Tenge");
+		UpdateCurrencyDto updateDto = new UpdateCurrencyDto("Tenge");
 
-		when(currencyService.update(any(UpdateCurrencyDto.class)))
+		when(currencyService.update(anyLong(), any(UpdateCurrencyDto.class)))
 				.thenThrow(CurrencyNameUnavailableException.class);
 
 		mockMvc.perform(
-				MockMvcRequestBuilders.put("/api/v1/currencies").with(csrf())
+				MockMvcRequestBuilders.put("/api/v1/currencies/" + 1L).with(csrf())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(new ObjectMapper().writeValueAsString(updateDto)))
 				.andExpect(MockMvcResultMatchers.status().isBadRequest());
@@ -248,10 +248,10 @@ public class CurrencyControllerUnitTests {
 	@DisplayName("Return HTTP 403 when updating a currency as a user with an invalid role")
 	@WithMockUser(roles = "SOME_ROLE_THAT_IS_NOT_USER")
 	public void GivenInvalidUserRole_WhenUpdatingCurrency_ThenReturnHttp403() throws Exception {
-		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(1L, "New Tenge");
+		UpdateCurrencyDto updateDto = new UpdateCurrencyDto("New Tenge");
 
 		mockMvc.perform(
-				MockMvcRequestBuilders.put("/api/v1/currencies").with(csrf())
+				MockMvcRequestBuilders.put("/api/v1/currencies/" + 1L).with(csrf())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(new ObjectMapper().writeValueAsString(updateDto)))
 				.andExpect(MockMvcResultMatchers.status().isForbidden());
@@ -262,13 +262,13 @@ public class CurrencyControllerUnitTests {
 	@WithMockUser(roles = "USER")
 	public void GivenNonExistingCurrencyId_WhenUpdatingCurrency_ThenReturnHttp404()
 			throws Exception {
-		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(1L, "New Tenge");
+		UpdateCurrencyDto updateDto = new UpdateCurrencyDto("New Tenge");
 
-		when(currencyService.update(any(UpdateCurrencyDto.class)))
+		when(currencyService.update(anyLong(), any(UpdateCurrencyDto.class)))
 				.thenThrow(CurrencyNotFoundException.class);
 
 		mockMvc.perform(
-				MockMvcRequestBuilders.put("/api/v1/currencies").with(csrf())
+				MockMvcRequestBuilders.put("/api/v1/currencies/" + 1L).with(csrf())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(new ObjectMapper().writeValueAsString(updateDto)))
 				.andExpect(MockMvcResultMatchers.status().isNotFound());

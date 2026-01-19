@@ -38,7 +38,8 @@ public class CurrencyController {
 
 	@PreAuthorize("hasRole('USER')")
 	@PostMapping()
-	public ResponseEntity<CurrencyDto> createCurrency(@Valid @RequestBody CreateCurrencyDto createDto) {
+	public ResponseEntity<CurrencyDto> createCurrency(
+			@Valid @RequestBody CreateCurrencyDto createDto) {
 		CurrencyDto created = currencyService.create(createDto);
 
 		return new ResponseEntity<>(created, HttpStatus.CREATED);
@@ -54,16 +55,18 @@ public class CurrencyController {
 
 	@PreAuthorize("hasRole('USER')")
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<CurrencyDto> findCurrencyById(@PathVariable(name = "id") Long currencyId) {
+	public ResponseEntity<CurrencyDto> findCurrencyById(
+			@PathVariable(name = "id") Long currencyId) {
 		CurrencyDto found = currencyService.findById(currencyId);
 
 		return new ResponseEntity<>(found, HttpStatus.OK);
 	}
 
 	@PreAuthorize("hasRole('USER')")
-	@PutMapping()
-	public ResponseEntity<CurrencyDto> updateCurrency(@Valid @RequestBody UpdateCurrencyDto updateDto) {
-		CurrencyDto updated = currencyService.update(updateDto);
+	@PutMapping(value = "/{id}")
+	public ResponseEntity<CurrencyDto> updateCurrency(@PathVariable(name = "id") Long currencyId,
+			@Valid @RequestBody UpdateCurrencyDto updateDto) {
+		CurrencyDto updated = currencyService.update(currencyId, updateDto);
 
 		return new ResponseEntity<>(updated, HttpStatus.OK);
 	}

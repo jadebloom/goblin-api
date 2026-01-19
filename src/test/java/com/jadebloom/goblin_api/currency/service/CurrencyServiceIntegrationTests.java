@@ -106,7 +106,8 @@ public class CurrencyServiceIntegrationTests {
 
 		underTest.create(createDto);
 
-		assertThrowsExactly(CurrencyNameUnavailableException.class, () -> underTest.create(createDto));
+		assertThrowsExactly(CurrencyNameUnavailableException.class,
+				() -> underTest.create(createDto));
 	}
 
 	@Test
@@ -168,12 +169,12 @@ public class CurrencyServiceIntegrationTests {
 		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
 		CurrencyDto created = underTest.create(createDto);
 
-		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(created.getId(), "Dollar");
+		UpdateCurrencyDto updateDto = new UpdateCurrencyDto("Dollar");
 		updateDto.setAlphabeticalCode("KZT");
-		CurrencyDto updated = underTest.update(updateDto);
+		CurrencyDto updated = underTest.update(created.getId(), updateDto);
 
 		assertAll("Assert that a currency can be updated using all fields",
-				() -> assertEquals(updateDto.getId(), updated.getId()),
+				() -> assertEquals(created.getId(), updated.getId()),
 				() -> assertEquals(updateDto.getName(), updated.getName()),
 				() -> assertEquals(updateDto.getAlphabeticalCode(), updated.getAlphabeticalCode()),
 				() -> assertEquals(created.getCreatedAt(), updated.getCreatedAt()),
@@ -187,11 +188,11 @@ public class CurrencyServiceIntegrationTests {
 		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
 		CurrencyDto created = underTest.create(createDto);
 
-		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(created.getId(), "Dollar");
-		CurrencyDto updated = underTest.update(updateDto);
+		UpdateCurrencyDto updateDto = new UpdateCurrencyDto("Dollar");
+		CurrencyDto updated = underTest.update(created.getId(), updateDto);
 
 		assertAll("Assert that a currency can be updated using all fields",
-				() -> assertEquals(updateDto.getId(), updated.getId()),
+				() -> assertEquals(created.getId(), updated.getId()),
 				() -> assertEquals(updateDto.getName(), updated.getName()),
 				() -> assertEquals(created.getAlphabeticalCode(), updated.getAlphabeticalCode()),
 				() -> assertEquals(created.getCreatedAt(), updated.getCreatedAt()),
@@ -205,8 +206,8 @@ public class CurrencyServiceIntegrationTests {
 		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
 		CurrencyDto created = underTest.create(createDto);
 
-		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(created.getId(), created.getName());
-		CurrencyDto updated = underTest.update(updateDto);
+		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(created.getName());
+		CurrencyDto updated = underTest.update(created.getId(), updateDto);
 
 		assertAll("Assert that a valid currency with required fields can be created",
 				() -> assertEquals(created.getId(), updated.getId()),
@@ -223,9 +224,10 @@ public class CurrencyServiceIntegrationTests {
 		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
 		CurrencyDto created = underTest.create(createDto);
 
-		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(created.getId(), " ");
+		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(" ");
 
-		assertThrowsExactly(InvalidCurrencyException.class, () -> underTest.update(updateDto));
+		assertThrowsExactly(InvalidCurrencyException.class,
+				() -> underTest.update(created.getId(), updateDto));
 	}
 
 	@Test
@@ -238,10 +240,10 @@ public class CurrencyServiceIntegrationTests {
 		CreateCurrencyDto createDto2 = new CreateCurrencyDto("Dollar");
 		CurrencyDto created2 = underTest.create(createDto2);
 
-		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(created2.getId(), created1.getName());
+		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(created1.getName());
 
 		assertThrowsExactly(CurrencyNameUnavailableException.class,
-				() -> underTest.update(updateDto));
+				() -> underTest.update(created2.getId(), updateDto));
 	}
 
 	@Test
@@ -251,9 +253,10 @@ public class CurrencyServiceIntegrationTests {
 		CreateCurrencyDto createDto = new CreateCurrencyDto("Tenge");
 		CurrencyDto created = underTest.create(createDto);
 
-		UpdateCurrencyDto updateDto = new UpdateCurrencyDto(created.getId() + 1, "Dollar");
+		UpdateCurrencyDto updateDto = new UpdateCurrencyDto("Dollar");
 
-		assertThrowsExactly(CurrencyNotFoundException.class, () -> underTest.update(updateDto));
+		assertThrowsExactly(CurrencyNotFoundException.class,
+				() -> underTest.update(created.getId() + 1, updateDto));
 	}
 
 	@Test

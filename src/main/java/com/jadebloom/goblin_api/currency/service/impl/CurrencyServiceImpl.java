@@ -109,7 +109,7 @@ public class CurrencyServiceImpl implements CurrencyService {
 	}
 
 	@Override
-	public CurrencyDto update(UpdateCurrencyDto updateDto)
+	public CurrencyDto update(Long currencyId, UpdateCurrencyDto updateDto)
 			throws ForbiddenException,
 			InvalidCurrencyException,
 			CurrencyNotFoundException,
@@ -123,18 +123,18 @@ public class CurrencyServiceImpl implements CurrencyService {
 			throw new InvalidCurrencyException(message);
 		}
 
-		CurrencyEntity currency = currencyRepository.findById(updateDto.getId())
+		CurrencyEntity currency = currencyRepository.findById(currencyId)
 				.orElseThrow(() -> {
 					String f = "Currency with the ID '%d' doesn't exist";
 
-					throw new CurrencyNotFoundException(String.format(f, updateDto.getId()));
+					throw new CurrencyNotFoundException(String.format(f, currencyId));
 				});
 
 		if (currency.getCreator().getId() != userId) {
 			throw new ForbiddenException();
 		}
 
-		if (currencyRepository.existsByIdNotAndName(currency.getId(), updateDto.getName())) {
+		if (currencyRepository.existsByIdNotAndName(currencyId, updateDto.getName())) {
 			String f = "Currency with the name '%s' already exists";
 			String errorMessage = String.format(f, updateDto.getName());
 
@@ -165,7 +165,8 @@ public class CurrencyServiceImpl implements CurrencyService {
 		}
 
 		if (expenseRepository.existsByCurrency_Id(currencyId)) {
-			String f = "Cannot delete the currency with the ID '%d': some amount of expenses depend use it";
+			String f =
+					"Cannot delete the currency with the ID '%d': some amount of expenses depend use it";
 			String errorMessage = String.format(f, currencyId);
 
 			throw new CurrencyInUseException(errorMessage);

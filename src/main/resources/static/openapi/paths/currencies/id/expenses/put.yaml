@@ -2,6 +2,12 @@ operationId: updateCurrency
 summary: Update a currency
 tags:
   - Currencies
+parameters:
+  - name: id
+    in: path
+    description: Currency ID
+    schema:
+      type: integer
 security:
   - bearerAuth: []
 requestBody:
@@ -15,12 +21,10 @@ requestBody:
         required:
           summary: An example with only required fields
           value:
-            id: 1
             name: Gold
         all:
           summary: An example with all fields
           value:
-            id: 2
             name: American dollar
             alphabetical_code: USD
 responses:
