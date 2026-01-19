@@ -2,6 +2,7 @@ package com.jadebloom.goblin_api.security.controller;
 
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -84,8 +85,11 @@ public class AuthenticationController {
 				.body(response);
 	}
 
+	@PreAuthorize("hasRole('USER')")
 	@PostMapping("/logout")
 	public ResponseEntity<Void> logout() {
+		authenticationService.logout();
+
 		ResponseCookie cookie = ResponseCookie.from("refresh_token", "")
 				.httpOnly(true)
 				.secure(false)
@@ -98,6 +102,5 @@ public class AuthenticationController {
 				.header("Set-Cookie", cookie.toString())
 				.build();
 	}
-
 
 }

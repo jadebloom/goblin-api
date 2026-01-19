@@ -47,4 +47,12 @@ public class CustomUserDetails implements UserDetails {
 		return grantedAuthorities;
 	}
 
+	@Override
+	public String toString() {
+		return "CustomUserDetails(id=" + id +
+				", email=" + email +
+				", password=" + password +
+				", grantedAuthorities=" + grantedAuthorities + ")";
+	}
+
 }

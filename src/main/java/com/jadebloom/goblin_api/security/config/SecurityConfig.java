@@ -42,7 +42,9 @@ public class SecurityConfig {
 				.formLogin(formLogin -> formLogin.disable())
 				.authenticationManager(authManager)
 				.authorizeHttpRequests((auth) -> auth
-						.requestMatchers("/api/v1/authentication/**",
+						.requestMatchers("/api/v1/authentication/registration",
+								"/api/v1/authentication/login",
+								"/api/v1/authentication/refresh",
 								"/v3/api-docs/**",
 								"/swagger-ui/**",
 								"/swagger-ui.html",
@@ -64,8 +66,7 @@ public class SecurityConfig {
 	public AuthenticationManager authenticationManager(
 			UserDetailsService userDetailsService,
 			PasswordEncoder passwordEncoder) {
-		DaoAuthenticationProvider daoAuthenticationProvider =
-				new DaoAuthenticationProvider(userDetailsService);
+		DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(userDetailsService);
 		daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
 
 		ProviderManager providerManager = new ProviderManager(daoAuthenticationProvider);

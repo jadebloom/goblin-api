@@ -66,24 +66,32 @@ public class JwtService {
 				.build()
 				.verify(token);
 
-		Long userId = decodedJWT.getClaim("sub").asLong();
-		String userEmail = decodedJWT.getClaim("email").asString();
+		try {
+			String userId = decodedJWT.getSubject();
+			String userEmail = decodedJWT.getClaim("email").asString();
 
-		List<String> roleNames = decodedJWT.getClaim("roles").asList(String.class);
-		Set<String> uniqueRoleNames = new HashSet<>(roleNames);
+			List<String> roleNames = decodedJWT.getClaim("roles").asList(String.class);
+			Set<String> uniqueRoleNames = new HashSet<>(roleNames);
 
-		Set<GrantedAuthority> roles = uniqueRoleNames.stream()
-				.map(n -> new SimpleGrantedAuthority(n))
-				.collect(Collectors.toSet());
+			Set<GrantedAuthority> roles = uniqueRoleNames.stream()
+					.map(n -> new SimpleGrantedAuthority(n))
+					.collect(Collectors.toSet());
 
-		CustomUserDetails userDetails = new CustomUserDetails(userId, userEmail, "", roles);
+			CustomUserDetails userDetails = new CustomUserDetails(
+					Long.parseLong(userId),
+					userEmail,
+					"",
+					roles);
 
-		UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-				userDetails,
-				"",
-				roles);
+			UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+					userDetails,
+					"",
+					roles);
 
-		return auth;
+			return auth;
+		} catch (NumberFormatException e) {
+			throw new JWTVerificationException("Token subject is not a valid number", e);
+		}
 	}
 
 	public Long validateRefreshTokenAndRetrieveUserId(String token)

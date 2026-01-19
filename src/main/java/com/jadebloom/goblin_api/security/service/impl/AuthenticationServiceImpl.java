@@ -177,8 +177,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				authorities);
 		SecurityContextHolder.getContext().setAuthentication(auth);
 
-		String accessToken =
-				jwtService.generateAccessToken(user.getId(), user.getEmail(), roleNames);
+		String accessToken = jwtService.generateAccessToken(user.getId(), user.getEmail(), roleNames);
 		String newRefreshToken = jwtService.generateRefreshToken(user.getId());
 
 		return new JwtTokensDto(accessToken, newRefreshToken);
