@@ -193,21 +193,22 @@ public class ExpenseCategoryControllerUnitTests {
 	@WithMockUser(roles = { "USER" })
 	public void GivenExpenseCategory_WhenUpdating_ThenReturnHttp200AndExpenseCategory()
 			throws Exception {
-		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(1L, "Daily");
+		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto("Daily");
 
 		ExpenseCategoryDto returned = new ExpenseCategoryDto(
-				updateDto.getId(),
+				1L,
 				updateDto.getName(),
 				ZonedDateTime.now(),
 				1L);
 
-		when(expenseCategoryService.update(any(UpdateExpenseCategoryDto.class)))
+		when(expenseCategoryService.update(anyLong(), any(UpdateExpenseCategoryDto.class)))
 				.thenReturn(returned);
 
-		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/categories")
-				.with(csrf())
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(updateDto)))
+		mockMvc.perform(
+				MockMvcRequestBuilders.put("/api/v1/expenses/categories/" + returned.getId())
+						.with(csrf())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(updateDto)))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(returned.getId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(returned.getName()))
@@ -224,9 +225,9 @@ public class ExpenseCategoryControllerUnitTests {
 	@DisplayName("Return HTTP 400 when updating an expense category with an invalid name")
 	@WithMockUser(roles = { "USER" })
 	public void GivenInvalidName_WhenUpdating_ThenReturnHttp400() throws Exception {
-		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(1L, "   ");
+		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto("   ");
 
-		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/categories")
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/categories/1")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(updateDto)))
@@ -237,12 +238,12 @@ public class ExpenseCategoryControllerUnitTests {
 	@DisplayName("Return HTTP 400 when updating an expense category with an unavailable name")
 	@WithMockUser(roles = { "USER" })
 	public void GivenUnavailableName_WhenUpdating_ThenReturnHttp400() throws Exception {
-		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(1L, "Daily");
+		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto("Daily");
 
-		when(expenseCategoryService.update(any(UpdateExpenseCategoryDto.class)))
+		when(expenseCategoryService.update(anyLong(), any(UpdateExpenseCategoryDto.class)))
 				.thenThrow(ExpenseCategoryNameUnavailableException.class);
 
-		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/categories")
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/categories/1")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(updateDto)))
@@ -253,9 +254,9 @@ public class ExpenseCategoryControllerUnitTests {
 	@DisplayName("Return HTTP 403 when updating an expense category as a user without valid roles")
 	@WithMockUser(roles = { "SOME_INVALID_ROLE" })
 	public void GivenWithoutValidRoles_WhenUpdating_ThenReturnHttp403() throws Exception {
-		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(1L, "Daily");
+		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto("Daily");
 
-		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/categories")
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/categories/1")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(updateDto)))
@@ -267,12 +268,12 @@ public class ExpenseCategoryControllerUnitTests {
 	@WithMockUser(roles = { "USER" })
 	public void GivenNonExistingExpenseCategory_WhenUpdatingIt_ThenReturnHttp400()
 			throws Exception {
-		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(1L, "Daily");
+		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto("Daily");
 
-		when(expenseCategoryService.update(any(UpdateExpenseCategoryDto.class)))
+		when(expenseCategoryService.update(anyLong(), any(UpdateExpenseCategoryDto.class)))
 				.thenThrow(ExpenseCategoryNotFoundException.class);
 
-		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/categories")
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/categories/1")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(updateDto)))

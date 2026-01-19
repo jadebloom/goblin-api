@@ -25,7 +25,7 @@ public interface ExpenseCategoryService {
 	ExpenseCategoryDto findById(Long expenseCategoryId)
 			throws ForbiddenException, ExpenseCategoryNotFoundException;
 
-	ExpenseCategoryDto update(UpdateExpenseCategoryDto updateDto)
+	ExpenseCategoryDto update(Long expenseCategoryId, UpdateExpenseCategoryDto updateDto)
 			throws ForbiddenException,
 			InvalidExpenseCategoryException,
 			ExpenseCategoryNotFoundException,

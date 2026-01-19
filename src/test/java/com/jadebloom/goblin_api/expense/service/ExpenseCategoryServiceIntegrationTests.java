@@ -138,7 +138,8 @@ public class ExpenseCategoryServiceIntegrationTests {
 
 		List<ExpenseCategoryDto> expenseCategories = page.getContent();
 
-		assertAll("Assert that a page is returned when finding the authenticated user's expense categories",
+		assertAll(
+				"Assert that a page is returned when finding the authenticated user's expense categories",
 				() -> assertNotNull(page),
 				() -> assertNotNull(expenseCategories),
 				() -> assertEquals(2, expenseCategories.size()),
@@ -189,13 +190,11 @@ public class ExpenseCategoryServiceIntegrationTests {
 		CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Daily");
 		ExpenseCategoryDto created = underTest.create(createDto);
 
-		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(
-				created.getId(),
-				"Debt");
+		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto("Debt");
 		updateDto.setDescription("Daily expenses category");
 		updateDto.setHexColorCode("#FFF");
 
-		ExpenseCategoryDto updated = underTest.update(updateDto);
+		ExpenseCategoryDto updated = underTest.update(created.getId(), updateDto);
 
 		assertAll("Assert that an expense category can be updated given valid all fields",
 				() -> assertEquals(created.getId(), updated.getId()),
@@ -213,11 +212,9 @@ public class ExpenseCategoryServiceIntegrationTests {
 		CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Daily");
 		ExpenseCategoryDto created = underTest.create(createDto);
 
-		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(
-				created.getId(),
-				"Debt");
+		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto("Debt");
 
-		ExpenseCategoryDto updated = underTest.update(updateDto);
+		ExpenseCategoryDto updated = underTest.update(created.getId(), updateDto);
 
 		assertAll("Assert that an expense category can be updated given valid only required fields",
 				() -> assertEquals(created.getId(), updated.getId()),
@@ -234,12 +231,10 @@ public class ExpenseCategoryServiceIntegrationTests {
 		CreateExpenseCategoryDto createDto = new CreateExpenseCategoryDto("Daily");
 		ExpenseCategoryDto created = underTest.create(createDto);
 
-		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(
-				created.getId(),
-				"  ");
+		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto("  ");
 
 		assertThrowsExactly(InvalidExpenseCategoryException.class,
-				() -> underTest.update(updateDto));
+				() -> underTest.update(created.getId(), updateDto));
 	}
 
 	@Test
@@ -252,22 +247,20 @@ public class ExpenseCategoryServiceIntegrationTests {
 		CreateExpenseCategoryDto createDto2 = new CreateExpenseCategoryDto("Debt");
 		ExpenseCategoryDto created2 = underTest.create(createDto2);
 
-		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(
-				created2.getId(),
-				createDto1.getName());
+		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(createDto1.getName());
 
 		assertThrowsExactly(ExpenseCategoryNameUnavailableException.class,
-				() -> underTest.update(updateDto));
+				() -> underTest.update(created2.getId(), updateDto));
 	}
 
 	@Test
 	@DisplayName("Throw ExpenseCategoryNotFoundException when trying to update a non-existing expense category")
 	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void GivenNonExistingExpenseCategory_WhenUpdating_ThrowExpenseCategoryNotFoundException() {
-		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto(0L, "Daily");
+		UpdateExpenseCategoryDto updateDto = new UpdateExpenseCategoryDto("Daily");
 
 		assertThrowsExactly(ExpenseCategoryNotFoundException.class,
-				() -> underTest.update(updateDto));
+				() -> underTest.update(1L, updateDto));
 	}
 
 	@Test

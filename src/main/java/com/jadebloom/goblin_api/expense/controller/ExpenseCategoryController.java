@@ -49,9 +49,11 @@ public class ExpenseCategoryController {
 
 	@PreAuthorize("hasRole('USER')")
 	@GetMapping
-	public ResponseEntity<Page<ExpenseCategoryDto>> findAuthenticatedUserExpenseCategories(Pageable pageable) {
-		Page<ExpenseCategoryDto> page = expenseCategoryService.findAuthenticatedUserExpenseCategories(
-				pageable);
+	public ResponseEntity<Page<ExpenseCategoryDto>> findAuthenticatedUserExpenseCategories(
+			Pageable pageable) {
+		Page<ExpenseCategoryDto> page =
+				expenseCategoryService.findAuthenticatedUserExpenseCategories(
+						pageable);
 
 		return new ResponseEntity<>(page, HttpStatus.OK);
 	}
@@ -66,10 +68,11 @@ public class ExpenseCategoryController {
 	}
 
 	@PreAuthorize("hasRole('USER')")
-	@PutMapping
+	@PutMapping(value = "/{id}")
 	public ResponseEntity<ExpenseCategoryDto> updateExpenseCategory(
+			@PathVariable(name = "id") Long expenseCategoryId,
 			@Valid @RequestBody UpdateExpenseCategoryDto updateDto) {
-		ExpenseCategoryDto result = expenseCategoryService.update(updateDto);
+		ExpenseCategoryDto result = expenseCategoryService.update(expenseCategoryId, updateDto);
 
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}

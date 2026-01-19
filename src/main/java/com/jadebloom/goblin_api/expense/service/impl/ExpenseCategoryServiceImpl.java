@@ -113,7 +113,7 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 	}
 
 	@Override
-	public ExpenseCategoryDto update(UpdateExpenseCategoryDto updateDto)
+	public ExpenseCategoryDto update(Long expenseCategoryId, UpdateExpenseCategoryDto updateDto)
 			throws ForbiddenException,
 			InvalidExpenseCategoryException,
 			ExpenseCategoryNameUnavailableException,
@@ -128,10 +128,10 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 		}
 
 		ExpenseCategoryEntity expenseCategory = expenseCategoryRepository
-				.findById(updateDto.getId())
+				.findById(expenseCategoryId)
 				.orElseThrow(() -> {
 					String f = "Expense category with the ID '%d' doesn't exist";
-					String errorMessage = String.format(f, updateDto.getId());
+					String errorMessage = String.format(f, expenseCategoryId);
 
 					throw new ExpenseCategoryNotFoundException(errorMessage);
 				});
@@ -141,7 +141,7 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 		}
 
 		if (expenseCategoryRepository.existsByIdNotAndName(
-				expenseCategory.getId(), updateDto.getName())) {
+				expenseCategoryId, updateDto.getName())) {
 			String f = "Expense category with the name '%s' already exists";
 			String errorMessage = String.format(f, updateDto.getName());
 
@@ -177,7 +177,8 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 		}
 
 		if (expenseRepository.existsByExpenseCategory_Id(expenseCategoryId)) {
-			String f = "Cannot delete the expense category with the ID '%d': some amount of expenses depend use it";
+			String f =
+					"Cannot delete the expense category with the ID '%d': some amount of expenses depend use it";
 			String errorMessage = String.format(f, expenseCategoryId);
 
 			throw new ExpenseCategoryInUseException(errorMessage);

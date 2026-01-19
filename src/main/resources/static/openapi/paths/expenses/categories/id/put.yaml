@@ -2,6 +2,12 @@ operationId: updateExpenseCategory
 summary: Update an expense category
 tags:
   - Expense Categories
+parameters:
+  - name: id
+    in: path
+    description: Expense category ID
+    schema:
+      type: integer
 security:
   - bearerAuth: []
 requestBody:
@@ -15,12 +21,10 @@ requestBody:
         required:
           summary: An example with only required fields
           value:
-            id: 1
             name: Daily
         all:
           summary: An example with all fields
           value:
-            id: 2
             name: Debt
             description: Daily debt payments
 responses:

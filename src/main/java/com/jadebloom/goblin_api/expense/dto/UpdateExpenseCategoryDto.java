@@ -5,12 +5,7 @@ import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryDescripti
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryName;
 import com.jadebloom.goblin_api.shared.validation.ValidHexColorCode;
 
-import jakarta.validation.constraints.NotNull;
-
 public class UpdateExpenseCategoryDto {
-
-	@NotNull(message = "The expense category's ID must not be null")
-	private Long id;
 
 	@ValidExpenseCategoryName
 	private String name;
@@ -22,17 +17,10 @@ public class UpdateExpenseCategoryDto {
 	@JsonProperty("hex_color_code")
 	private String hexColorCode;
 
-	public UpdateExpenseCategoryDto() {
-	}
+	public UpdateExpenseCategoryDto() {}
 
-	public UpdateExpenseCategoryDto(Long id, String name) {
-		this.id = id;
-
+	public UpdateExpenseCategoryDto(String name) {
 		this.name = name;
-	}
-
-	public Long getId() {
-		return id;
 	}
 
 	public String getName() {
@@ -45,10 +33,6 @@ public class UpdateExpenseCategoryDto {
 
 	public String getHexColorCode() {
 		return hexColorCode;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public void setName(String name) {
@@ -65,8 +49,7 @@ public class UpdateExpenseCategoryDto {
 
 	@Override
 	public String toString() {
-		return "UpdateExpenseCategoryDto(id=" + id +
-				", name=" + name +
+		return "UpdateExpenseCategoryDto(name=" + name +
 				", description=" + description +
 				", hexColorCode=" + hexColorCode + ")";
 	}
