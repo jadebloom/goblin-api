@@ -16,7 +16,7 @@ requestBody:
   content:
     application/json:
       schema:
-        $ref: ../../openapi.yaml#/components/schemas/UpdateCurrencyDto
+        $ref: ../../../openapi.yaml#/components/schemas/UpdateCurrencyDto
       examples:
         required:
           summary: An example with only required fields
@@ -33,14 +33,14 @@ responses:
     content:
       application/json:
         schema:
-          $ref: ../../openapi.yaml#/components/schemas/CurrencyDto
+          $ref: ../../../openapi.yaml#/components/schemas/CurrencyDto
   "400":
     description: Invalid currency or such currency name is already in use.
     content:
       application/json:
         schema:
-          $ref: ../../openapi.yaml#/components/schemas/ErrorResponse
+          $ref: ../../../openapi.yaml#/components/schemas/ErrorResponse
   "403":
-    $ref: ../../openapi.yaml#/components/responses/ForbiddenError
+    $ref: ../../../openapi.yaml#/components/responses/ForbiddenError
   "500":
-    $ref: ../../openapi.yaml#/components/responses/InternalServerError
+    $ref: ../../../openapi.yaml#/components/responses/InternalServerError

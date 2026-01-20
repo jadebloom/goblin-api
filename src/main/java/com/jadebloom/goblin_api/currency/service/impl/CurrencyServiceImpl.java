@@ -1,5 +1,7 @@
 package com.jadebloom.goblin_api.currency.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -65,7 +67,7 @@ public class CurrencyServiceImpl implements CurrencyService {
 		}
 
 		if (currencyRepository.existsByName(createDto.getName())) {
-			String f = "Currency with the name '%s' already exists";
+			String f = "Currency with name '%s' already exists";
 			String errorMessage = String.format(f, createDto.getName());
 
 			throw new CurrencyNameUnavailableException(errorMessage);
@@ -96,7 +98,7 @@ public class CurrencyServiceImpl implements CurrencyService {
 
 		CurrencyEntity currency = currencyRepository.findById(currencyId)
 				.orElseThrow(() -> {
-					String f = "Currency with the ID '%d' wasn't found";
+					String f = "Currency with ID '%d' wasn't found";
 
 					throw new CurrencyNotFoundException(String.format(f, currencyId));
 				});
@@ -125,7 +127,7 @@ public class CurrencyServiceImpl implements CurrencyService {
 
 		CurrencyEntity currency = currencyRepository.findById(currencyId)
 				.orElseThrow(() -> {
-					String f = "Currency with the ID '%d' doesn't exist";
+					String f = "Currency with ID '%d' doesn't exist";
 
 					throw new CurrencyNotFoundException(String.format(f, currencyId));
 				});
@@ -135,7 +137,7 @@ public class CurrencyServiceImpl implements CurrencyService {
 		}
 
 		if (currencyRepository.existsByIdNotAndName(currencyId, updateDto.getName())) {
-			String f = "Currency with the name '%s' already exists";
+			String f = "Currency with name '%s' already exists";
 			String errorMessage = String.format(f, updateDto.getName());
 
 			throw new CurrencyNameUnavailableException(errorMessage);
@@ -148,6 +150,48 @@ public class CurrencyServiceImpl implements CurrencyService {
 	}
 
 	@Override
+	public void deleteAll() throws ForbiddenException, CurrencyInUseException {
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
+
+		List<CurrencyEntity> allCurrencies = currencyRepository.findAll();
+
+		List<String> inUseCurrenciesNames = new ArrayList<>();
+
+		for (CurrencyEntity currency : allCurrencies) {
+			if (currency.getCreator().getId() != userId) {
+				throw new ForbiddenException();
+			}
+		}
+
+		for (CurrencyEntity currency : allCurrencies) {
+			if (expenseRepository.existsByCurrency_Id(currency.getId())) {
+				inUseCurrenciesNames.add(currency.getName());
+			}
+		}
+
+		if (!inUseCurrenciesNames.isEmpty()) {
+			String s = "Cannot delete all currencies: currencies with names ";
+
+			for (int i = 0; i < inUseCurrenciesNames.size(); i++) {
+				String name = inUseCurrenciesNames.get(i);
+
+				if (i == inUseCurrenciesNames.size() - 1) {
+					s += "\"" + name + "\" ";
+				} else {
+					s += "\"" + name + "\", ";
+				}
+			}
+
+			s += "cannot be deleted, because some amount of expenses reference them";
+
+			throw new CurrencyInUseException(s);
+		}
+
+		currencyRepository.deleteAll();
+	}
+
+	@Override
 	public void deleteById(Long currencyId)
 			throws ForbiddenException, CurrencyNotFoundException, CurrencyInUseException {
 		Long userId = SecurityContextUtils.getAuthenticatedUserId()
@@ -155,7 +199,7 @@ public class CurrencyServiceImpl implements CurrencyService {
 
 		CurrencyEntity currency = currencyRepository.findById(currencyId)
 				.orElseThrow(() -> {
-					String f = "Currency with the ID '%d' doesn't exist";
+					String f = "Currency with ID '%d' doesn't exist";
 
 					throw new CurrencyNotFoundException(String.format(f, currencyId));
 				});
@@ -166,8 +210,8 @@ public class CurrencyServiceImpl implements CurrencyService {
 
 		if (expenseRepository.existsByCurrency_Id(currencyId)) {
 			String f =
-					"Cannot delete the currency with the ID '%d': some amount of expenses depend use it";
-			String errorMessage = String.format(f, currencyId);
+					"Cannot delete the currency with name '%s': some amount of expenses reference it";
+			String errorMessage = String.format(f, currency.getName());
 
 			throw new CurrencyInUseException(errorMessage);
 		}

@@ -25,10 +25,10 @@ import jakarta.validation.constraints.Pattern;
 @Constraint(validatedBy = {})
 public @interface ValidCurrencyAlphabeticalCode {
 
-    String message() default "The currency's optional alphabetical code must conform to ISO 4217";
+	String message() default "The currency's optional alphabetical code must conform to ISO 4217";
 
-    Class<?>[] groups() default {};
+	Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default {};
+	Class<? extends Payload>[] payload() default {};
 
 }

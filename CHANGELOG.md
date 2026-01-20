@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Added
 - Added refresh token functionality.
 - Added logout functionality.
+- Added "delete all currencies" functionality.
 ### Changed
 - Changed the payload and destination of update by ID functionality.
 - Added expense_category_name and currency_name to ExpenseDto schema.

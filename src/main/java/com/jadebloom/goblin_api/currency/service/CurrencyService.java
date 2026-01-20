@@ -29,6 +29,8 @@ public interface CurrencyService {
 			CurrencyNotFoundException,
 			CurrencyNameUnavailableException;
 
+	void deleteAll() throws ForbiddenException, CurrencyInUseException;
+
 	void deleteById(Long currencyId)
 			throws ForbiddenException, CurrencyNotFoundException, CurrencyInUseException;
 

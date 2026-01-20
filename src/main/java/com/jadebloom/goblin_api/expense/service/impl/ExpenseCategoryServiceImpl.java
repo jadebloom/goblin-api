@@ -178,7 +178,7 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 
 		if (expenseRepository.existsByExpenseCategory_Id(expenseCategoryId)) {
 			String f =
-					"Cannot delete the expense category with the ID '%d': some amount of expenses depend use it";
+					"Cannot delete the expense category with the ID '%d': some amount of expenses reference it";
 			String errorMessage = String.format(f, expenseCategoryId);
 
 			throw new ExpenseCategoryInUseException(errorMessage);

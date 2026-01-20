@@ -16,7 +16,7 @@ requestBody:
   content:
     application/json:
       schema:
-        $ref: ../../../openapi.yaml#/components/schemas/UpdateExpenseCategoryDto
+        $ref: ../../../../openapi.yaml#/components/schemas/UpdateExpenseCategoryDto
       examples:
         required:
           summary: An example with only required fields
@@ -33,14 +33,14 @@ responses:
     content:
       application/json:
         schema:
-          $ref: ../../../openapi.yaml#/components/schemas/ExpenseCategoryDto
+          $ref: ../../../../openapi.yaml#/components/schemas/ExpenseCategoryDto
   "400":
     description: Invalid expense category or such expense category name is already in use.
     content:
       application/json:
         schema:
-          $ref: ../../../openapi.yaml#/components/schemas/ErrorResponse
+          $ref: ../../../../openapi.yaml#/components/schemas/ErrorResponse
   "403":
-    $ref: ../../../openapi.yaml#/components/responses/ForbiddenError
+    $ref: ../../../../openapi.yaml#/components/responses/ForbiddenError
   "500":
-    $ref: ../../../openapi.yaml#/components/responses/InternalServerError
+    $ref: ../../../../openapi.yaml#/components/responses/InternalServerError

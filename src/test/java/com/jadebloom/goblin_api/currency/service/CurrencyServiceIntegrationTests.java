@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
-
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -257,6 +256,30 @@ public class CurrencyServiceIntegrationTests {
 
 		assertThrowsExactly(CurrencyNotFoundException.class,
 				() -> underTest.update(created.getId() + 1, updateDto));
+	}
+
+	@Test
+	@DisplayName("Do not throw when deleting all currencies, regardless if they exist or not")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	public void GivenPossibleCurrencies_WhenDeletingAll_ThenDoNotThrow() {
+		CreateCurrencyDto createDto1 = new CreateCurrencyDto("Tenge");
+		CreateCurrencyDto createDto2 = new CreateCurrencyDto("Dollar");
+
+		underTest.create(createDto1);
+		underTest.create(createDto2);
+
+		underTest.deleteAll();
+
+		Page<CurrencyDto> page =
+				underTest.findAuthenticatedUserCurrencies(PageRequest.of(0, 20));
+
+		assertEquals(0, page.getContent().size());
+	}
+
+	@Test
+	@DisplayName("Throw ForbiddenException when trying to delete all currencies without the authenticated user")
+	public void GivenWithoutAuthenticatedUser_WhenDeletingAll_ThenThrowForbiddenException() {
+		assertThrowsExactly(ForbiddenException.class, () -> underTest.deleteAll());
 	}
 
 	@Test

@@ -72,6 +72,14 @@ public class CurrencyController {
 	}
 
 	@PreAuthorize("hasRole('USER')")
+	@DeleteMapping("/all")
+	public ResponseEntity<Void> deleteAll() {
+		currencyService.deleteAll();
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@PreAuthorize("hasRole('USER')")
 	@DeleteMapping("/{id}/expenses")
 	public ResponseEntity<Void> deleteAllExpensesByCurrencyId(
 			@PathVariable(name = "id") Long expenseCategoryId) {

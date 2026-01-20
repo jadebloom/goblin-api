@@ -16,7 +16,7 @@ requestBody:
   content:
     application/json:
       schema:
-        $ref: ../../openapi.yaml#/components/schemas/UpdateExpenseDto
+        $ref: ../../../openapi.yaml#/components/schemas/UpdateExpenseDto
       examples:
         required:
           summary: An example with only required fields.
@@ -42,16 +42,16 @@ responses:
     content:
       application/json:
         schema:
-          $ref: ../../openapi.yaml#/components/schemas/ExpenseDto
+          $ref: ../../../openapi.yaml#/components/schemas/ExpenseDto
   "400":
     description: Invalid expense.
     content:
       application/json:
         schema:
-          $ref: ../../openapi.yaml#/components/schemas/ErrorResponse
+          $ref: ../../../openapi.yaml#/components/schemas/ErrorResponse
   "403":
-    $ref: ../../openapi.yaml#/components/responses/ForbiddenError
+    $ref: ../../../openapi.yaml#/components/responses/ForbiddenError
   "404":
-    $ref: ../../openapi.yaml#/components/responses/NotFoundError
+    $ref: ../../../openapi.yaml#/components/responses/NotFoundError
   "500":
-    $ref: ../../openapi.yaml#/components/responses/InternalServerError
+    $ref: ../../../openapi.yaml#/components/responses/InternalServerError

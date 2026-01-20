@@ -275,6 +275,38 @@ public class CurrencyControllerUnitTests {
 	}
 
 	@Test
+	@DisplayName("Return HTTP 204 when deleting all currencies")
+	@WithMockUser(roles = { "USER" })
+	public void GivenCurrencies_WhenDeletingAllCurrencies_ThenReturnHttp204()
+			throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/currencies/all")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isNoContent());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 403 when trying to delete all currencies without valid roles")
+	@WithMockUser(roles = { "SOME_INVALID_ROLE" })
+	public void GivenWithoutValidRoles_WhenDeletingAllCurrencies_ThenReturnHttp403()
+			throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/currencies/all")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 403 when trying to delete all currencies, when some of them are in use")
+	@WithMockUser(roles = { "USER" })
+	public void GivenCurrenciesInUse_WhenDeletingAllCurrencies_ThenReturnHttp409()
+			throws Exception {
+		doThrow(CurrencyInUseException.class).when(currencyService).deleteAll();
+
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/currencies/all")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isConflict());
+	}
+
+	@Test
 	@DisplayName("Return HTTP 204 when deleting all possible expenses by their currency's ID")
 	@WithMockUser(roles = { "USER" })
 	public void GivenPossibleExpenses_WhenDeletingAllExpensesByCurrencyId_ThenReturnHttp204()

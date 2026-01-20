@@ -28,6 +28,8 @@ paths:
     $ref: paths/account/index.yaml
   /currencies:
     $ref: paths/currencies/index.yaml
+  /currencies/all:
+    $ref: paths/currencies/all/index.yaml
   /currencies/{id}:
     $ref: paths/currencies/id/index.yaml
   /currencies/{id}/expenses:
