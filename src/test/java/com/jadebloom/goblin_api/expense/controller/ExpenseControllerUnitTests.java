@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseDto;
+import com.jadebloom.goblin_api.expense.dto.DeleteExpensesDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseDto;
 import com.jadebloom.goblin_api.expense.dto.UpdateExpenseDto;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
@@ -520,6 +521,34 @@ public class ExpenseControllerUnitTests {
 			throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/all")
 				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 204 when deleting all expenses by ID")
+	@WithMockUser(roles = { "USER" })
+	public void GivenPossibleExpenses_WhenDeletingAllExpensesById_ThenReturnHttp204()
+			throws Exception {
+		DeleteExpensesDto deleteDto = new DeleteExpensesDto(List.of(1L, 2L));
+
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses/delete")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(new ObjectMapper().writeValueAsString(deleteDto)))
+				.andExpect(MockMvcResultMatchers.status().isNoContent());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 403 when trying to delete all expenses by ID without valid roles")
+	@WithMockUser(roles = { "SOME_INVALID_ROLE" })
+	public void GivenWithoutValidRoles_WhenDeletingAllExpensesById_ThenReturnHttp403()
+			throws Exception {
+		DeleteExpensesDto deleteDto = new DeleteExpensesDto(List.of(1L, 2L));
+
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses/delete")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(new ObjectMapper().writeValueAsString(deleteDto)))
 				.andExpect(MockMvcResultMatchers.status().isForbidden());
 	}
 

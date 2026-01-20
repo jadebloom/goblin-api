@@ -2,11 +2,14 @@ package com.jadebloom.goblin_api.expense.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.jadebloom.goblin_api.currency.error.CurrencyInUseException;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
+import com.jadebloom.goblin_api.expense.dto.DeleteExpenseCategoriesDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.UpdateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
@@ -197,6 +200,53 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 		}
 
 		expenseCategoryRepository.deleteAll();
+	}
+
+	@Override
+	public void deleteAllById(DeleteExpenseCategoriesDto deleteDto)
+			throws ForbiddenException, ExpenseCategoryInUseException {
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
+
+		List<Long> categoryIds = deleteDto.getExpenseCategoryIds();
+
+		Set<Long> ids = categoryIds.stream().collect(Collectors.toSet());
+
+		List<ExpenseCategoryEntity> categories = expenseCategoryRepository.findAllById(ids);
+
+		for (ExpenseCategoryEntity category : categories) {
+			if (category.getCreator().getId() != userId) {
+				throw new ForbiddenException();
+			}
+		}
+
+		List<String> inUseCategoriesNames = new ArrayList<>();
+
+		for (ExpenseCategoryEntity category : categories) {
+			if (expenseRepository.existsByExpenseCategory_Id(category.getId())) {
+				inUseCategoriesNames.add(category.getName());
+			}
+		}
+
+		if (!inUseCategoriesNames.isEmpty()) {
+			String s = "Cannot delete provided expense categories: categories with names ";
+
+			for (int i = 0; i < inUseCategoriesNames.size(); i++) {
+				String name = inUseCategoriesNames.get(i);
+
+				if (i == inUseCategoriesNames.size() - 1) {
+					s += "\"" + name + "\" ";
+				} else {
+					s += "\"" + name + "\", ";
+				}
+			}
+
+			s += "cannot be deleted, because some amount of expenses reference them";
+
+			throw new ExpenseCategoryInUseException(s);
+		}
+
+		expenseCategoryRepository.deleteAllById(ids);
 	}
 
 	@Override

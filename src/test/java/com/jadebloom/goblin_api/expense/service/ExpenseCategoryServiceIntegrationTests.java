@@ -22,6 +22,7 @@ import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
+import com.jadebloom.goblin_api.expense.dto.DeleteExpenseCategoriesDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.UpdateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNameUnavailableException;
@@ -283,6 +284,33 @@ public class ExpenseCategoryServiceIntegrationTests {
 	@Test
 	@DisplayName("Throw ForbiddenException when trying to delete all expense categories without the authenticated user")
 	public void GivenWithoutAuthenticatedUser_WhenDeletingAll_ThenThrowForbiddenException() {
+		assertThrowsExactly(ForbiddenException.class, () -> underTest.deleteAll());
+	}
+
+	@Test
+	@DisplayName("Do not throw when deleting all expense categories by ID, regardless if they exist or not")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	public void GivenPossibleExpenseCategories_WhenDeletingAllById_ThenDoNotThrow() {
+		CreateExpenseCategoryDto createDto1 = new CreateExpenseCategoryDto("Daily");
+		CreateExpenseCategoryDto createDto2 = new CreateExpenseCategoryDto("Debt");
+
+		ExpenseCategoryDto created1 = underTest.create(createDto1);
+		ExpenseCategoryDto created2 = underTest.create(createDto2);
+
+		DeleteExpenseCategoriesDto deleteDto =
+				new DeleteExpenseCategoriesDto(List.of(created1.getId(), created2.getId()));
+
+		underTest.deleteAllById(deleteDto);
+
+		Page<ExpenseCategoryDto> page =
+				underTest.findAuthenticatedUserExpenseCategories(PageRequest.of(0, 20));
+
+		assertEquals(0, page.getContent().size());
+	}
+
+	@Test
+	@DisplayName("Throw ForbiddenException when trying to delete all expense categories by ID without the authenticated user")
+	public void GivenWithoutAuthenticatedUser_WhenDeletingAllById_ThenThrowForbiddenException() {
 		assertThrowsExactly(ForbiddenException.class, () -> underTest.deleteAll());
 	}
 

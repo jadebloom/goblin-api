@@ -26,6 +26,7 @@ import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
 import com.jadebloom.goblin_api.currency.repository.CurrencyRepository;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseDto;
+import com.jadebloom.goblin_api.expense.dto.DeleteExpensesDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseDto;
 import com.jadebloom.goblin_api.expense.dto.UpdateExpenseDto;
 import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
@@ -437,6 +438,41 @@ public class ExpenseServiceIntegrationTests {
 	@Test
 	@DisplayName("Throw ForbiddenException when trying to delete all expenses without the authenticated user")
 	public void GivenWithoutAuthenticatedUser_WhenDeletingAllExpenses_ThenThrowForbiddenException() {
+		assertThrowsExactly(ForbiddenException.class, () -> underTest.deleteAll());
+	}
+
+	@Test
+	@DisplayName("Do not throw when deleting all expenses by ID, regardless if they exist or not")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	public void GivenPossibleExpenses_WhenDeletingAllById_ThenDoNotThrow() {
+		CreateExpenseDto createDto1 = new CreateExpenseDto(
+				"Uber Ride",
+				100L,
+				expenseCategory.getId(),
+				currency.getId());
+		CreateExpenseDto createDto2 = new CreateExpenseDto(
+				"Uber Ride",
+				100L,
+				expenseCategory.getId(),
+				currency.getId());
+
+		ExpenseDto created1 = underTest.create(createDto1);
+		ExpenseDto created2 = underTest.create(createDto2);
+
+		DeleteExpensesDto deleteDto =
+				new DeleteExpensesDto(List.of(created1.getId(), created2.getId()));
+
+		underTest.deleteAllById(deleteDto);
+
+		Page<ExpenseDto> page =
+				underTest.findUserAuthenticatedExpenses(PageRequest.of(0, 20));
+
+		assertEquals(0, page.getContent().size());
+	}
+
+	@Test
+	@DisplayName("Throw ForbiddenException when trying to delete all expenses by ID without the authenticated user")
+	public void GivenWithoutAuthenticatedUser_WhenDeletingAllById_ThenThrowForbiddenException() {
 		assertThrowsExactly(ForbiddenException.class, () -> underTest.deleteAll());
 	}
 

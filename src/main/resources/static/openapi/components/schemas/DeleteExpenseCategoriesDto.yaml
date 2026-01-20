@@ -1,0 +1,11 @@
+type: object
+required:
+  - expense_category_ids
+properties:
+  expense_category_ids:
+    type: array
+    description: The IDs of expense categories that should be deleted.
+    nullable: true
+    minItems: 1
+    items:
+      type: integer

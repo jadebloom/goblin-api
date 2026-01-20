@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseDto;
+import com.jadebloom.goblin_api.expense.dto.DeleteExpensesDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseDto;
 import com.jadebloom.goblin_api.expense.dto.UpdateExpenseDto;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
@@ -31,6 +32,8 @@ public interface ExpenseService {
 			CurrencyNotFoundException;
 
 	void deleteAll() throws ForbiddenException;
+
+	void deleteAllById(DeleteExpensesDto deleteDto) throws ForbiddenException;
 
 	void deleteAllExpensesByExpenseCategoryId(Long expenseCategoryId)
 			throws ForbiddenException, ExpenseCategoryNotFoundException;

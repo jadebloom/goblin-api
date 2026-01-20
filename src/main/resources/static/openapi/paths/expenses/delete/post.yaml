@@ -1,0 +1,27 @@
+operationId: deleteAllExpensesById
+summary: Delete all expenses by given IDs
+tags:
+  - Expenses
+security:
+  - bearerAuth: []
+requestBody:
+  description: A JSON DeleteExpensesDto object.
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: ../../../openapi.yaml#/components/schemas/DeleteExpensesDto
+      examples:
+        ids:
+          summary: An example with a list of expense IDs.
+          value:
+            expense_ids: [1, 2, 3]
+responses:
+  "204":
+    $ref: ../../../openapi.yaml#/components/responses/NoContent
+  "403":
+    $ref: ../../../openapi.yaml#/components/responses/ForbiddenError
+  "409":
+    $ref: ../../../openapi.yaml#/components/responses/EntityInUseError
+  "500":
+    $ref: ../../../openapi.yaml#/components/responses/InternalServerError

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseDto;
+import com.jadebloom.goblin_api.expense.dto.DeleteExpensesDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseDto;
 import com.jadebloom.goblin_api.expense.dto.UpdateExpenseDto;
 import com.jadebloom.goblin_api.expense.service.ExpenseService;
@@ -71,6 +72,15 @@ public class ExpenseController {
 	@DeleteMapping("/all")
 	public ResponseEntity<Void> deleteAllExpenses() {
 		expenseService.deleteAll();
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@PreAuthorize("hasRole('USER')")
+	@PostMapping("/delete")
+	public ResponseEntity<Void> deleteAllExpensesById(
+			@Valid @RequestBody DeleteExpensesDto deleteDto) {
+		expenseService.deleteAllById(deleteDto);
 
 		return ResponseEntity.noContent().build();
 	}

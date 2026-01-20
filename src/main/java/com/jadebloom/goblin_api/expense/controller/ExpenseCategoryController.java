@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
+import com.jadebloom.goblin_api.expense.dto.DeleteExpenseCategoriesDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.UpdateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.service.ExpenseCategoryService;
@@ -81,6 +81,15 @@ public class ExpenseCategoryController {
 	@DeleteMapping("/all")
 	public ResponseEntity<Void> deleteAllExpenseCategories() {
 		expenseCategoryService.deleteAll();
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@PreAuthorize("hasRole('USER')")
+	@PostMapping("/delete")
+	public ResponseEntity<Void> deleteAllExpenseCategoriesById(
+			@Valid @RequestBody DeleteExpenseCategoriesDto deleteDto) {
+		expenseCategoryService.deleteAllById(deleteDto);
 
 		return ResponseEntity.noContent().build();
 	}

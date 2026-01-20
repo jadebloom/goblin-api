@@ -32,6 +32,8 @@ paths:
     $ref: paths/currencies/all/index.yaml
   /currencies/{id}:
     $ref: paths/currencies/id/index.yaml
+  /currencies/delete:
+    $ref: paths/currencies/delete/index.yaml
   /currencies/{id}/expenses:
     $ref: paths/currencies/id/expenses/index.yaml
   /expenses/categories:
@@ -40,6 +42,8 @@ paths:
     $ref: paths/expenses/categories/all/index.yaml
   /expenses/categories/{id}:
     $ref: paths/expenses/categories/id/index.yaml
+  /expenses/categories/delete:
+    $ref: paths/expenses/categories/delete/index.yaml
   /expenses/categories/{id}/expenses:
     $ref: paths/expenses/categories/id/expenses/index.yaml
   /expenses:
@@ -48,6 +52,8 @@ paths:
     $ref: paths/expenses/all/index.yaml
   /expenses/{id}:
     $ref: paths/expenses/id/index.yaml
+  /expenses/delete:
+    $ref: paths/expenses/delete/index.yaml
 components:
   schemas:
     RegistrationDto:
@@ -60,22 +66,28 @@ components:
       $ref: components/schemas/UpdatePasswordDto.yaml
     CreateCurrencyDto:
       $ref: components/schemas/CreateCurrencyDto.yaml
-    UpdateCurrencyDto:
-      $ref: components/schemas/UpdateCurrencyDto.yaml
     CurrencyDto:
       $ref: components/schemas/CurrencyDto.yaml
+    UpdateCurrencyDto:
+      $ref: components/schemas/UpdateCurrencyDto.yaml
+    DeleteCurrenciesDto:
+      $ref: components/schemas/DeleteCurrenciesDto.yaml
     CreateExpenseCategoryDto:
       $ref: components/schemas/CreateExpenseCategoryDto.yaml
-    UpdateExpenseCategoryDto:
-      $ref: components/schemas/UpdateExpenseCategoryDto.yaml
     ExpenseCategoryDto:
       $ref: components/schemas/ExpenseCategoryDto.yaml
+    UpdateExpenseCategoryDto:
+      $ref: components/schemas/UpdateExpenseCategoryDto.yaml
+    DeleteExpenseCategoriesDto:
+      $ref: components/schemas/DeleteExpenseCategoriesDto.yaml
     CreateExpenseDto:
       $ref: components/schemas/CreateExpenseDto.yaml
-    UpdateExpenseDto:
-      $ref: components/schemas/UpdateExpenseDto.yaml
     ExpenseDto:
       $ref: components/schemas/ExpenseDto.yaml
+    UpdateExpenseDto:
+      $ref: components/schemas/UpdateExpenseDto.yaml
+    DeleteExpensesDto:
+      $ref: components/schemas/DeleteExpensesDto.yaml
     ErrorResponse:
       $ref: components/schemas/ErrorResponse.yaml
   parameters:

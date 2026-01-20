@@ -12,9 +12,6 @@ The centralized log of tasks and improvements.
 
 1. Add token rotations and invalidations (e.g. on logout).
 2. Use different token secrets.
-3. Delete multiple currencies at once.
-4. Delete multiple expense categories at once.
-5. Delete multiple expenses at once.
 6.  Consider adding icons to expense categories.
 7.  Add configuration packs (w/ linking to the `User`).
 8.  Consider adding reocurring expenses.

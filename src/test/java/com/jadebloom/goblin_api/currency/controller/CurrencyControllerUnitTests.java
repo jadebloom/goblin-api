@@ -6,7 +6,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.time.ZonedDateTime;
-
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +22,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 
 import com.jadebloom.goblin_api.currency.dto.CreateCurrencyDto;
 import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
+import com.jadebloom.goblin_api.currency.dto.DeleteCurrenciesDto;
 import com.jadebloom.goblin_api.currency.dto.UpdateCurrencyDto;
 import com.jadebloom.goblin_api.currency.error.CurrencyInUseException;
 import com.jadebloom.goblin_api.currency.error.CurrencyNameUnavailableException;
@@ -303,6 +304,54 @@ public class CurrencyControllerUnitTests {
 
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/currencies/all")
 				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isConflict());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 204 when deleting all currencies by ID")
+	@WithMockUser(roles = { "USER" })
+	public void GivenPossibleCurrencies_WhenDeletingAllCurrenciesById_ThenReturnHttp204()
+			throws Exception {
+		DeleteCurrenciesDto deleteDto = new DeleteCurrenciesDto(List.of(1L, 2L));
+
+		mockMvc.perform(
+				MockMvcRequestBuilders.post("/api/v1/currencies/delete")
+						.with(csrf())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(new ObjectMapper().writeValueAsString(deleteDto)))
+				.andExpect(MockMvcResultMatchers.status().isNoContent());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 403 when trying to delete all currencies by ID without valid roles")
+	@WithMockUser(roles = { "SOME_INVALID_ROLE" })
+	public void GivenWithoutValidRoles_WhenDeletingAllCurrenciesById_ThenReturnHttp403()
+			throws Exception {
+		DeleteCurrenciesDto deleteDto = new DeleteCurrenciesDto(List.of(1L, 2L));
+
+		mockMvc.perform(
+				MockMvcRequestBuilders.post("/api/v1/currencies/delete")
+						.with(csrf())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(new ObjectMapper().writeValueAsString(deleteDto)))
+				.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 409 when trying to delete all currencies by ID, when some of them are in use")
+	@WithMockUser(roles = { "USER" })
+	public void GivenCurrenciesInUse_WhenDeletingAllCurrenciesById_ThenReturnHttp409()
+			throws Exception {
+		doThrow(CurrencyInUseException.class).when(currencyService)
+				.deleteAllById(any(DeleteCurrenciesDto.class));
+
+		DeleteCurrenciesDto deleteDto = new DeleteCurrenciesDto(List.of(1L, 2L));
+
+		mockMvc.perform(
+				MockMvcRequestBuilders.post("/api/v1/currencies/delete")
+						.with(csrf())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(new ObjectMapper().writeValueAsString(deleteDto)))
 				.andExpect(MockMvcResultMatchers.status().isConflict());
 	}
 

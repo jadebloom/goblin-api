@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 import java.time.ZonedDateTime;
-
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
+import com.jadebloom.goblin_api.expense.dto.DeleteExpenseCategoriesDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.UpdateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.error.ExpenseCategoryInUseException;
@@ -308,6 +309,51 @@ public class ExpenseCategoryControllerUnitTests {
 
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/all")
 				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isConflict());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 204 when deleting all expense categories by ID")
+	@WithMockUser(roles = { "USER" })
+	public void GivenPossibleExpenseCategories_WhenDeletingAllExpenseCategoriesById_ThenReturnHttp204()
+			throws Exception {
+		DeleteExpenseCategoriesDto deleteDto = new DeleteExpenseCategoriesDto(List.of(1L, 2L));
+
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses/categories/delete")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(deleteDto)))
+				.andExpect(MockMvcResultMatchers.status().isNoContent());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 403 when trying to delete all expense categories by ID without valid roles")
+	@WithMockUser(roles = { "SOME_INVALID_ROLE" })
+	public void GivenWithoutValidRoles_WhenDeletingAllExpenseCategoriesById_ThenReturnHttp403()
+			throws Exception {
+		DeleteExpenseCategoriesDto deleteDto = new DeleteExpenseCategoriesDto(List.of(1L, 2L));
+
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses/categories/delete")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(deleteDto)))
+				.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 409 when trying to delete all expenses categories by ID, when some of them are in use")
+	@WithMockUser(roles = { "USER" })
+	public void GivenExpenseCategoriesInUse_WhenDeletingAllExpenseCategoriesById_ThenReturnHttp409()
+			throws Exception {
+		doThrow(ExpenseCategoryInUseException.class).when(expenseCategoryService)
+				.deleteAllById(any(DeleteExpenseCategoriesDto.class));
+
+		DeleteExpenseCategoriesDto deleteDto = new DeleteExpenseCategoriesDto(List.of(1L, 2L));
+
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses/categories/delete")
+				.with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(deleteDto)))
 				.andExpect(MockMvcResultMatchers.status().isConflict());
 	}
 

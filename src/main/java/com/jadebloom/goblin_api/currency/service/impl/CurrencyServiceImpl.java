@@ -2,12 +2,15 @@ package com.jadebloom.goblin_api.currency.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.jadebloom.goblin_api.currency.dto.CreateCurrencyDto;
 import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
+import com.jadebloom.goblin_api.currency.dto.DeleteCurrenciesDto;
 import com.jadebloom.goblin_api.currency.dto.UpdateCurrencyDto;
 import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
 import com.jadebloom.goblin_api.currency.error.CurrencyInUseException;
@@ -189,6 +192,52 @@ public class CurrencyServiceImpl implements CurrencyService {
 		}
 
 		currencyRepository.deleteAll();
+	}
+
+	@Override
+	public void deleteAllById(DeleteCurrenciesDto deleteDto) throws ForbiddenException {
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
+
+		List<Long> currencyIds = deleteDto.getCurrencyIds();
+
+		Set<Long> ids = currencyIds.stream().collect(Collectors.toSet());
+
+		List<CurrencyEntity> currencies = currencyRepository.findAllById(ids);
+
+		for (CurrencyEntity currency : currencies) {
+			if (currency.getCreator().getId() != userId) {
+				throw new ForbiddenException();
+			}
+		}
+
+		List<String> inUseCurrenciesNames = new ArrayList<>();
+
+		for (CurrencyEntity currency : currencies) {
+			if (expenseRepository.existsByCurrency_Id(currency.getId())) {
+				inUseCurrenciesNames.add(currency.getName());
+			}
+		}
+
+		if (!inUseCurrenciesNames.isEmpty()) {
+			String s = "Cannot delete provided currencies: currencies with names ";
+
+			for (int i = 0; i < inUseCurrenciesNames.size(); i++) {
+				String name = inUseCurrenciesNames.get(i);
+
+				if (i == inUseCurrenciesNames.size() - 1) {
+					s += "\"" + name + "\" ";
+				} else {
+					s += "\"" + name + "\", ";
+				}
+			}
+
+			s += "cannot be deleted, because some amount of expenses reference them";
+
+			throw new CurrencyInUseException(s);
+		}
+
+		currencyRepository.deleteAllById(ids);
 	}
 
 	@Override

@@ -1,6 +1,8 @@
 package com.jadebloom.goblin_api.expense.service.impl;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -9,6 +11,7 @@ import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
 import com.jadebloom.goblin_api.currency.repository.CurrencyRepository;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseDto;
+import com.jadebloom.goblin_api.expense.dto.DeleteExpensesDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseDto;
 import com.jadebloom.goblin_api.expense.dto.UpdateExpenseDto;
 import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
@@ -203,6 +206,27 @@ public class ExpenseServiceImpl implements ExpenseService {
 		}
 
 		expenseRepository.deleteAll();
+	}
+
+	@Override
+	public void deleteAllById(DeleteExpensesDto deleteDto)
+			throws ForbiddenException {
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
+
+		List<Long> expenseIds = deleteDto.getExpenseIds();
+
+		Set<Long> ids = expenseIds.stream().collect(Collectors.toSet());
+
+		List<ExpenseEntity> expenses = expenseRepository.findAllById(ids);
+
+		for (ExpenseEntity expense : expenses) {
+			if (expense.getCreator().getId() != userId) {
+				throw new ForbiddenException();
+			}
+		}
+
+		expenseRepository.deleteAllById(ids);
 	}
 
 	@Override

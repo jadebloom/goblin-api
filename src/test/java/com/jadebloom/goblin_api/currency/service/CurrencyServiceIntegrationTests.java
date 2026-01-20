@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jadebloom.goblin_api.currency.dto.CreateCurrencyDto;
 import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
+import com.jadebloom.goblin_api.currency.dto.DeleteCurrenciesDto;
 import com.jadebloom.goblin_api.currency.dto.UpdateCurrencyDto;
 import com.jadebloom.goblin_api.currency.error.CurrencyNameUnavailableException;
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
@@ -279,6 +281,33 @@ public class CurrencyServiceIntegrationTests {
 	@Test
 	@DisplayName("Throw ForbiddenException when trying to delete all currencies without the authenticated user")
 	public void GivenWithoutAuthenticatedUser_WhenDeletingAll_ThenThrowForbiddenException() {
+		assertThrowsExactly(ForbiddenException.class, () -> underTest.deleteAll());
+	}
+
+	@Test
+	@DisplayName("Do not throw when deleting all currencies by ID, regardless if they exist or not")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	public void GivenPossibleCurrencies_WhenDeletingAllById_ThenDoNotThrow() {
+		CreateCurrencyDto createDto1 = new CreateCurrencyDto("Tenge");
+		CreateCurrencyDto createDto2 = new CreateCurrencyDto("Dollar");
+
+		CurrencyDto created1 = underTest.create(createDto1);
+		CurrencyDto created2 = underTest.create(createDto2);
+
+		DeleteCurrenciesDto deleteDto =
+				new DeleteCurrenciesDto(List.of(created1.getId(), created2.getId()));
+
+		underTest.deleteAllById(deleteDto);
+
+		Page<CurrencyDto> page =
+				underTest.findAuthenticatedUserCurrencies(PageRequest.of(0, 20));
+
+		assertEquals(0, page.getContent().size());
+	}
+
+	@Test
+	@DisplayName("Throw ForbiddenException when trying to delete all currencies by ID without the authenticated user")
+	public void GivenWithoutAuthenticatedUser_WhenDeletingAllById_ThenThrowForbiddenException() {
 		assertThrowsExactly(ForbiddenException.class, () -> underTest.deleteAll());
 	}
 

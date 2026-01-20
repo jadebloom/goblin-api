@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jadebloom.goblin_api.currency.dto.CreateCurrencyDto;
 import com.jadebloom.goblin_api.currency.dto.CurrencyDto;
+import com.jadebloom.goblin_api.currency.dto.DeleteCurrenciesDto;
 import com.jadebloom.goblin_api.currency.dto.UpdateCurrencyDto;
 import com.jadebloom.goblin_api.currency.service.CurrencyService;
 import com.jadebloom.goblin_api.expense.service.ExpenseService;
@@ -63,7 +64,7 @@ public class CurrencyController {
 	}
 
 	@PreAuthorize("hasRole('USER')")
-	@PutMapping(value = "/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<CurrencyDto> updateCurrencyById(
 			@PathVariable(name = "id") Long currencyId,
 			@Valid @RequestBody UpdateCurrencyDto updateDto) {
@@ -76,6 +77,15 @@ public class CurrencyController {
 	@DeleteMapping("/all")
 	public ResponseEntity<Void> deleteAllCurrencies() {
 		currencyService.deleteAll();
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@PreAuthorize("hasRole('USER')")
+	@PostMapping("/delete")
+	public ResponseEntity<Void> deleteAllCurrenciesById(
+			@Valid @RequestBody DeleteCurrenciesDto deleteDto) {
+		currencyService.deleteAllById(deleteDto);
 
 		return ResponseEntity.noContent().build();
 	}
