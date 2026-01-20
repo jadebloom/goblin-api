@@ -4,7 +4,9 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.jadebloom.goblin_api.currency.validation.ValidCurrencyName;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseAmount;
+import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryName;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseDescription;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseLabel;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseLabelsList;
@@ -36,16 +38,23 @@ public class ExpenseDto {
 	@JsonProperty("expense_category_id")
 	private Long expenseCategoryId;
 
+	@ValidExpenseCategoryName
+	@JsonProperty("expense_category_name")
+	private String expenseCategoryName;
+
 	@NotNull(message = "The expense's creator ID is not null")
 	@JsonProperty("currency_id")
 	private Long currencyId;
+
+	@ValidCurrencyName
+	@JsonProperty("currency_name")
+	private String currencyName;
 
 	@NotNull(message = "The expense's creator ID is not null")
 	@JsonProperty("creator_id")
 	private Long creatorId;
 
-	public ExpenseDto() {
-	}
+	public ExpenseDto() {}
 
 	public ExpenseDto(
 			Long id,
@@ -53,7 +62,9 @@ public class ExpenseDto {
 			Long amount,
 			ZonedDateTime createdAt,
 			Long expenseCategoryId,
+			String expenseCategoryName,
 			Long currencyId,
+			String currencyName,
 			Long creatorId) {
 		this.id = id;
 
@@ -65,7 +76,11 @@ public class ExpenseDto {
 
 		this.expenseCategoryId = expenseCategoryId;
 
+		this.expenseCategoryName = expenseCategoryName;
+
 		this.currencyId = currencyId;
+
+		this.currencyName = currencyName;
 
 		this.creatorId = creatorId;
 	}
@@ -98,8 +113,16 @@ public class ExpenseDto {
 		return expenseCategoryId;
 	}
 
+	public String getExpenseCategoryName() {
+		return expenseCategoryName;
+	}
+
 	public Long getCurrencyId() {
 		return currencyId;
+	}
+
+	public String getCurrencyName() {
+		return currencyName;
 	}
 
 	public Long getCreatorId() {
@@ -134,8 +157,16 @@ public class ExpenseDto {
 		this.expenseCategoryId = expenseCategoryId;
 	}
 
+	public void setExpenseCategoryName(String expenseCategoryName) {
+		this.expenseCategoryName = expenseCategoryName;
+	}
+
 	public void setCurrencyId(Long currencyId) {
 		this.currencyId = currencyId;
+	}
+
+	public void setCurrencyName(String currencyName) {
+		this.currencyName = currencyName;
 	}
 
 	public void setCreatorId(Long creatorId) {
@@ -182,7 +213,9 @@ public class ExpenseDto {
 				", labels=" + labels +
 				", createdAt=" + createdAt +
 				", expenseCategoryId=" + expenseCategoryId +
+				", expenseCategoryName=" + expenseCategoryName +
 				", currencyId=" + currencyId +
+				", currencyName=" + currencyName +
 				", creatorId=" + creatorId + ")";
 
 		return f;

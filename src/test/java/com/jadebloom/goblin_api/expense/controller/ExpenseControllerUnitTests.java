@@ -69,7 +69,9 @@ public class ExpenseControllerUnitTests {
 				createDto.getAmount(),
 				ZonedDateTime.now(),
 				createDto.getExpenseCategoryId(),
+				"ExpenseCategory",
 				createDto.getCurrencyId(),
+				"Currency",
 				1L);
 		dto.setDescription(createDto.getDescription());
 		dto.setLabels(createDto.getLabels());
@@ -91,8 +93,13 @@ public class ExpenseControllerUnitTests {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id")
 						.value(dto.getExpenseCategoryId()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_name")
+						.value(dto.getExpenseCategoryName()))
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.currency_name")
+								.value(dto.getCurrencyName()))
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
 	}
@@ -114,7 +121,9 @@ public class ExpenseControllerUnitTests {
 				createDto.getAmount(),
 				ZonedDateTime.now(),
 				createDto.getExpenseCategoryId(),
+				"ExpenseCategory",
 				createDto.getCurrencyId(),
+				"Currency",
 				1L);
 
 		when(expenseService.create(any(CreateExpenseDto.class))).thenReturn(dto);
@@ -130,8 +139,13 @@ public class ExpenseControllerUnitTests {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id")
 						.value(dto.getExpenseCategoryId()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_name")
+						.value(dto.getExpenseCategoryName()))
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.currency_name")
+								.value(dto.getCurrencyName()))
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
 	}
@@ -241,7 +255,9 @@ public class ExpenseControllerUnitTests {
 				100L,
 				ZonedDateTime.now(),
 				1L,
+				"ExpenseCategory",
 				1L,
+				"Currency",
 				1L);
 		dto.setDescription("Magnificent ride");
 		dto.setLabels(List.of("Label1", "Label2"));
@@ -261,8 +277,13 @@ public class ExpenseControllerUnitTests {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id")
 						.value(dto.getExpenseCategoryId()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_name")
+						.value(dto.getExpenseCategoryName()))
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.currency_name")
+								.value(dto.getCurrencyName()))
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
 	}
@@ -306,7 +327,9 @@ public class ExpenseControllerUnitTests {
 				updateDto.getAmount(),
 				ZonedDateTime.now(),
 				updateDto.getExpenseCategoryId(),
+				"ExpenseCategory",
 				updateDto.getCurrencyId(),
+				"Currency",
 				1L);
 		dto.setDescription(updateDto.getDescription());
 		dto.setLabels(updateDto.getLabels());
@@ -328,8 +351,13 @@ public class ExpenseControllerUnitTests {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id")
 						.value(dto.getExpenseCategoryId()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_name")
+						.value(dto.getExpenseCategoryName()))
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.currency_name")
+								.value(dto.getCurrencyName()))
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
 	}
@@ -351,7 +379,9 @@ public class ExpenseControllerUnitTests {
 				updateDto.getAmount(),
 				ZonedDateTime.now(),
 				updateDto.getExpenseCategoryId(),
+				"ExpenseCategory",
 				updateDto.getCurrencyId(),
+				"Currency",
 				1L);
 
 		when(expenseService.update(anyLong(), any(UpdateExpenseDto.class))).thenReturn(dto);
@@ -367,8 +397,13 @@ public class ExpenseControllerUnitTests {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id")
 						.value(dto.getExpenseCategoryId()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_name")
+						.value(dto.getExpenseCategoryName()))
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
+				.andExpect(
+						MockMvcResultMatchers.jsonPath("$.currency_name")
+								.value(dto.getCurrencyName()))
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
 	}

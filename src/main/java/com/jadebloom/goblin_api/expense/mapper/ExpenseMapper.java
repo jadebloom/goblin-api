@@ -62,7 +62,11 @@ public class ExpenseMapper {
 			typeMap.addMappings(mapper -> mapper.map(
 					src -> src.getExpenseCategory().getId(), ExpenseDto::setExpenseCategoryId));
 			typeMap.addMappings(mapper -> mapper.map(
+					src -> src.getExpenseCategory().getName(), ExpenseDto::setExpenseCategoryName));
+			typeMap.addMappings(mapper -> mapper.map(
 					src -> src.getCurrency().getId(), ExpenseDto::setCurrencyId));
+			typeMap.addMappings(mapper -> mapper.map(
+					src -> src.getCurrency().getName(), ExpenseDto::setCurrencyName));
 			typeMap.addMappings(mapper -> mapper.map(
 					src -> src.getCreator().getId(), ExpenseDto::setCreatorId));
 		}
