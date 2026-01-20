@@ -22,7 +22,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
 import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
 import com.jadebloom.goblin_api.currency.repository.CurrencyRepository;
@@ -410,6 +409,38 @@ public class ExpenseServiceIntegrationTests {
 	}
 
 	@Test
+	@DisplayName("Do not throw when deleting all expenses, regardless if they exist or not")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	public void GivenPossibleExpenses_WhenDeletingAll_ThenDoNotThrow() {
+		CreateExpenseDto createDto1 = new CreateExpenseDto(
+				"Uber Ride",
+				100L,
+				expenseCategory.getId(),
+				currency.getId());
+		CreateExpenseDto createDto2 = new CreateExpenseDto(
+				"Uber Ride",
+				100L,
+				expenseCategory.getId(),
+				currency.getId());
+
+		underTest.create(createDto1);
+		underTest.create(createDto2);
+
+		underTest.deleteAll();
+
+		Page<ExpenseDto> page =
+				underTest.findUserAuthenticatedExpenses(PageRequest.of(0, 20));
+
+		assertEquals(0, page.getContent().size());
+	}
+
+	@Test
+	@DisplayName("Throw ForbiddenException when trying to delete all expenses without the authenticated user")
+	public void GivenWithoutAuthenticatedUser_WhenDeletingAllExpenses_ThenThrowForbiddenException() {
+		assertThrowsExactly(ForbiddenException.class, () -> underTest.deleteAll());
+	}
+
+	@Test
 	@DisplayName("Do not throw when deleting all possible expenses by their category's ID")
 	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 	public void GivenPossibleExpenses_WhenDeletingAllExpensesByExpenseCategoryId_ThenDoNotThrow() {
@@ -458,7 +489,7 @@ public class ExpenseServiceIntegrationTests {
 	@Test
 	@DisplayName("Do not throw when deleting an expense by its ID")
 	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-	public void GivenExistingExpense_WhenDeletingById_ThenDoNoThrow() {
+	public void GivenExistingExpense_WhenDeletingById_ThenDoNotThrow() {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
 				100L,

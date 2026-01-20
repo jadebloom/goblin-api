@@ -504,6 +504,26 @@ public class ExpenseControllerUnitTests {
 	}
 
 	@Test
+	@DisplayName("Return HTTP 204 when deleting all expenses")
+	@WithMockUser(roles = { "USER" })
+	public void GivenPossibleExpenses_WhenDeletingAllExpenses_ThenReturnHttp204()
+			throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/all")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isNoContent());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 403 when trying to delete all expenses without valid roles")
+	@WithMockUser(roles = { "SOME_INVALID_ROLE" })
+	public void GivenWithoutValidRoles_WhenDeletingAllExpenses_ThenReturnHttp403()
+			throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/all")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
+
+	@Test
 	@DisplayName("Return HTTP 204 when deleting an expense by its ID")
 	@WithMockUser(roles = { "USER" })
 	public void GivenExistingExpense_WhenDeletingById_ThenReturnHttp204() throws Exception {

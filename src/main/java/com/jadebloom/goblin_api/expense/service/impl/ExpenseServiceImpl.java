@@ -1,5 +1,6 @@
 package com.jadebloom.goblin_api.expense.service.impl;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -186,6 +187,22 @@ public class ExpenseServiceImpl implements ExpenseService {
 		expense.setCurrency(currency);
 
 		return mapper.map(expenseRepository.saveAndFlush(expense));
+	}
+
+	@Override
+	public void deleteAll() throws ForbiddenException {
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
+
+		List<ExpenseEntity> allExpenses = expenseRepository.findAll();
+
+		for (ExpenseEntity expense : allExpenses) {
+			if (expense.getCreator().getId() != userId) {
+				throw new ForbiddenException();
+			}
+		}
+
+		expenseRepository.deleteAll();
 	}
 
 	@Override

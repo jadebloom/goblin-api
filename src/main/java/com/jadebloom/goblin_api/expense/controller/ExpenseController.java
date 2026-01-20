@@ -68,6 +68,15 @@ public class ExpenseController {
 	}
 
 	@PreAuthorize("hasRole('USER')")
+	@DeleteMapping("/all")
+	public ResponseEntity<Void> deleteAllExpenses() {
+		expenseService.deleteAll();
+
+		return ResponseEntity.noContent().build();
+	}
+
+
+	@PreAuthorize("hasRole('USER')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteExpenseById(
 			@PathVariable(name = "id") Long expenseId) {

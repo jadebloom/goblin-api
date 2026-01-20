@@ -44,6 +44,8 @@ paths:
     $ref: paths/expenses/categories/id/expenses/index.yaml
   /expenses:
     $ref: paths/expenses/index.yaml
+  /expenses/all:
+    $ref: paths/expenses/all/index.yaml
   /expenses/{id}:
     $ref: paths/expenses/id/index.yaml
 components:
