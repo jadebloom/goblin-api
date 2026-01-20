@@ -293,7 +293,6 @@ public class ExpenseControllerUnitTests {
 	public void GivenExpenseWithAllFields_WhenUpdating_ThenReturnHttp200AndExpense()
 			throws Exception {
 		UpdateExpenseDto updateDto = new UpdateExpenseDto(
-				1L,
 				"Uber Ride",
 				100L,
 				1L,
@@ -302,7 +301,7 @@ public class ExpenseControllerUnitTests {
 		updateDto.setLabels(List.of("Label1", "Label2"));
 
 		ExpenseDto dto = new ExpenseDto(
-				updateDto.getId(),
+				1L,
 				updateDto.getName(),
 				updateDto.getAmount(),
 				ZonedDateTime.now(),
@@ -312,9 +311,9 @@ public class ExpenseControllerUnitTests {
 		dto.setDescription(updateDto.getDescription());
 		dto.setLabels(updateDto.getLabels());
 
-		when(expenseService.update(any(UpdateExpenseDto.class))).thenReturn(dto);
+		when(expenseService.update(anyLong(), any(UpdateExpenseDto.class))).thenReturn(dto);
 
-		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses")
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/" + dto.getId())
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(updateDto)))
@@ -341,14 +340,13 @@ public class ExpenseControllerUnitTests {
 	public void GivenExpenseWithOnlyRequiredFields_WhenUpdating_ThenReturnHttp200AndExpense()
 			throws Exception {
 		UpdateExpenseDto updateDto = new UpdateExpenseDto(
-				1L,
 				"Uber Ride",
 				100L,
 				1L,
 				1L);
 
 		ExpenseDto dto = new ExpenseDto(
-				updateDto.getId(),
+				1L,
 				updateDto.getName(),
 				updateDto.getAmount(),
 				ZonedDateTime.now(),
@@ -356,9 +354,9 @@ public class ExpenseControllerUnitTests {
 				updateDto.getCurrencyId(),
 				1L);
 
-		when(expenseService.update(any(UpdateExpenseDto.class))).thenReturn(dto);
+		when(expenseService.update(anyLong(), any(UpdateExpenseDto.class))).thenReturn(dto);
 
-		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses")
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/" + dto.getId())
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(updateDto)))
@@ -381,13 +379,12 @@ public class ExpenseControllerUnitTests {
 	public void GivenInvalidExpense_WhenUpdating_ThenReturnHttp400()
 			throws Exception {
 		UpdateExpenseDto updateDto = new UpdateExpenseDto(
-				1L,
 				"",
 				100L,
 				1L,
 				1L);
 
-		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses")
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/1")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(updateDto)))
@@ -399,13 +396,12 @@ public class ExpenseControllerUnitTests {
 	@WithMockUser(roles = { "SOME_INVALID_ROLE" })
 	public void GivenWithoutValidRoles_WhenUpdating_ThenReturnHttp403() throws Exception {
 		UpdateExpenseDto updateDto = new UpdateExpenseDto(
-				1L,
 				"Uber Ride",
 				100L,
 				1L,
 				1L);
 
-		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses")
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/1")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(updateDto)))
@@ -417,16 +413,15 @@ public class ExpenseControllerUnitTests {
 	@WithMockUser(roles = { "USER" })
 	public void GivenNonExistingExpense_WhenUpdating_ThenReturnHttp404() throws Exception {
 		UpdateExpenseDto updateDto = new UpdateExpenseDto(
-				1L,
 				"Uber Ride",
 				100L,
 				1L,
 				1L);
 
-		when(expenseService.update(any(UpdateExpenseDto.class)))
+		when(expenseService.update(anyLong(), any(UpdateExpenseDto.class)))
 				.thenThrow(ExpenseNotFoundException.class);
 
-		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses")
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/1")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(updateDto)))
@@ -438,16 +433,15 @@ public class ExpenseControllerUnitTests {
 	@WithMockUser(roles = { "USER" })
 	public void GivenNonExistingExpenseCategory_WhenUpdating_ThenReturnHttp404() throws Exception {
 		UpdateExpenseDto updateDto = new UpdateExpenseDto(
-				1L,
 				"Uber Ride",
 				100L,
 				1L,
 				1L);
 
-		when(expenseService.update(any(UpdateExpenseDto.class)))
+		when(expenseService.update(anyLong(), any(UpdateExpenseDto.class)))
 				.thenThrow(ExpenseCategoryNotFoundException.class);
 
-		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses")
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/1")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(updateDto)))
@@ -459,16 +453,15 @@ public class ExpenseControllerUnitTests {
 	@WithMockUser(roles = { "USER" })
 	public void GivenNonExistingCurrency_WhenUpdating_ThenReturnHttp404() throws Exception {
 		UpdateExpenseDto updateDto = new UpdateExpenseDto(
-				1L,
 				"Uber Ride",
 				100L,
 				1L,
 				1L);
 
-		when(expenseService.update(any(UpdateExpenseDto.class)))
+		when(expenseService.update(anyLong(), any(UpdateExpenseDto.class)))
 				.thenThrow(CurrencyNotFoundException.class);
 
-		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses")
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/1")
 				.with(csrf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(new ObjectMapper().writeValueAsString(updateDto)))

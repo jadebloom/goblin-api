@@ -102,7 +102,8 @@ public class ExpenseServiceImpl implements ExpenseService {
 	}
 
 	@Override
-	public Page<ExpenseDto> findUserAuthenticatedExpenses(Pageable pageable) throws ForbiddenException {
+	public Page<ExpenseDto> findUserAuthenticatedExpenses(Pageable pageable)
+			throws ForbiddenException {
 		Long userId = SecurityContextUtils.getAuthenticatedUserId()
 				.orElseThrow(() -> new ForbiddenException());
 
@@ -131,7 +132,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 	}
 
 	@Override
-	public ExpenseDto update(UpdateExpenseDto updateDto)
+	public ExpenseDto update(Long expenseId, UpdateExpenseDto updateDto)
 			throws ForbiddenException,
 			InvalidExpenseException,
 			ExpenseNotFoundException,
@@ -146,7 +147,6 @@ public class ExpenseServiceImpl implements ExpenseService {
 			throw new InvalidExpenseException(message);
 		}
 
-		Long expenseId = updateDto.getId();
 		ExpenseEntity expense = expenseRepository.findById(expenseId)
 				.orElseThrow(() -> {
 					String f = "Expense with the ID '%d' wasn't found";
@@ -211,7 +211,8 @@ public class ExpenseServiceImpl implements ExpenseService {
 	}
 
 	@Override
-	public void deleteAllExpensesByCurrencyId(Long currencyId) throws ForbiddenException, CurrencyNotFoundException {
+	public void deleteAllExpensesByCurrencyId(Long currencyId)
+			throws ForbiddenException, CurrencyNotFoundException {
 		Long userId = SecurityContextUtils.getAuthenticatedUserId()
 				.orElseThrow(() -> new ForbiddenException());
 

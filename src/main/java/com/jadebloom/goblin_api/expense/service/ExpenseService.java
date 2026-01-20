@@ -24,7 +24,7 @@ public interface ExpenseService {
 
 	ExpenseDto findById(Long expenseId) throws ForbiddenException, ExpenseNotFoundException;
 
-	ExpenseDto update(UpdateExpenseDto updateDto)
+	ExpenseDto update(Long expenseId, UpdateExpenseDto updateDto)
 			throws ForbiddenException,
 			InvalidExpenseException,
 			ExpenseNotFoundException,

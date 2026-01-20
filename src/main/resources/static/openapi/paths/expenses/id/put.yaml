@@ -1,7 +1,13 @@
 operationId: updateExpense
-summary: Update an expense
+summary: Update an expense by ID
 tags:
   - Expenses
+parameters:
+  - name: id
+    in: path
+    description: Expense ID
+    schema:
+      type: integer
 security:
   - bearerAuth: []
 requestBody:
@@ -15,7 +21,6 @@ requestBody:
         required:
           summary: An example with only required fields.
           value:
-            id: 1
             name: New Expense
             amount: 1
             expense_category_id: 1
@@ -23,7 +28,6 @@ requestBody:
         all:
           summary: An example with all fields.
           value:
-            id: 1
             name: New Expense
             amount: 1
             description: Amount should be at least 1 by the way

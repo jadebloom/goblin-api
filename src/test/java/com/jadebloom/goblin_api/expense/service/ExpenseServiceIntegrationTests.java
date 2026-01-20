@@ -270,7 +270,6 @@ public class ExpenseServiceIntegrationTests {
 		ExpenseDto created = underTest.create(createDto);
 
 		UpdateExpenseDto updateDto = new UpdateExpenseDto(
-				created.getId(),
 				"Birthday expenses",
 				1001L,
 				expenseCategory.getId(),
@@ -283,10 +282,10 @@ public class ExpenseServiceIntegrationTests {
 		labels.add("Label2");
 		updateDto.setLabels(labels);
 
-		ExpenseDto updated = underTest.update(updateDto);
+		ExpenseDto updated = underTest.update(created.getId(), updateDto);
 
 		assertAll("Assert that an expense can be updated and returned with valid all fields",
-				() -> assertEquals(updateDto.getId(), updated.getId()),
+				() -> assertEquals(created.getId(), updated.getId()),
 				() -> assertEquals(updateDto.getName(), updated.getName()),
 				() -> assertEquals(updateDto.getDescription(), updated.getDescription()),
 				() -> assertEquals(updateDto.getAmount(), updated.getAmount()),
@@ -308,16 +307,15 @@ public class ExpenseServiceIntegrationTests {
 		ExpenseDto created = underTest.create(createDto);
 
 		UpdateExpenseDto updateDto = new UpdateExpenseDto(
-				created.getId(),
 				"Birthday expenses",
 				1001L,
 				expenseCategory.getId(),
 				currency.getId());
 
-		ExpenseDto updated = underTest.update(updateDto);
+		ExpenseDto updated = underTest.update(created.getId(), updateDto);
 
 		assertAll("Assert that an expense can be updated and returned with valid all fields",
-				() -> assertEquals(updateDto.getId(), updated.getId()),
+				() -> assertEquals(created.getId(), updated.getId()),
 				() -> assertEquals(updateDto.getName(), updated.getName()),
 				() -> assertNull(updated.getDescription()),
 				() -> assertEquals(updateDto.getAmount(), updated.getAmount()),
@@ -339,13 +337,13 @@ public class ExpenseServiceIntegrationTests {
 		ExpenseDto created = underTest.create(createDto);
 
 		UpdateExpenseDto updateDto = new UpdateExpenseDto(
-				created.getId(),
 				"Birthday expenses",
 				-1001L,
 				expenseCategory.getId(),
 				currency.getId());
 
-		assertThrowsExactly(InvalidExpenseException.class, () -> underTest.update(updateDto));
+		assertThrowsExactly(InvalidExpenseException.class,
+				() -> underTest.update(created.getId(), updateDto));
 	}
 
 	@Test
@@ -360,13 +358,13 @@ public class ExpenseServiceIntegrationTests {
 		ExpenseDto created = underTest.create(createDto);
 
 		UpdateExpenseDto updateDto = new UpdateExpenseDto(
-				created.getId() + 1L,
 				"Birthday expenses",
 				1001L,
 				expenseCategory.getId(),
 				currency.getId());
 
-		assertThrowsExactly(ExpenseNotFoundException.class, () -> underTest.update(updateDto));
+		assertThrowsExactly(ExpenseNotFoundException.class,
+				() -> underTest.update(created.getId() + 1, updateDto));
 	}
 
 	@Test
@@ -381,14 +379,13 @@ public class ExpenseServiceIntegrationTests {
 		ExpenseDto created = underTest.create(createDto);
 
 		UpdateExpenseDto updateDto = new UpdateExpenseDto(
-				created.getId(),
 				"Birthday expenses",
 				1001L,
 				expenseCategory.getId() + 1L,
 				currency.getId());
 
 		assertThrowsExactly(ExpenseCategoryNotFoundException.class,
-				() -> underTest.update(updateDto));
+				() -> underTest.update(created.getId(), updateDto));
 	}
 
 	@Test
@@ -403,13 +400,13 @@ public class ExpenseServiceIntegrationTests {
 		ExpenseDto created = underTest.create(createDto);
 
 		UpdateExpenseDto updateDto = new UpdateExpenseDto(
-				created.getId(),
 				"Birthday expenses",
 				1001L,
 				expenseCategory.getId(),
 				currency.getId() + 1L);
 
-		assertThrowsExactly(CurrencyNotFoundException.class, () -> underTest.update(updateDto));
+		assertThrowsExactly(CurrencyNotFoundException.class,
+				() -> underTest.update(created.getId(), updateDto));
 	}
 
 	@Test

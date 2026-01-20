@@ -58,10 +58,11 @@ public class ExpenseController {
 	}
 
 	@PreAuthorize("hasRole('USER')")
-	@PutMapping
+	@PutMapping("/{id}")
 	public ResponseEntity<ExpenseDto> updateExpense(
+			@PathVariable(name = "id") Long expenseId,
 			@Valid @RequestBody UpdateExpenseDto updateDto) {
-		ExpenseDto result = expenseService.update(updateDto);
+		ExpenseDto result = expenseService.update(expenseId, updateDto);
 
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
@@ -69,8 +70,8 @@ public class ExpenseController {
 	@PreAuthorize("hasRole('USER')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteExpenseById(
-			@PathVariable(name = "id") Long expenseCategoryId) {
-		expenseService.deleteById(expenseCategoryId);
+			@PathVariable(name = "id") Long expenseId) {
+		expenseService.deleteById(expenseId);
 
 		return ResponseEntity.noContent().build();
 	}

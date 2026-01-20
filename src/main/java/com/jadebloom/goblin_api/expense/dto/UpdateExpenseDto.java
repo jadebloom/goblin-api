@@ -13,109 +13,94 @@ import jakarta.validation.constraints.NotNull;
 
 public class UpdateExpenseDto {
 
-    @NotNull(message = "The expense's ID must not be null")
-    private Long id;
+	@ValidExpenseName
+	private String name;
 
-    @ValidExpenseName
-    private String name;
+	@ValidExpenseDescription
+	private String description;
 
-    @ValidExpenseDescription
-    private String description;
+	@ValidExpenseAmount
+	private Long amount;
 
-    @ValidExpenseAmount
-    private Long amount;
+	@ValidExpenseLabelsList
+	private List<@ValidExpenseLabel String> labels;
 
-    @ValidExpenseLabelsList
-    private List<@ValidExpenseLabel String> labels;
+	@NotNull(message = "The expense's category ID must not be null")
+	@JsonProperty("expense_category_id")
+	private Long expenseCategoryId;
 
-    @NotNull(message = "The expense's category ID must not be null")
-    @JsonProperty("expense_category_id")
-    private Long expenseCategoryId;
+	@NotNull(message = "The expense's currency ID must not be null")
+	@JsonProperty("currency_id")
+	private Long currencyId;
 
-    @NotNull(message = "The expense's currency ID must not be null")
-    @JsonProperty("currency_id")
-    private Long currencyId;
+	public UpdateExpenseDto() {}
 
-    public UpdateExpenseDto() {
-    }
+	public UpdateExpenseDto(String name, Long amount, Long expenseCategoryId, Long currencyId) {
+		this.name = name;
 
-    public UpdateExpenseDto(Long id, String name, Long amount, Long expenseCategoryId, Long currencyId) {
-        this.id = id;
+		this.amount = amount;
 
-        this.name = name;
+		this.expenseCategoryId = expenseCategoryId;
 
-        this.amount = amount;
+		this.currencyId = currencyId;
+	}
 
-        this.expenseCategoryId = expenseCategoryId;
+	public String getName() {
+		return name;
+	}
 
-        this.currencyId = currencyId;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public Long getAmount() {
+		return amount;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public List<String> getLabels() {
+		return labels;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public Long getExpenseCategoryId() {
+		return expenseCategoryId;
+	}
 
-    public Long getAmount() {
-        return amount;
-    }
+	public Long getCurrencyId() {
+		return currencyId;
+	}
 
-    public List<String> getLabels() {
-        return labels;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public Long getExpenseCategoryId() {
-        return expenseCategoryId;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public Long getCurrencyId() {
-        return currencyId;
-    }
+	public void setAmount(Long amount) {
+		this.amount = amount;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setLabels(List<String> labels) {
+		this.labels = labels;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setExpenseCategoryId(Long expenseCategoryId) {
+		this.expenseCategoryId = expenseCategoryId;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setCurrencyId(Long currencyId) {
+		this.currencyId = currencyId;
+	}
 
-    public void setAmount(Long amount) {
-        this.amount = amount;
-    }
-
-    public void setLabels(List<String> labels) {
-        this.labels = labels;
-    }
-
-    public void setExpenseCategoryId(Long expenseCategoryId) {
-        this.expenseCategoryId = expenseCategoryId;
-    }
-
-    public void setCurrencyId(Long currencyId) {
-        this.currencyId = currencyId;
-    }
-
-    @Override
-    public String toString() {
-        return "UpdateExpenseDto(id=" + id +
-                ", name" + name +
-                ", description=" + description +
-                ", amount=" + amount +
-                ", labels=" + labels +
-                ", expenseCategoryId=" + expenseCategoryId +
-                ", currencyId=" + currencyId + ")";
-    }
+	@Override
+	public String toString() {
+		return "UpdateExpenseDto(name" + name +
+				", description=" + description +
+				", amount=" + amount +
+				", labels=" + labels +
+				", expenseCategoryId=" + expenseCategoryId +
+				", currencyId=" + currencyId + ")";
+	}
 
 }

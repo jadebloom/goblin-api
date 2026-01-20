@@ -1,5 +1,5 @@
 operationId: updateCurrency
-summary: Update a currency
+summary: Update a currency by ID
 tags:
   - Currencies
 parameters:

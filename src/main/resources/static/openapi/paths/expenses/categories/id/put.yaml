@@ -1,5 +1,5 @@
 operationId: updateExpenseCategory
-summary: Update an expense category
+summary: Update an expense category by ID
 tags:
   - Expense Categories
 parameters:
