@@ -2,7 +2,6 @@ package com.jadebloom.goblin_api.expense.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.UpdateExpenseCategoryDto;
@@ -30,6 +29,8 @@ public interface ExpenseCategoryService {
 			InvalidExpenseCategoryException,
 			ExpenseCategoryNotFoundException,
 			ExpenseCategoryNameUnavailableException;
+
+	void deleteAll() throws ForbiddenException, ExpenseCategoryInUseException;
 
 	void deleteById(Long expenseCategoryId)
 			throws ForbiddenException,

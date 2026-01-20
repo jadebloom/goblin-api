@@ -1,4 +1,4 @@
-operationId: deleteAll
+operationId: deleteAllCurrencies
 summary: Delete all currencies
 tags:
   - Currencies

@@ -156,13 +156,13 @@ public class CurrencyServiceImpl implements CurrencyService {
 
 		List<CurrencyEntity> allCurrencies = currencyRepository.findAll();
 
-		List<String> inUseCurrenciesNames = new ArrayList<>();
-
 		for (CurrencyEntity currency : allCurrencies) {
 			if (currency.getCreator().getId() != userId) {
 				throw new ForbiddenException();
 			}
 		}
+
+		List<String> inUseCurrenciesNames = new ArrayList<>();
 
 		for (CurrencyEntity currency : allCurrencies) {
 			if (expenseRepository.existsByCurrency_Id(currency.getId())) {

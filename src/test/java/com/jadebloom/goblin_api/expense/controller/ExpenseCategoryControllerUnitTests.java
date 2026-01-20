@@ -20,7 +20,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.UpdateExpenseCategoryDto;
@@ -278,6 +277,38 @@ public class ExpenseCategoryControllerUnitTests {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(updateDto)))
 				.andExpect(MockMvcResultMatchers.status().isNotFound());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 204 when deleting all expense categories")
+	@WithMockUser(roles = { "USER" })
+	public void GivenPossibleExpenseCategories_WhenDeletingAllExpenseCategories_ThenReturnHttp204()
+			throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/all")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isNoContent());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 403 when trying to delete all expense categories without valid roles")
+	@WithMockUser(roles = { "SOME_INVALID_ROLE" })
+	public void GivenWithoutValidRoles_WhenDeletingAllExpenseCategories_ThenReturnHttp403()
+			throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/all")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
+
+	@Test
+	@DisplayName("Return HTTP 409 when trying to delete all expenses categories, when some of them are in use")
+	@WithMockUser(roles = { "USER" })
+	public void GivenExpenseCategoriesInUse_WhenDeletingAllExpenseCategories_ThenReturnHttp409()
+			throws Exception {
+		doThrow(ExpenseCategoryInUseException.class).when(expenseCategoryService).deleteAll();
+
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/categories/all")
+				.with(csrf()))
+				.andExpect(MockMvcResultMatchers.status().isConflict());
 	}
 
 	@Test

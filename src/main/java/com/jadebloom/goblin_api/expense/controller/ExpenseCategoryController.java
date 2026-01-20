@@ -69,12 +69,20 @@ public class ExpenseCategoryController {
 
 	@PreAuthorize("hasRole('USER')")
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<ExpenseCategoryDto> updateExpenseCategory(
+	public ResponseEntity<ExpenseCategoryDto> updateExpenseCategoryById(
 			@PathVariable(name = "id") Long expenseCategoryId,
 			@Valid @RequestBody UpdateExpenseCategoryDto updateDto) {
 		ExpenseCategoryDto result = expenseCategoryService.update(expenseCategoryId, updateDto);
 
 		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+
+	@PreAuthorize("hasRole('USER')")
+	@DeleteMapping("/all")
+	public ResponseEntity<Void> deleteAllExpenseCategories() {
+		expenseCategoryService.deleteAll();
+
+		return ResponseEntity.noContent().build();
 	}
 
 	@PreAuthorize("hasRole('USER')")

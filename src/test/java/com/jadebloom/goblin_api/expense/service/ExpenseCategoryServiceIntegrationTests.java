@@ -21,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.UpdateExpenseCategoryDto;
@@ -261,6 +260,30 @@ public class ExpenseCategoryServiceIntegrationTests {
 
 		assertThrowsExactly(ExpenseCategoryNotFoundException.class,
 				() -> underTest.update(1L, updateDto));
+	}
+
+	@Test
+	@DisplayName("Do not throw when deleting all expense categories, regardless if they exist or not")
+	@WithUserDetails(value = "user@gmail.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+	public void GivenPossibleExpenseCategories_WhenDeletingAll_ThenDoNotThrow() {
+		CreateExpenseCategoryDto createDto1 = new CreateExpenseCategoryDto("Daily");
+		CreateExpenseCategoryDto createDto2 = new CreateExpenseCategoryDto("Debt");
+
+		underTest.create(createDto1);
+		underTest.create(createDto2);
+
+		underTest.deleteAll();
+
+		Page<ExpenseCategoryDto> page =
+				underTest.findAuthenticatedUserExpenseCategories(PageRequest.of(0, 20));
+
+		assertEquals(0, page.getContent().size());
+	}
+
+	@Test
+	@DisplayName("Throw ForbiddenException when trying to delete all expense categories without the authenticated user")
+	public void GivenWithoutAuthenticatedUser_WhenDeletingAll_ThenThrowForbiddenException() {
+		assertThrowsExactly(ForbiddenException.class, () -> underTest.deleteAll());
 	}
 
 	@Test

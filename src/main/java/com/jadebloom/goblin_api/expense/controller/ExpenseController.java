@@ -59,7 +59,7 @@ public class ExpenseController {
 
 	@PreAuthorize("hasRole('USER')")
 	@PutMapping("/{id}")
-	public ResponseEntity<ExpenseDto> updateExpense(
+	public ResponseEntity<ExpenseDto> updateExpenseById(
 			@PathVariable(name = "id") Long expenseId,
 			@Valid @RequestBody UpdateExpenseDto updateDto) {
 		ExpenseDto result = expenseService.update(expenseId, updateDto);

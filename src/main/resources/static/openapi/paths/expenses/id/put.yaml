@@ -1,4 +1,4 @@
-operationId: updateExpense
+operationId: updateExpenseById
 summary: Update an expense by ID
 tags:
   - Expenses

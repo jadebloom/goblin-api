@@ -1,0 +1,15 @@
+operationId: deleteAllExpenseCategories
+summary: Delete all expense categories
+tags:
+  - Expense Categories
+security:
+  - bearerAuth: []
+responses:
+  "204":
+    $ref: ../../../../openapi.yaml#/components/responses/NoContent
+  "403":
+    $ref: ../../../../openapi.yaml#/components/responses/ForbiddenError
+  "409":
+    $ref: ../../../../openapi.yaml#/components/responses/EntityInUseError
+  "500":
+    $ref: ../../../../openapi.yaml#/components/responses/InternalServerError

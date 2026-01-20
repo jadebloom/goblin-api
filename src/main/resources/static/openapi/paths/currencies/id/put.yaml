@@ -1,4 +1,4 @@
-operationId: updateCurrency
+operationId: updateCurrencyById
 summary: Update a currency by ID
 tags:
   - Currencies

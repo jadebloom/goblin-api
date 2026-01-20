@@ -1,9 +1,11 @@
 package com.jadebloom.goblin_api.expense.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
+import com.jadebloom.goblin_api.currency.error.CurrencyInUseException;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseCategoryDto;
 import com.jadebloom.goblin_api.expense.dto.UpdateExpenseCategoryDto;
@@ -153,6 +155,48 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 		expenseCategory.setHexColorCode(updateDto.getHexColorCode());
 
 		return mapper.map(expenseCategoryRepository.saveAndFlush(expenseCategory));
+	}
+
+	@Override
+	public void deleteAll() throws ForbiddenException, CurrencyInUseException {
+		Long userId = SecurityContextUtils.getAuthenticatedUserId()
+				.orElseThrow(() -> new ForbiddenException());
+
+		List<ExpenseCategoryEntity> allCategories = expenseCategoryRepository.findAll();
+
+		for (ExpenseCategoryEntity category : allCategories) {
+			if (category.getCreator().getId() != userId) {
+				throw new ForbiddenException();
+			}
+		}
+
+		List<String> inUseCategoriesNames = new ArrayList<>();
+
+		for (ExpenseCategoryEntity category : allCategories) {
+			if (expenseRepository.existsByExpenseCategory_Id(category.getId())) {
+				inUseCategoriesNames.add(category.getName());
+			}
+		}
+
+		if (!inUseCategoriesNames.isEmpty()) {
+			String s = "Cannot delete all expense categories: categories with names ";
+
+			for (int i = 0; i < inUseCategoriesNames.size(); i++) {
+				String name = inUseCategoriesNames.get(i);
+
+				if (i == inUseCategoriesNames.size() - 1) {
+					s += "\"" + name + "\" ";
+				} else {
+					s += "\"" + name + "\", ";
+				}
+			}
+
+			s += "cannot be deleted, because some amount of expenses reference them";
+
+			throw new ExpenseCategoryInUseException(s);
+		}
+
+		expenseCategoryRepository.deleteAll();
 	}
 
 	@Override

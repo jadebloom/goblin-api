@@ -295,7 +295,7 @@ public class CurrencyControllerUnitTests {
 	}
 
 	@Test
-	@DisplayName("Return HTTP 403 when trying to delete all currencies, when some of them are in use")
+	@DisplayName("Return HTTP 409 when trying to delete all currencies, when some of them are in use")
 	@WithMockUser(roles = { "USER" })
 	public void GivenCurrenciesInUse_WhenDeletingAllCurrencies_ThenReturnHttp409()
 			throws Exception {

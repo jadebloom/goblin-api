@@ -36,6 +36,8 @@ paths:
     $ref: paths/currencies/id/expenses/index.yaml
   /expenses/categories:
     $ref: paths/expenses/categories/index.yaml
+  /expenses/categories/all:
+    $ref: paths/expenses/categories/all/index.yaml
   /expenses/categories/{id}:
     $ref: paths/expenses/categories/id/index.yaml
   /expenses/categories/{id}/expenses:

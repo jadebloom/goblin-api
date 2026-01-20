@@ -1,4 +1,4 @@
-operationId: updateExpenseCategory
+operationId: updateExpenseCategoryById
 summary: Update an expense category by ID
 tags:
   - Expense Categories

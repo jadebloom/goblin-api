@@ -64,7 +64,8 @@ public class CurrencyController {
 
 	@PreAuthorize("hasRole('USER')")
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<CurrencyDto> updateCurrency(@PathVariable(name = "id") Long currencyId,
+	public ResponseEntity<CurrencyDto> updateCurrencyById(
+			@PathVariable(name = "id") Long currencyId,
 			@Valid @RequestBody UpdateCurrencyDto updateDto) {
 		CurrencyDto updated = currencyService.update(currencyId, updateDto);
 
@@ -73,7 +74,7 @@ public class CurrencyController {
 
 	@PreAuthorize("hasRole('USER')")
 	@DeleteMapping("/all")
-	public ResponseEntity<Void> deleteAll() {
+	public ResponseEntity<Void> deleteAllCurrencies() {
 		currencyService.deleteAll();
 
 		return ResponseEntity.noContent().build();
