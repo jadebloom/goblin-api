@@ -12,11 +12,11 @@ public class HexColorCodeValidator implements ConstraintValidator<ValidHexColorC
 
 	@Override
 	public boolean isValid(String value, ConstraintValidatorContext context) {
-		if (value == null) {
+		if (value == null || value.isEmpty()) {
 			return true;
 		}
 
-		if (value.isBlank() || value.charAt(0) != '#') {
+		if (value.charAt(0) != '#') {
 			return false;
 		}
 
