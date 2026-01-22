@@ -1,4 +1,4 @@
-operationId: deleteAllExpensesById
+operationId: deleteSelectedExpensesByIds
 summary: Delete all expenses by given IDs
 tags:
   - Expenses
@@ -21,7 +21,5 @@ responses:
     $ref: ../../../openapi.yaml#/components/responses/NoContent
   "403":
     $ref: ../../../openapi.yaml#/components/responses/ForbiddenError
-  "409":
-    $ref: ../../../openapi.yaml#/components/responses/EntityInUseError
   "500":
     $ref: ../../../openapi.yaml#/components/responses/InternalServerError

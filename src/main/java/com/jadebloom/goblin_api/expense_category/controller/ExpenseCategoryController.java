@@ -104,7 +104,7 @@ public class ExpenseCategoryController {
 
 	@PreAuthorize("hasRole('USER')")
 	@PostMapping("/delete")
-	public ResponseEntity<Void> deleteSelectedById(
+	public ResponseEntity<Void> deleteSelectedExpenseCategoriesByIds(
 			@Valid @RequestBody DeleteExpenseCategoriesDto deleteDto) {
 		deleteService.deleteSelectedById(deleteDto);
 

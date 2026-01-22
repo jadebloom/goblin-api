@@ -26,16 +26,6 @@ paths:
     $ref: paths/authentication/refresh/index.yaml
   /account:
     $ref: paths/account/index.yaml
-  /currencies:
-    $ref: paths/currencies/index.yaml
-  /currencies/all:
-    $ref: paths/currencies/all/index.yaml
-  /currencies/{id}:
-    $ref: paths/currencies/id/index.yaml
-  /currencies/delete:
-    $ref: paths/currencies/delete/index.yaml
-  /currencies/{id}/expenses:
-    $ref: paths/currencies/id/expenses/index.yaml
   /expenses/categories:
     $ref: paths/expenses/categories/index.yaml
   /expenses/categories/all:
@@ -64,14 +54,6 @@ components:
       $ref: components/schemas/AuthenticationResponseDto.yaml
     UpdatePasswordDto:
       $ref: components/schemas/UpdatePasswordDto.yaml
-    CreateCurrencyDto:
-      $ref: components/schemas/CreateCurrencyDto.yaml
-    CurrencyDto:
-      $ref: components/schemas/CurrencyDto.yaml
-    UpdateCurrencyDto:
-      $ref: components/schemas/UpdateCurrencyDto.yaml
-    DeleteCurrenciesDto:
-      $ref: components/schemas/DeleteCurrenciesDto.yaml
     CreateExpenseCategoryDto:
       $ref: components/schemas/CreateExpenseCategoryDto.yaml
     ExpenseCategoryDto:

@@ -10,16 +10,21 @@ properties:
     description: The name of an expense.
     minLength: 1
     maxLength: 64
+  amount:
+    type: integer
+    description: The amount spend on the expense.
+    minLength: 1
+  currency_code:
+    type: string
+    description: The currency code that conforms to ISO 4217.
+    minLength: 3
+    maxLength: 3
   description:
     type: string
     description: The description of an expense.
     nullable: true
     minLength: 1
     maxLength: 256
-  amount:
-    type: integer
-    description: The amount spend on the expense.
-    minLength: 1
   labels:
     type: array
     description: The labels related to an expense, where each label is 1 - 16 characters long.

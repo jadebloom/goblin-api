@@ -1,4 +1,4 @@
-description: An entity is in referenced or used by something.
+description: The entity is in referenced or used by something.
 content:
   application/json:
     schema:
