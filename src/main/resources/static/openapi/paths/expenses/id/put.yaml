@@ -23,16 +23,16 @@ requestBody:
           value:
             name: New Expense
             amount: 1
+            currency_code: USD
             expense_category_id: 1
-            currency_id: 1
         all:
           summary: An example with all fields.
           value:
             name: New Expense
             amount: 1
+            currency_code: USD
             description: Amount should be at least 1 by the way
             expense_category_id: 1
-            currency_id: 1
             labels:
               - Some label
               - Another label
