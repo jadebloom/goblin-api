@@ -8,6 +8,7 @@ import com.jadebloom.goblin_api.expense.validation.ValidExpenseDescription;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseLabel;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseLabelsList;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseName;
+import com.jadebloom.goblin_api.shared.validation.ValidCurrencyCode;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -22,6 +23,10 @@ public class UpdateExpenseDto {
 	@ValidExpenseAmount
 	private Long amount;
 
+	@ValidCurrencyCode
+	@JsonProperty("currency_code")
+	private String currencyCode;
+
 	@ValidExpenseLabelsList
 	private List<@ValidExpenseLabel String> labels;
 
@@ -29,20 +34,17 @@ public class UpdateExpenseDto {
 	@JsonProperty("expense_category_id")
 	private Long expenseCategoryId;
 
-	@NotNull(message = "The expense's currency ID must not be null")
-	@JsonProperty("currency_id")
-	private Long currencyId;
+	public UpdateExpenseDto() {
+	}
 
-	public UpdateExpenseDto() {}
-
-	public UpdateExpenseDto(String name, Long amount, Long expenseCategoryId, Long currencyId) {
+	public UpdateExpenseDto(String name, Long amount, String currencyCode, Long expenseCategoryId) {
 		this.name = name;
 
 		this.amount = amount;
 
-		this.expenseCategoryId = expenseCategoryId;
+		this.currencyCode = currencyCode;
 
-		this.currencyId = currencyId;
+		this.expenseCategoryId = expenseCategoryId;
 	}
 
 	public String getName() {
@@ -57,16 +59,16 @@ public class UpdateExpenseDto {
 		return amount;
 	}
 
+	public String getCurrencyCode() {
+		return currencyCode;
+	}
+
 	public List<String> getLabels() {
 		return labels;
 	}
 
 	public Long getExpenseCategoryId() {
 		return expenseCategoryId;
-	}
-
-	public Long getCurrencyId() {
-		return currencyId;
 	}
 
 	public void setName(String name) {
@@ -81,6 +83,10 @@ public class UpdateExpenseDto {
 		this.amount = amount;
 	}
 
+	public void setCurrencyCode(String currencyCode) {
+		this.currencyCode = currencyCode;
+	}
+
 	public void setLabels(List<String> labels) {
 		this.labels = labels;
 	}
@@ -89,18 +95,14 @@ public class UpdateExpenseDto {
 		this.expenseCategoryId = expenseCategoryId;
 	}
 
-	public void setCurrencyId(Long currencyId) {
-		this.currencyId = currencyId;
-	}
-
 	@Override
 	public String toString() {
 		return "UpdateExpenseDto(name" + name +
 				", description=" + description +
 				", amount=" + amount +
+				", currencyCode=" + currencyCode +
 				", labels=" + labels +
-				", expenseCategoryId=" + expenseCategoryId +
-				", currencyId=" + currencyId + ")";
+				", expenseCategoryId=" + expenseCategoryId + ")";
 	}
 
 }

@@ -5,13 +5,14 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseAmount;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseDescription;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseLabel;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseLabelsList;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseName;
+import com.jadebloom.goblin_api.expense_category.entity.ExpenseCategoryEntity;
 import com.jadebloom.goblin_api.security.entity.UserEntity;
+import com.jadebloom.goblin_api.shared.validation.ValidCurrencyCode;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -38,13 +39,17 @@ public class ExpenseEntity {
 	@ValidExpenseName
 	private String name;
 
-	@Column(length = 256)
-	@ValidExpenseDescription
-	private String description;
-
 	@Column(nullable = false)
 	@ValidExpenseAmount
 	private Long amount;
+
+	@Column(length = 3)
+	@ValidCurrencyCode
+	private String currencyCode;
+
+	@Column(length = 256)
+	@ValidExpenseDescription
+	private String description;
 
 	@ElementCollection
 	@CollectionTable(name = "expense_labels", joinColumns = @JoinColumn(name = "expense_id"))
@@ -62,11 +67,6 @@ public class ExpenseEntity {
 	private ExpenseCategoryEntity expenseCategory;
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "currency_id", referencedColumnName = "id", nullable = false)
-	@NotNull(message = "The expense's currency must not be null")
-	private CurrencyEntity currency;
-
-	@ManyToOne(optional = false)
 	@JoinColumn(name = "creator_id", referencedColumnName = "id", nullable = false, updatable = false)
 	@NotNull(message = "The expense's creator must not be null")
 	private UserEntity creator;
@@ -77,8 +77,8 @@ public class ExpenseEntity {
 	public ExpenseEntity(
 			String name,
 			Long amount,
+			String currencyCode,
 			ExpenseCategoryEntity expenseCategory,
-			CurrencyEntity currency,
 			UserEntity creator) {
 		this.name = name;
 
@@ -86,7 +86,7 @@ public class ExpenseEntity {
 
 		this.expenseCategory = expenseCategory;
 
-		this.currency = currency;
+		this.currencyCode = currencyCode;
 
 		this.creator = creator;
 	}
@@ -107,6 +107,10 @@ public class ExpenseEntity {
 		return amount;
 	}
 
+	public String getCurrencyCode() {
+		return currencyCode;
+	}
+
 	public List<String> getLabels() {
 		return labels;
 	}
@@ -117,10 +121,6 @@ public class ExpenseEntity {
 
 	public ExpenseCategoryEntity getExpenseCategory() {
 		return expenseCategory;
-	}
-
-	public CurrencyEntity getCurrency() {
-		return currency;
 	}
 
 	public UserEntity getCreator() {
@@ -143,6 +143,10 @@ public class ExpenseEntity {
 		this.amount = amount;
 	}
 
+	public void setCurrencyCode(String currencyCode) {
+		this.currencyCode = currencyCode;
+	}
+
 	public void setLabels(List<String> labels) {
 		this.labels = labels;
 	}
@@ -153,10 +157,6 @@ public class ExpenseEntity {
 
 	public void setExpenseCategory(ExpenseCategoryEntity expenseCategory) {
 		this.expenseCategory = expenseCategory;
-	}
-
-	public void setCurrency(CurrencyEntity currency) {
-		this.currency = currency;
 	}
 
 	public void setCreator(UserEntity creator) {
@@ -173,17 +173,17 @@ public class ExpenseEntity {
 			return false;
 		}
 
-		ExpenseEntity expenseEntity = (ExpenseEntity) o;
+		ExpenseEntity e = (ExpenseEntity) o;
 
-		if (id != expenseEntity.getId() || !name.equals(expenseEntity.getName())) {
+		if (id != e.getId() || !name.equals(e.getName())) {
 			return false;
 		}
 
-		if (description != null && !description.equals(expenseEntity.getDescription())) {
+		if (description != null && !description.equals(e.getDescription())) {
 			return false;
 		}
 
-		return amount == expenseEntity.amount && createdAt == expenseEntity.createdAt;
+		return amount == e.amount && currencyCode.equals(e.getCurrencyCode()) && createdAt == e.createdAt;
 	}
 
 	@Override
@@ -192,6 +192,7 @@ public class ExpenseEntity {
 				", name=" + name +
 				", description=" + description +
 				", amount=" + amount +
+				", currencyCode=" + currencyCode +
 				", createdAt=" + createdAt + ")";
 	}
 

@@ -19,12 +19,10 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import com.jadebloom.goblin_api.account.dto.UpdatePasswordDto;
 import com.jadebloom.goblin_api.account.errors.InvalidPasswordException;
-import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
-import com.jadebloom.goblin_api.currency.repository.CurrencyRepository;
-import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
 import com.jadebloom.goblin_api.expense.entity.ExpenseEntity;
-import com.jadebloom.goblin_api.expense.repository.ExpenseCategoryRepository;
 import com.jadebloom.goblin_api.expense.repository.ExpenseRepository;
+import com.jadebloom.goblin_api.expense_category.entity.ExpenseCategoryEntity;
+import com.jadebloom.goblin_api.expense_category.repository.ExpenseCategoryRepository;
 import com.jadebloom.goblin_api.security.entity.UserEntity;
 import com.jadebloom.goblin_api.security.error.IncorrectPasswordException;
 import com.jadebloom.goblin_api.security.repository.UserRepository;
@@ -41,8 +39,6 @@ public class AccountServiceIntegrationTests {
 
 	private final ExpenseCategoryRepository expenseCategoryRepository;
 
-	private final CurrencyRepository currencyRepository;
-
 	private final ExpenseRepository expenseRepository;
 
 	private final UserRepository userRepository;
@@ -56,7 +52,6 @@ public class AccountServiceIntegrationTests {
 			AccountService underTest,
 			PasswordEncoder passwordEncoder,
 			ExpenseCategoryRepository expenseCategoryRepository,
-			CurrencyRepository currencyRepository,
 			ExpenseRepository expenseRepository,
 			UserRepository userRepository,
 			UserTestUtils userTestUtils) {
@@ -65,8 +60,6 @@ public class AccountServiceIntegrationTests {
 		this.passwordEncoder = passwordEncoder;
 
 		this.expenseCategoryRepository = expenseCategoryRepository;
-
-		this.currencyRepository = currencyRepository;
 
 		this.expenseRepository = expenseRepository;
 
@@ -85,16 +78,13 @@ public class AccountServiceIntegrationTests {
 		ExpenseCategoryEntity toCreate1 = new ExpenseCategoryEntity("Daily", user);
 		ExpenseCategoryEntity created1 = expenseCategoryRepository.saveAndFlush(toCreate1);
 
-		CurrencyEntity toCreate2 = new CurrencyEntity("Tenge", user);
-		CurrencyEntity created2 = currencyRepository.saveAndFlush(toCreate2);
-
-		ExpenseEntity toCreate3 = new ExpenseEntity(
+		ExpenseEntity toCreate2 = new ExpenseEntity(
 				"Uber Ride",
 				10L,
+				"USD",
 				created1,
-				created2,
 				user);
-		expenseRepository.save(toCreate3);
+		expenseRepository.save(toCreate2);
 	}
 
 	@Test
@@ -138,14 +128,11 @@ public class AccountServiceIntegrationTests {
 
 		List<ExpenseCategoryEntity> expenseCategories = expenseCategoryRepository.findAll();
 
-		List<CurrencyEntity> currencies = currencyRepository.findAll();
-
 		List<ExpenseEntity> expenses = expenseRepository.findAll();
 
 		assertAll("Assert that an existing account and its data can be deleted",
 				() -> assertFalse(isUserExists),
 				() -> assertEquals(0, expenseCategories.size()),
-				() -> assertEquals(0, currencies.size()),
 				() -> assertEquals(0, expenses.size()));
 	}
 

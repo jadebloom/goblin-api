@@ -10,48 +10,38 @@ import com.jadebloom.goblin_api.security.repository.PermissionRepository;
 @Component
 public class PermissionTestUtils {
 
-    private final PermissionRepository permissionRepository;
+	private final PermissionRepository permissionRepository;
 
-    public PermissionTestUtils(PermissionRepository permissionRepository) {
-        this.permissionRepository = permissionRepository;
-    }
+	public PermissionTestUtils(PermissionRepository permissionRepository) {
+		this.permissionRepository = permissionRepository;
+	}
 
-    public List<PermissionEntity> createCurrencyPermissions() {
-        List<String> permissionNames = List.of(
-                "CREATE_CURRENCY",
-                "READ_CURRENCY",
-                "UPDATE_CURRENCY",
-                "DELETE_CURRENCY");
+	public List<PermissionEntity> createExpenseCategoryPermissions() {
+		List<String> permissionNames = List.of(
+				"CREATE_EXPENSE_CATEGORY",
+				"READ_EXPENSE_CATEGORY",
+				"UPDATE_EXPENSE_CATEGORY",
+				"DELETE_EXPENSE_CATEGORY");
 
-        return createPermissions(permissionNames);
-    }
+		return createPermissions(permissionNames);
+	}
 
-    public List<PermissionEntity> createExpenseCategoryPermissions() {
-        List<String> permissionNames = List.of(
-                "CREATE_EXPENSE_CATEGORY",
-                "READ_EXPENSE_CATEGORY",
-                "UPDATE_EXPENSE_CATEGORY",
-                "DELETE_EXPENSE_CATEGORY");
+	public List<PermissionEntity> createExpensePermissions() {
+		List<String> permissionNames = List.of(
+				"CREATE_EXPENSE",
+				"READ_EXPENSE",
+				"UPDATE_EXPENSE",
+				"DELETE_EXPENSE");
 
-        return createPermissions(permissionNames);
-    }
+		return createPermissions(permissionNames);
+	}
 
-    public List<PermissionEntity> createExpensePermissions() {
-        List<String> permissionNames = List.of(
-                "CREATE_EXPENSE",
-                "READ_EXPENSE",
-                "UPDATE_EXPENSE",
-                "DELETE_EXPENSE");
+	public List<PermissionEntity> createPermissions(List<String> permissionNames) {
+		List<PermissionEntity> permissions = permissionNames.stream()
+				.map(name -> permissionRepository.save(new PermissionEntity(name)))
+				.toList();
 
-        return createPermissions(permissionNames);
-    }
-
-    public List<PermissionEntity> createPermissions(List<String> permissionNames) {
-        List<PermissionEntity> permissions = permissionNames.stream()
-                .map(name -> permissionRepository.save(new PermissionEntity(name)))
-                .toList();
-
-        return permissions;
-    }
+		return permissions;
+	}
 
 }

@@ -4,14 +4,11 @@ The centralized log of tasks and improvements.
 
 ## Working on
 
-1. What about flag for token strategy? 
-2. Check JWtFilter for th bypass (if not including bearae)
 3. Log
 
 ### Features
 
 1. Add token rotations and invalidations (e.g. on logout).
-2. Use different token secrets.
 6.  Consider adding icons to expense categories.
 7.  Add configuration packs (w/ linking to the `User`).
 8.  Consider adding reocurring expenses.

@@ -23,14 +23,16 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jadebloom.goblin_api.currency.error.CurrencyNotFoundException;
 import com.jadebloom.goblin_api.expense.dto.CreateExpenseDto;
 import com.jadebloom.goblin_api.expense.dto.DeleteExpensesDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseDto;
 import com.jadebloom.goblin_api.expense.dto.UpdateExpenseDto;
-import com.jadebloom.goblin_api.expense.error.ExpenseCategoryNotFoundException;
 import com.jadebloom.goblin_api.expense.error.ExpenseNotFoundException;
-import com.jadebloom.goblin_api.expense.service.ExpenseService;
+import com.jadebloom.goblin_api.expense.service.ExpenseCreateService;
+import com.jadebloom.goblin_api.expense.service.ExpenseDeleteService;
+import com.jadebloom.goblin_api.expense.service.ExpenseFindService;
+import com.jadebloom.goblin_api.expense.service.ExpenseUpdateService;
+import com.jadebloom.goblin_api.expense_category.error.ExpenseCategoryNotFoundException;
 import com.jadebloom.goblin_api.security.service.JwtService;
 import com.jadebloom.goblin_api.shared.service.HttpResponseService;
 import com.jadebloom.goblin_api.test.MethodSecurityTestConfig;
@@ -43,7 +45,16 @@ public class ExpenseControllerUnitTests {
 	private MockMvc mockMvc;
 
 	@MockitoBean
-	private ExpenseService expenseService;
+	private ExpenseCreateService createService;
+
+	@MockitoBean
+	private ExpenseFindService findService;
+
+	@MockitoBean
+	private ExpenseUpdateService updateService;
+
+	@MockitoBean
+	private ExpenseDeleteService deleteService;
 
 	@MockitoBean
 	private JwtService jwtService;
@@ -59,7 +70,7 @@ public class ExpenseControllerUnitTests {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
 				100L,
-				1L,
+				"USD",
 				1L);
 		createDto.setDescription("Magnificent ride");
 		createDto.setLabels(List.of("Label1", "Label2"));
@@ -68,16 +79,15 @@ public class ExpenseControllerUnitTests {
 				1L,
 				createDto.getName(),
 				createDto.getAmount(),
+				"USD",
 				ZonedDateTime.now(),
 				createDto.getExpenseCategoryId(),
 				"ExpenseCategory",
-				createDto.getCurrencyId(),
-				"Currency",
 				1L);
 		dto.setDescription(createDto.getDescription());
 		dto.setLabels(createDto.getLabels());
 
-		when(expenseService.create(any(CreateExpenseDto.class))).thenReturn(dto);
+		when(createService.create(any(CreateExpenseDto.class))).thenReturn(dto);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses")
 				.with(csrf())
@@ -89,6 +99,7 @@ public class ExpenseControllerUnitTests {
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.description").value(dto.getDescription()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.amount").value(dto.getAmount()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.currency_code").value(dto.getCurrencyCode()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.labels")
 						.value(Matchers.containsInAnyOrder(dto.getLabels().toArray())))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
@@ -96,11 +107,6 @@ public class ExpenseControllerUnitTests {
 						.value(dto.getExpenseCategoryId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_name")
 						.value(dto.getExpenseCategoryName()))
-				.andExpect(
-						MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
-				.andExpect(
-						MockMvcResultMatchers.jsonPath("$.currency_name")
-								.value(dto.getCurrencyName()))
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
 	}
@@ -113,21 +119,20 @@ public class ExpenseControllerUnitTests {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
 				100L,
-				1L,
+				"USD",
 				1L);
 
 		ExpenseDto dto = new ExpenseDto(
 				1L,
 				createDto.getName(),
 				createDto.getAmount(),
+				"USD",
 				ZonedDateTime.now(),
 				createDto.getExpenseCategoryId(),
 				"ExpenseCategory",
-				createDto.getCurrencyId(),
-				"Currency",
 				1L);
 
-		when(expenseService.create(any(CreateExpenseDto.class))).thenReturn(dto);
+		when(createService.create(any(CreateExpenseDto.class))).thenReturn(dto);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses")
 				.with(csrf())
@@ -137,16 +142,12 @@ public class ExpenseControllerUnitTests {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(dto.getId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(dto.getName()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.amount").value(dto.getAmount()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.currency_code").value(dto.getCurrencyCode()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id")
 						.value(dto.getExpenseCategoryId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_name")
 						.value(dto.getExpenseCategoryName()))
-				.andExpect(
-						MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
-				.andExpect(
-						MockMvcResultMatchers.jsonPath("$.currency_name")
-								.value(dto.getCurrencyName()))
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
 	}
@@ -158,7 +159,7 @@ public class ExpenseControllerUnitTests {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"",
 				100L,
-				1L,
+				"USD",
 				1L);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses")
@@ -175,7 +176,7 @@ public class ExpenseControllerUnitTests {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
 				100L,
-				1L,
+				"USD",
 				1L);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses")
@@ -192,31 +193,11 @@ public class ExpenseControllerUnitTests {
 		CreateExpenseDto createDto = new CreateExpenseDto(
 				"Uber Ride",
 				100L,
-				1L,
+				"USD",
 				1L);
 
-		when(expenseService.create(any(CreateExpenseDto.class)))
+		when(createService.create(any(CreateExpenseDto.class)))
 				.thenThrow(ExpenseCategoryNotFoundException.class);
-
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses")
-				.with(csrf())
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(new ObjectMapper().writeValueAsString(createDto)))
-				.andExpect(MockMvcResultMatchers.status().isNotFound());
-	}
-
-	@Test
-	@DisplayName("Return HTTP 404 when trying to create an expense with a non-existing currency")
-	@WithMockUser(roles = { "USER" })
-	public void GivenNonExistingCurrency_WhenCreating_ThenReturnHttp404() throws Exception {
-		CreateExpenseDto createDto = new CreateExpenseDto(
-				"Uber Ride",
-				100L,
-				1L,
-				1L);
-
-		when(expenseService.create(any(CreateExpenseDto.class)))
-				.thenThrow(CurrencyNotFoundException.class);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/expenses")
 				.with(csrf())
@@ -254,16 +235,15 @@ public class ExpenseControllerUnitTests {
 				1L,
 				"Uber Ride",
 				100L,
+				"USD",
 				ZonedDateTime.now(),
 				1L,
 				"ExpenseCategory",
-				1L,
-				"Currency",
 				1L);
 		dto.setDescription("Magnificent ride");
 		dto.setLabels(List.of("Label1", "Label2"));
 
-		when(expenseService.findById(anyLong())).thenReturn(dto);
+		when(findService.findById(anyLong())).thenReturn(dto);
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/expenses/1")
 				.with(csrf()))
@@ -273,6 +253,7 @@ public class ExpenseControllerUnitTests {
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.description").value(dto.getDescription()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.amount").value(dto.getAmount()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.currency_code").value(dto.getCurrencyCode()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.labels")
 						.value(Matchers.containsInAnyOrder(dto.getLabels().toArray())))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
@@ -280,11 +261,6 @@ public class ExpenseControllerUnitTests {
 						.value(dto.getExpenseCategoryId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_name")
 						.value(dto.getExpenseCategoryName()))
-				.andExpect(
-						MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
-				.andExpect(
-						MockMvcResultMatchers.jsonPath("$.currency_name")
-								.value(dto.getCurrencyName()))
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
 	}
@@ -302,7 +278,7 @@ public class ExpenseControllerUnitTests {
 	@DisplayName("Return HTTP 404 when trying to find a non-existing expense by ID")
 	@WithMockUser(roles = { "USER" })
 	public void GivenNonExistingExpense_WhenFindingItById_ThenReturn404() throws Exception {
-		when(expenseService.findById(anyLong())).thenThrow(ExpenseNotFoundException.class);
+		when(findService.findById(anyLong())).thenThrow(ExpenseNotFoundException.class);
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/expenses/1")
 				.with(csrf()))
@@ -317,7 +293,7 @@ public class ExpenseControllerUnitTests {
 		UpdateExpenseDto updateDto = new UpdateExpenseDto(
 				"Uber Ride",
 				100L,
-				1L,
+				"USD",
 				1L);
 		updateDto.setDescription("Magnificent ride");
 		updateDto.setLabels(List.of("Label1", "Label2"));
@@ -326,16 +302,15 @@ public class ExpenseControllerUnitTests {
 				1L,
 				updateDto.getName(),
 				updateDto.getAmount(),
+				"USD",
 				ZonedDateTime.now(),
 				updateDto.getExpenseCategoryId(),
 				"ExpenseCategory",
-				updateDto.getCurrencyId(),
-				"Currency",
 				1L);
 		dto.setDescription(updateDto.getDescription());
 		dto.setLabels(updateDto.getLabels());
 
-		when(expenseService.update(anyLong(), any(UpdateExpenseDto.class))).thenReturn(dto);
+		when(updateService.update(anyLong(), any(UpdateExpenseDto.class))).thenReturn(dto);
 
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/" + dto.getId())
 				.with(csrf())
@@ -347,6 +322,7 @@ public class ExpenseControllerUnitTests {
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.description").value(dto.getDescription()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.amount").value(dto.getAmount()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.currency_code").value(dto.getCurrencyCode()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.labels")
 						.value(Matchers.containsInAnyOrder(dto.getLabels().toArray())))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
@@ -354,11 +330,6 @@ public class ExpenseControllerUnitTests {
 						.value(dto.getExpenseCategoryId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_name")
 						.value(dto.getExpenseCategoryName()))
-				.andExpect(
-						MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
-				.andExpect(
-						MockMvcResultMatchers.jsonPath("$.currency_name")
-								.value(dto.getCurrencyName()))
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
 	}
@@ -371,21 +342,20 @@ public class ExpenseControllerUnitTests {
 		UpdateExpenseDto updateDto = new UpdateExpenseDto(
 				"Uber Ride",
 				100L,
-				1L,
+				"USD",
 				1L);
 
 		ExpenseDto dto = new ExpenseDto(
 				1L,
 				updateDto.getName(),
 				updateDto.getAmount(),
+				"USD",
 				ZonedDateTime.now(),
 				updateDto.getExpenseCategoryId(),
 				"ExpenseCategory",
-				updateDto.getCurrencyId(),
-				"Currency",
 				1L);
 
-		when(expenseService.update(anyLong(), any(UpdateExpenseDto.class))).thenReturn(dto);
+		when(updateService.update(anyLong(), any(UpdateExpenseDto.class))).thenReturn(dto);
 
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/" + dto.getId())
 				.with(csrf())
@@ -395,16 +365,12 @@ public class ExpenseControllerUnitTests {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(dto.getId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(dto.getName()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.amount").value(dto.getAmount()))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.currency_code").value(dto.getCurrencyCode()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.created_at").isNotEmpty())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_id")
 						.value(dto.getExpenseCategoryId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.expense_category_name")
 						.value(dto.getExpenseCategoryName()))
-				.andExpect(
-						MockMvcResultMatchers.jsonPath("$.currency_id").value(dto.getCurrencyId()))
-				.andExpect(
-						MockMvcResultMatchers.jsonPath("$.currency_name")
-								.value(dto.getCurrencyName()))
 				.andExpect(
 						MockMvcResultMatchers.jsonPath("$.creator_id").value(dto.getCreatorId()));
 	}
@@ -417,7 +383,7 @@ public class ExpenseControllerUnitTests {
 		UpdateExpenseDto updateDto = new UpdateExpenseDto(
 				"",
 				100L,
-				1L,
+				"USD",
 				1L);
 
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/1")
@@ -434,7 +400,7 @@ public class ExpenseControllerUnitTests {
 		UpdateExpenseDto updateDto = new UpdateExpenseDto(
 				"Uber Ride",
 				100L,
-				1L,
+				"USD",
 				1L);
 
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/1")
@@ -451,10 +417,10 @@ public class ExpenseControllerUnitTests {
 		UpdateExpenseDto updateDto = new UpdateExpenseDto(
 				"Uber Ride",
 				100L,
-				1L,
+				"USD",
 				1L);
 
-		when(expenseService.update(anyLong(), any(UpdateExpenseDto.class)))
+		when(updateService.update(anyLong(), any(UpdateExpenseDto.class)))
 				.thenThrow(ExpenseNotFoundException.class);
 
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/1")
@@ -471,31 +437,11 @@ public class ExpenseControllerUnitTests {
 		UpdateExpenseDto updateDto = new UpdateExpenseDto(
 				"Uber Ride",
 				100L,
-				1L,
+				"USD",
 				1L);
 
-		when(expenseService.update(anyLong(), any(UpdateExpenseDto.class)))
+		when(updateService.update(anyLong(), any(UpdateExpenseDto.class)))
 				.thenThrow(ExpenseCategoryNotFoundException.class);
-
-		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/1")
-				.with(csrf())
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(new ObjectMapper().writeValueAsString(updateDto)))
-				.andExpect(MockMvcResultMatchers.status().isNotFound());
-	}
-
-	@Test
-	@DisplayName("Return HTTP 404 when trying to update with a non-existing currency")
-	@WithMockUser(roles = { "USER" })
-	public void GivenNonExistingCurrency_WhenUpdating_ThenReturnHttp404() throws Exception {
-		UpdateExpenseDto updateDto = new UpdateExpenseDto(
-				"Uber Ride",
-				100L,
-				1L,
-				1L);
-
-		when(expenseService.update(anyLong(), any(UpdateExpenseDto.class)))
-				.thenThrow(CurrencyNotFoundException.class);
 
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/expenses/1")
 				.with(csrf())
@@ -539,7 +485,7 @@ public class ExpenseControllerUnitTests {
 	}
 
 	@Test
-	@DisplayName("Return HTTP 403 when trying to delete all expenses by ID without valid roles")
+	@DisplayName("Return HTTP 403 when trying to delete selected expenses by ID without valid roles")
 	@WithMockUser(roles = { "SOME_INVALID_ROLE" })
 	public void GivenWithoutValidRoles_WhenDeletingAllExpensesById_ThenReturnHttp403()
 			throws Exception {
@@ -574,7 +520,7 @@ public class ExpenseControllerUnitTests {
 	@DisplayName("Return HTTP 404 when trying to delete a non-existing expense by ID")
 	@WithMockUser(roles = { "USER" })
 	public void GivenNonExistingExpense_WhenDeletingById_ThenReturnHttp404() throws Exception {
-		doThrow(ExpenseNotFoundException.class).when(expenseService).deleteById(anyLong());
+		doThrow(ExpenseNotFoundException.class).when(deleteService).deleteById(anyLong());
 
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/expenses/1")
 				.with(csrf()))

@@ -17,10 +17,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import com.jadebloom.goblin_api.currency.entity.CurrencyEntity;
-import com.jadebloom.goblin_api.currency.repository.CurrencyRepository;
-import com.jadebloom.goblin_api.expense.entity.ExpenseCategoryEntity;
 import com.jadebloom.goblin_api.expense.entity.ExpenseEntity;
+import com.jadebloom.goblin_api.expense_category.entity.ExpenseCategoryEntity;
+import com.jadebloom.goblin_api.expense_category.repository.ExpenseCategoryRepository;
 import com.jadebloom.goblin_api.security.entity.UserEntity;
 import com.jadebloom.goblin_api.security.test.PermissionTestUtils;
 import com.jadebloom.goblin_api.security.test.RoleTestUtils;
@@ -34,13 +33,9 @@ public class ExpenseRepositoryIntegrationTests {
 
 	private final ExpenseCategoryRepository expenseCategoryRepository;
 
-	private final CurrencyRepository currencyRepository;
-
 	private final UserTestUtils userTestUtils;
 
 	private ExpenseCategoryEntity expenseCategory;
-
-	private CurrencyEntity currency;
 
 	private UserEntity user;
 
@@ -48,13 +43,10 @@ public class ExpenseRepositoryIntegrationTests {
 	public ExpenseRepositoryIntegrationTests(
 			ExpenseRepository underTest,
 			ExpenseCategoryRepository expenseCategoryRepository,
-			CurrencyRepository currencyRepository,
 			UserTestUtils userTestUtils) {
 		this.underTest = underTest;
 
 		this.expenseCategoryRepository = expenseCategoryRepository;
-
-		this.currencyRepository = currencyRepository;
 
 		this.userTestUtils = userTestUtils;
 	}
@@ -66,10 +58,6 @@ public class ExpenseRepositoryIntegrationTests {
 		ExpenseCategoryEntity toCreate1 = new ExpenseCategoryEntity("Daily", user);
 		toCreate1.setDescription("The category description");
 		expenseCategory = expenseCategoryRepository.saveAndFlush(toCreate1);
-
-		CurrencyEntity toCreate2 = new CurrencyEntity("Tenge", user);
-		toCreate2.setAlphabeticalCode("KZT");
-		currency = currencyRepository.saveAndFlush(toCreate2);
 	}
 
 	@Test
@@ -78,14 +66,14 @@ public class ExpenseRepositoryIntegrationTests {
 		ExpenseEntity toCreate1 = new ExpenseEntity(
 				"Uber Ride",
 				1000L,
+				"USD",
 				expenseCategory,
-				currency,
 				user);
 		ExpenseEntity toCreate2 = new ExpenseEntity(
 				"Uber Ride",
 				1000L,
+				"USD",
 				expenseCategory,
-				currency,
 				user);
 
 		ExpenseEntity created1 = underTest.saveAndFlush(toCreate1);
@@ -111,8 +99,8 @@ public class ExpenseRepositoryIntegrationTests {
 		ExpenseEntity toCreate = new ExpenseEntity(
 				"Uber Ride",
 				1000L,
+				"USD",
 				expenseCategory,
-				currency,
 				user);
 		Long expenseCategoryId = underTest.save(toCreate).getExpenseCategory().getId();
 
@@ -130,59 +118,17 @@ public class ExpenseRepositoryIntegrationTests {
 	}
 
 	@Test
-	@DisplayName("Return true when checking the existence of a valid expense by its currency ID")
-	public void GivenValidExpense_WhenCheckingItsExistenceByItscurrencyId_ThenReturnTrue() {
-		ExpenseEntity toCreate = new ExpenseEntity(
-				"Uber Ride",
-				1000L,
-				expenseCategory,
-				currency,
-				user);
-		Long currencyId = underTest.save(toCreate).getCurrency().getId();
-
-		boolean isExists = underTest.existsByCurrency_Id(currencyId);
-
-		assertTrue(isExists);
-	}
-
-	@Test
-	@DisplayName("Return false when checking the existence of a valid expense non-existing expense category ID")
-	public void GivenExpenseWithNonExistingCurrency_WhenCheckingItsExistenceByItsCurrencyId_ThenReturnFalse() {
-		boolean isExists = underTest.existsByCurrency_Id(1L);
-
-		assertFalse(isExists);
-	}
-
-	@Test
 	@DisplayName("Verify that all possible expenses can be deleted by their category's ID")
 	public void GivenPossibleExpenses_WhenDeletingAllByExpenseCategoryId_ThenDelete() {
 		ExpenseEntity toCreate = new ExpenseEntity(
 				"Uber Ride",
 				1000L,
+				"USD",
 				expenseCategory,
-				currency,
 				user);
 		underTest.save(toCreate);
 
 		underTest.deleteAllByExpenseCategory_Id(expenseCategory.getId());
-
-		List<ExpenseEntity> expenses = underTest.findAll();
-
-		assertEquals(0, expenses.size());
-	}
-
-	@Test
-	@DisplayName("Verify that all possible expenses can be deleted by their currency's ID")
-	public void GivenPossibleExpenses_WhenDeletingAllByCurrencyId_ThenDelete() {
-		ExpenseEntity toCreate = new ExpenseEntity(
-				"Uber Ride",
-				1000L,
-				expenseCategory,
-				currency,
-				user);
-		underTest.save(toCreate);
-
-		underTest.deleteAllByCurrency_Id(currency.getId());
 
 		List<ExpenseEntity> expenses = underTest.findAll();
 
@@ -195,8 +141,8 @@ public class ExpenseRepositoryIntegrationTests {
 		ExpenseEntity toCreate = new ExpenseEntity(
 				"Uber Ride",
 				1000L,
+				"USD",
 				expenseCategory,
-				currency,
 				user);
 		underTest.save(toCreate);
 

@@ -20,7 +20,7 @@ import jakarta.validation.ReportAsSingleViolation;
 import jakarta.validation.constraints.Size;
 
 @NotAllWhitespace
-@Size(min = 1, max = 256)
+@Size(max = 256)
 @ReportAsSingleViolation
 @Target({ FIELD, METHOD, PARAMETER, ANNOTATION_TYPE, TYPE_USE })
 @Retention(RUNTIME)
@@ -28,10 +28,10 @@ import jakarta.validation.constraints.Size;
 @Constraint(validatedBy = {})
 public @interface ValidExpenseDescription {
 
-    String message() default "The expense's optional description must be 1 - 256 characters long";
+	String message() default "The expense's description should contain at most 256 characters long";
 
-    Class<?>[] groups() default {};
+	Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default {};
+	Class<? extends Payload>[] payload() default {};
 
 }

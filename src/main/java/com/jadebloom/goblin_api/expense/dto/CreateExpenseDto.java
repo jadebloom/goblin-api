@@ -8,100 +8,101 @@ import com.jadebloom.goblin_api.expense.validation.ValidExpenseDescription;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseLabel;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseLabelsList;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseName;
+import com.jadebloom.goblin_api.shared.validation.ValidCurrencyCode;
 
 import jakarta.validation.constraints.NotNull;
 
 public class CreateExpenseDto {
 
-    @ValidExpenseName
-    private String name;
+	@ValidExpenseName
+	private String name;
 
-    @ValidExpenseDescription
-    private String description;
+	@ValidExpenseDescription
+	private String description;
 
-    @ValidExpenseAmount
-    private Long amount;
+	@ValidExpenseAmount
+	private Long amount;
 
-    @ValidExpenseLabelsList
-    private List<@ValidExpenseLabel String> labels;
+	@ValidCurrencyCode
+	@JsonProperty("currency_code")
+	private String currencyCode;
 
-    @NotNull(message = "The expense's category ID must not be null")
-    @JsonProperty("expense_category_id")
-    private Long expenseCategoryId;
+	@ValidExpenseLabelsList
+	private List<@ValidExpenseLabel String> labels;
 
-    @NotNull(message = "The expense's currency ID must not be null")
-    @JsonProperty("currency_id")
-    private Long currencyId;
+	@NotNull(message = "The expense's category ID must not be null")
+	@JsonProperty("expense_category_id")
+	private Long expenseCategoryId;
 
-    public CreateExpenseDto() {
-    }
+	public CreateExpenseDto() {
+	}
 
-    public CreateExpenseDto(String name, Long amount, Long expenseCategoryId, Long currencyId) {
-        this.name = name;
+	public CreateExpenseDto(String name, Long amount, String currencyCode, Long expenseCategoryId) {
+		this.name = name;
 
-        this.amount = amount;
+		this.amount = amount;
 
-        this.expenseCategoryId = expenseCategoryId;
+		this.currencyCode = currencyCode;
 
-        this.currencyId = currencyId;
-    }
+		this.expenseCategoryId = expenseCategoryId;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public Long getAmount() {
-        return amount;
-    }
+	public Long getAmount() {
+		return amount;
+	}
 
-    public List<String> getLabels() {
-        return labels;
-    }
+	public String getCurrencyCode() {
+		return currencyCode;
+	}
 
-    public Long getExpenseCategoryId() {
-        return expenseCategoryId;
-    }
+	public List<String> getLabels() {
+		return labels;
+	}
 
-    public Long getCurrencyId() {
-        return currencyId;
-    }
+	public Long getExpenseCategoryId() {
+		return expenseCategoryId;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public void setAmount(Long amount) {
-        this.amount = amount;
-    }
+	public void setAmount(Long amount) {
+		this.amount = amount;
+	}
 
-    public void setLabels(List<String> labels) {
-        this.labels = labels;
-    }
+	public void setCurrencyCode(String currencyCode) {
+		this.currencyCode = currencyCode;
+	}
 
-    public void setExpenseCategoryId(Long expenseCategoryId) {
-        this.expenseCategoryId = expenseCategoryId;
-    }
+	public void setLabels(List<String> labels) {
+		this.labels = labels;
+	}
 
-    public void setCurrencyId(Long currencyId) {
-        this.currencyId = currencyId;
-    }
+	public void setExpenseCategoryId(Long expenseCategoryId) {
+		this.expenseCategoryId = expenseCategoryId;
+	}
 
-    @Override
-    public String toString() {
-        return "CreateExpenseDto(name=" + name +
-                ", description=" + description +
-                ", amount=" + amount +
-                ", labels=" + labels +
-                ", expenseCategoryId=" + expenseCategoryId +
-                ", currencyId=" + currencyId + ")";
-    }
+	@Override
+	public String toString() {
+		return "CreateExpenseDto(name=" + name +
+				", description=" + description +
+				", amount=" + amount +
+				", currencyCode=" + currencyCode +
+				", labels=" + labels +
+				", expenseCategoryId=" + expenseCategoryId + ")";
+	}
 
 }

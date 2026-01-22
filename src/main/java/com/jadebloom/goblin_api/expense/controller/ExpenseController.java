@@ -18,7 +18,10 @@ import com.jadebloom.goblin_api.expense.dto.CreateExpenseDto;
 import com.jadebloom.goblin_api.expense.dto.DeleteExpensesDto;
 import com.jadebloom.goblin_api.expense.dto.ExpenseDto;
 import com.jadebloom.goblin_api.expense.dto.UpdateExpenseDto;
-import com.jadebloom.goblin_api.expense.service.ExpenseService;
+import com.jadebloom.goblin_api.expense.service.ExpenseCreateService;
+import com.jadebloom.goblin_api.expense.service.ExpenseDeleteService;
+import com.jadebloom.goblin_api.expense.service.ExpenseFindService;
+import com.jadebloom.goblin_api.expense.service.ExpenseUpdateService;
 
 import jakarta.validation.Valid;
 
@@ -26,17 +29,32 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/v1/expenses")
 public class ExpenseController {
 
-	private final ExpenseService expenseService;
+	private final ExpenseCreateService createService;
 
-	public ExpenseController(ExpenseService expenseService) {
-		this.expenseService = expenseService;
+	private final ExpenseFindService findService;
+
+	private final ExpenseUpdateService updateService;
+
+	private final ExpenseDeleteService deleteService;
+
+	public ExpenseController(ExpenseCreateService createService,
+			ExpenseFindService findService,
+			ExpenseUpdateService updateService,
+			ExpenseDeleteService deleteService) {
+		this.createService = createService;
+
+		this.findService = findService;
+
+		this.updateService = updateService;
+
+		this.deleteService = deleteService;
 	}
 
 	@PreAuthorize("hasRole('USER')")
 	@PostMapping
 	public ResponseEntity<ExpenseDto> createExpense(
 			@Valid @RequestBody CreateExpenseDto createDto) {
-		ExpenseDto dto = expenseService.create(createDto);
+		ExpenseDto dto = createService.create(createDto);
 
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 	}
@@ -44,7 +62,7 @@ public class ExpenseController {
 	@PreAuthorize("hasRole('USER')")
 	@GetMapping
 	public ResponseEntity<Page<ExpenseDto>> findAuthenticatedUserExpenses(Pageable pageable) {
-		Page<ExpenseDto> page = expenseService.findUserAuthenticatedExpenses(pageable);
+		Page<ExpenseDto> page = findService.findUserAuthenticatedExpenses(pageable);
 
 		return new ResponseEntity<>(page, HttpStatus.OK);
 	}
@@ -53,7 +71,7 @@ public class ExpenseController {
 	@GetMapping("/{id}")
 	public ResponseEntity<ExpenseDto> findExpenseById(
 			@PathVariable(name = "id") Long expenseId) {
-		ExpenseDto dto = expenseService.findById(expenseId);
+		ExpenseDto dto = findService.findById(expenseId);
 
 		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
@@ -63,7 +81,7 @@ public class ExpenseController {
 	public ResponseEntity<ExpenseDto> updateExpenseById(
 			@PathVariable(name = "id") Long expenseId,
 			@Valid @RequestBody UpdateExpenseDto updateDto) {
-		ExpenseDto result = expenseService.update(expenseId, updateDto);
+		ExpenseDto result = updateService.update(expenseId, updateDto);
 
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
@@ -71,26 +89,25 @@ public class ExpenseController {
 	@PreAuthorize("hasRole('USER')")
 	@DeleteMapping("/all")
 	public ResponseEntity<Void> deleteAllExpenses() {
-		expenseService.deleteAll();
+		deleteService.deleteAll();
 
 		return ResponseEntity.noContent().build();
 	}
 
 	@PreAuthorize("hasRole('USER')")
 	@PostMapping("/delete")
-	public ResponseEntity<Void> deleteAllExpensesById(
+	public ResponseEntity<Void> deleteSelectedExpensesById(
 			@Valid @RequestBody DeleteExpensesDto deleteDto) {
-		expenseService.deleteAllById(deleteDto);
+		deleteService.deleteSelectedById(deleteDto);
 
 		return ResponseEntity.noContent().build();
 	}
-
 
 	@PreAuthorize("hasRole('USER')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteExpenseById(
 			@PathVariable(name = "id") Long expenseId) {
-		expenseService.deleteById(expenseId);
+		deleteService.deleteById(expenseId);
 
 		return ResponseEntity.noContent().build();
 	}

@@ -18,10 +18,10 @@ import jakarta.validation.Payload;
 @Constraint(validatedBy = NotAllWhitespaceValidator.class)
 public @interface NotAllWhitespace {
 
-    String message() default "The string must not contain only whitespace characters";
+	String message() default "The string should not contain only whitespace characters";
 
-    Class<?>[] groups() default {};
+	Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default {};
+	Class<? extends Payload>[] payload() default {};
 
 }

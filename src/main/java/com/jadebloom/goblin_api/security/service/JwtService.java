@@ -25,14 +25,19 @@ import com.jadebloom.goblin_api.security.enums.JwtTokenUseType;
 @Service
 public class JwtService {
 
-	private String jwtSecret;
+	private String jwtAccessTokenSecret;
+
+	private String jwtRefreshTokenSecret;
 
 	public static final long ACCESS_TOKEN_EXPIRATION = 15 * 60 * 1000; // 15 min
 
 	public static final long REFRESH_TOKEN_EXPIRATION = 7 * 24 * 60 * 60 * 1000; // 7 days
 
-	public JwtService(@Value("${JWT_SECRET}") String jwtSecret) {
-		this.jwtSecret = jwtSecret;
+	public JwtService(@Value("${JWT_ACCESS_TOKEN_SECRET}") String jwtAccessTokenSecret,
+			@Value("${JWT_REFRESH_TOKEN_SECRET}") String jwtRefreshTokenSecret) {
+		this.jwtAccessTokenSecret = jwtAccessTokenSecret;
+
+		this.jwtRefreshTokenSecret = jwtRefreshTokenSecret;
 	}
 
 	public String generateAccessToken(Long userId, String userEmail, Set<String> roles)
@@ -45,7 +50,7 @@ public class JwtService {
 				.withIssuedAt(new Date())
 				.withIssuer("Goblin API")
 				.withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION))
-				.sign(Algorithm.HMAC256(jwtSecret));
+				.sign(Algorithm.HMAC256(jwtAccessTokenSecret));
 	}
 
 	public String generateRefreshToken(Long userId) throws JWTCreationException {
@@ -55,12 +60,12 @@ public class JwtService {
 				.withIssuedAt(new Date())
 				.withIssuer("Goblin API")
 				.withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
-				.sign(Algorithm.HMAC256(jwtSecret));
+				.sign(Algorithm.HMAC256(jwtRefreshTokenSecret));
 	}
 
 	public Authentication validateAccessTokenAndPrepareUserDetails(String token)
 			throws JWTVerificationException {
-		DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(jwtSecret))
+		DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(jwtAccessTokenSecret))
 				.withClaim("token_use", JwtTokenUseType.ACCESS.getName())
 				.withIssuer("Goblin API")
 				.build()
@@ -96,7 +101,7 @@ public class JwtService {
 
 	public Long validateRefreshTokenAndRetrieveUserId(String token)
 			throws JWTVerificationException {
-		DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(jwtSecret))
+		DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(jwtRefreshTokenSecret))
 				.withClaim("token_use", JwtTokenUseType.REFRESH.getName())
 				.withIssuer("Goblin API")
 				.build()

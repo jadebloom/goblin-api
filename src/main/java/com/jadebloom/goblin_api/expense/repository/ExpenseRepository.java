@@ -14,12 +14,8 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
 
 	boolean existsByExpenseCategory_Id(Long expenseCategoryId);
 
-	boolean existsByCurrency_Id(Long currencyId);
-
 	void deleteAllByExpenseCategory_Id(Long expenseCategoryId);
 
 	void deleteAllByCreator_Id(Long creatorId);
-
-	void deleteAllByCurrency_Id(Long currencyId);
 
 }

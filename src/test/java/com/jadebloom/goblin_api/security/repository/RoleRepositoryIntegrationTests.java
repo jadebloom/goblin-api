@@ -20,33 +20,32 @@ import com.jadebloom.goblin_api.security.test.PermissionTestUtils;
 @Import(PermissionTestUtils.class)
 public class RoleRepositoryIntegrationTests {
 
-    private final RoleRepository underTest;
+	private final RoleRepository underTest;
 
-    private final PermissionTestUtils utils;
+	private final PermissionTestUtils utils;
 
-    @Autowired
-    public RoleRepositoryIntegrationTests(RoleRepository underTest, PermissionTestUtils utils) {
-        this.underTest = underTest;
+	@Autowired
+	public RoleRepositoryIntegrationTests(RoleRepository underTest, PermissionTestUtils utils) {
+		this.underTest = underTest;
 
-        this.utils = utils;
-    }
+		this.utils = utils;
+	}
 
-    @Test
-    @DisplayName("Save a role with given permissions")
-    public void GivenPermissions_WhenSaving_ThenSaveRole() {
-        Set<PermissionEntity> permissions = new HashSet<>();
+	@Test
+	@DisplayName("Save a role with given permissions")
+	public void GivenPermissions_WhenSaving_ThenSaveRole() {
+		Set<PermissionEntity> permissions = new HashSet<>();
 
-        permissions.addAll(utils.createCurrencyPermissions());
-        permissions.addAll(utils.createExpenseCategoryPermissions());
-        permissions.addAll(utils.createExpensePermissions());
+		permissions.addAll(utils.createExpenseCategoryPermissions());
+		permissions.addAll(utils.createExpensePermissions());
 
-        RoleEntity toSave = new RoleEntity("USER", permissions);
+		RoleEntity toSave = new RoleEntity("USER", permissions);
 
-        RoleEntity saved = underTest.save(toSave);
+		RoleEntity saved = underTest.save(toSave);
 
-        assertAll("Assert that a user role can be saved with correct permissions",
-                () -> assertEquals(toSave.getName(), saved.getName()),
-                () -> assertEquals(permissions.size(), saved.getPermissions().size()));
-    }
+		assertAll("Assert that a user role can be saved with correct permissions",
+				() -> assertEquals(toSave.getName(), saved.getName()),
+				() -> assertEquals(permissions.size(), saved.getPermissions().size()));
+	}
 
 }

@@ -12,26 +12,25 @@ import com.jadebloom.goblin_api.security.repository.RoleRepository;
 @Component
 public class RoleTestUtils {
 
-    private final RoleRepository roleRepository;
+	private final RoleRepository roleRepository;
 
-    private final PermissionTestUtils utils;
+	private final PermissionTestUtils utils;
 
-    public RoleTestUtils(RoleRepository roleRepository, PermissionTestUtils utils) {
-        this.roleRepository = roleRepository;
+	public RoleTestUtils(RoleRepository roleRepository, PermissionTestUtils utils) {
+		this.roleRepository = roleRepository;
 
-        this.utils = utils;
-    }
+		this.utils = utils;
+	}
 
-    public RoleEntity createUserRole() {
-        Set<PermissionEntity> permissions = new HashSet<>();
+	public RoleEntity createUserRole() {
+		Set<PermissionEntity> permissions = new HashSet<>();
 
-        permissions.addAll(utils.createCurrencyPermissions());
-        permissions.addAll(utils.createExpenseCategoryPermissions());
-        permissions.addAll(utils.createExpensePermissions());
+		permissions.addAll(utils.createExpenseCategoryPermissions());
+		permissions.addAll(utils.createExpensePermissions());
 
-        RoleEntity toCreate = new RoleEntity("USER", permissions);
+		RoleEntity toCreate = new RoleEntity("USER", permissions);
 
-        return roleRepository.save(toCreate);
-    }
+		return roleRepository.save(toCreate);
+	}
 
 }

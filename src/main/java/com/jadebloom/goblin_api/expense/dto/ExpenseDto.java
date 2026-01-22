@@ -4,13 +4,13 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.jadebloom.goblin_api.currency.validation.ValidCurrencyName;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseAmount;
-import com.jadebloom.goblin_api.expense.validation.ValidExpenseCategoryName;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseDescription;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseLabel;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseLabelsList;
 import com.jadebloom.goblin_api.expense.validation.ValidExpenseName;
+import com.jadebloom.goblin_api.expense_category.validation.ValidExpenseCategoryName;
+import com.jadebloom.goblin_api.shared.validation.ValidCurrencyCode;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -28,6 +28,10 @@ public class ExpenseDto {
 	@ValidExpenseAmount
 	private Long amount;
 
+	@ValidCurrencyCode
+	@JsonProperty("currency_code")
+	private String currencyCode;
+
 	@ValidExpenseLabelsList
 	private List<@ValidExpenseLabel String> labels;
 
@@ -43,28 +47,20 @@ public class ExpenseDto {
 	private String expenseCategoryName;
 
 	@NotNull(message = "The expense's creator ID is not null")
-	@JsonProperty("currency_id")
-	private Long currencyId;
-
-	@ValidCurrencyName
-	@JsonProperty("currency_name")
-	private String currencyName;
-
-	@NotNull(message = "The expense's creator ID is not null")
 	@JsonProperty("creator_id")
 	private Long creatorId;
 
-	public ExpenseDto() {}
+	public ExpenseDto() {
+	}
 
 	public ExpenseDto(
 			Long id,
 			String name,
 			Long amount,
+			String currencyCode,
 			ZonedDateTime createdAt,
 			Long expenseCategoryId,
 			String expenseCategoryName,
-			Long currencyId,
-			String currencyName,
 			Long creatorId) {
 		this.id = id;
 
@@ -72,15 +68,13 @@ public class ExpenseDto {
 
 		this.amount = amount;
 
+		this.currencyCode = currencyCode;
+
 		this.createdAt = createdAt;
 
 		this.expenseCategoryId = expenseCategoryId;
 
 		this.expenseCategoryName = expenseCategoryName;
-
-		this.currencyId = currencyId;
-
-		this.currencyName = currencyName;
 
 		this.creatorId = creatorId;
 	}
@@ -101,6 +95,10 @@ public class ExpenseDto {
 		return amount;
 	}
 
+	public String getCurrencyCode() {
+		return currencyCode;
+	}
+
 	public List<String> getLabels() {
 		return labels;
 	}
@@ -115,14 +113,6 @@ public class ExpenseDto {
 
 	public String getExpenseCategoryName() {
 		return expenseCategoryName;
-	}
-
-	public Long getCurrencyId() {
-		return currencyId;
-	}
-
-	public String getCurrencyName() {
-		return currencyName;
 	}
 
 	public Long getCreatorId() {
@@ -145,6 +135,10 @@ public class ExpenseDto {
 		this.amount = amount;
 	}
 
+	public void setCurrencyCode(String currencyCode) {
+		this.currencyCode = currencyCode;
+	}
+
 	public void setLabels(List<String> labels) {
 		this.labels = labels;
 	}
@@ -159,14 +153,6 @@ public class ExpenseDto {
 
 	public void setExpenseCategoryName(String expenseCategoryName) {
 		this.expenseCategoryName = expenseCategoryName;
-	}
-
-	public void setCurrencyId(Long currencyId) {
-		this.currencyId = currencyId;
-	}
-
-	public void setCurrencyName(String currencyName) {
-		this.currencyName = currencyName;
 	}
 
 	public void setCreatorId(Long creatorId) {
@@ -189,6 +175,10 @@ public class ExpenseDto {
 			return false;
 		}
 
+		if (!currencyCode.equals(t.getCurrencyCode())) {
+			return false;
+		}
+
 		if (description != null && !description.equals(t.getDescription())) {
 			return false;
 		}
@@ -197,7 +187,7 @@ public class ExpenseDto {
 			return false;
 		}
 
-		if (expenseCategoryId != t.getExpenseCategoryId() || currencyId != t.getCurrencyId()) {
+		if (expenseCategoryId != t.getExpenseCategoryId()) {
 			return false;
 		}
 
@@ -210,12 +200,11 @@ public class ExpenseDto {
 				", name=" + name +
 				", description=" + description +
 				", amount=" + amount +
+				", currencyCode=" + currencyCode +
 				", labels=" + labels +
 				", createdAt=" + createdAt +
 				", expenseCategoryId=" + expenseCategoryId +
 				", expenseCategoryName=" + expenseCategoryName +
-				", currencyId=" + currencyId +
-				", currencyName=" + currencyName +
 				", creatorId=" + creatorId + ")";
 
 		return f;

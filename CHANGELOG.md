@@ -7,19 +7,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Added
 - Added refresh token functionality.
 - Added logout functionality.
-- Added "delete all currencies" functionality.
 - Added "delete all expense categories" functionality.
 - Added "delete all expenses" functionality.
-- Added "delete multiple currencies" functionality.
 - Added "delete multiple expense categories" functionality.
 - Added "delete multiple expenses" functionality.
+- Added currency-related info to expense entity.
 ### Changed
 - Changed the payload and destination of update by ID functionality.
 - Added expense_category_name and currency_name to ExpenseDto schema.
+- Made huge codebase changes for DX.
+- Added two JWT token secretes, instead of one.
 ### Deprecated
 - For soon-to-be removed features.
 ### Removed
-- For now removed features.
+- Removed currency as a feature.
 ### Fixed 
 - For any bug fixes.
 ### Security 

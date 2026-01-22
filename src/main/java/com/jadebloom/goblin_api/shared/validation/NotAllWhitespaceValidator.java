@@ -5,14 +5,18 @@ import jakarta.validation.ConstraintValidatorContext;
 
 public class NotAllWhitespaceValidator implements ConstraintValidator<NotAllWhitespace, String> {
 
-    @Override
-    public void initialize(NotAllWhitespace constraintAnnotation) {
-        ConstraintValidator.super.initialize(constraintAnnotation);
-    }
+	@Override
+	public void initialize(NotAllWhitespace constraintAnnotation) {
+		ConstraintValidator.super.initialize(constraintAnnotation);
+	}
 
-    @Override
-    public boolean isValid(String value, ConstraintValidatorContext context) {
-        return value == null ? true : !value.trim().isEmpty();
-    }
+	@Override
+	public boolean isValid(String value, ConstraintValidatorContext context) {
+		if (value == null || value.isEmpty()) {
+			return true;
+		}
+
+		return !value.trim().isEmpty();
+	}
 
 }

@@ -15,69 +15,59 @@ import com.jadebloom.goblin_api.security.repository.RoleRepository;
 @Component
 public class DataLoader implements CommandLineRunner {
 
-    private final RoleRepository roleRepository;
+	private final RoleRepository roleRepository;
 
-    private final PermissionRepository permissionRepository;
+	private final PermissionRepository permissionRepository;
 
-    public DataLoader(RoleRepository roleRepository, PermissionRepository permissionRepository) {
-        this.roleRepository = roleRepository;
+	public DataLoader(RoleRepository roleRepository, PermissionRepository permissionRepository) {
+		this.roleRepository = roleRepository;
 
-        this.permissionRepository = permissionRepository;
-    }
+		this.permissionRepository = permissionRepository;
+	}
 
-    @Override
-    public void run(String... args) throws Exception {
-        PermissionEntity createCurrency = loadPermission("CREATE_CURRENCY");
-        PermissionEntity readCurrency = loadPermission("READ_CURRENCY");
-        PermissionEntity updateCurrency = loadPermission("UPDATE_CURRENCY");
-        PermissionEntity deleteCurrency = loadPermission("VIEW_CURRENCY");
+	@Override
+	public void run(String... args) throws Exception {
+		PermissionEntity createExpenseCategory = loadPermission("CREATE_EXPENSE_CATEGORY");
+		PermissionEntity readExpenseCategory = loadPermission("READ_EXPENSE_CATEGORY");
+		PermissionEntity updateExpenseCategory = loadPermission("UPDATE_EXPENSE_CATEGORY");
+		PermissionEntity deleteExpenseCategory = loadPermission("VIEW_EXPENSE_CATEGORY");
 
-        PermissionEntity createExpenseCategory = loadPermission("CREATE_EXPENSE_CATEGORY");
-        PermissionEntity readExpenseCategory = loadPermission("READ_EXPENSE_CATEGORY");
-        PermissionEntity updateExpenseCategory = loadPermission("UPDATE_EXPENSE_CATEGORY");
-        PermissionEntity deleteExpenseCategory = loadPermission("VIEW_EXPENSE_CATEGORY");
+		PermissionEntity createExpense = loadPermission("CREATE_EXPENSE");
+		PermissionEntity readExpense = loadPermission("READ_EXPENSE");
+		PermissionEntity updateExpense = loadPermission("UPDATE_EXPENSE");
+		PermissionEntity deleteExpense = loadPermission("VIEW_EXPENSE");
 
-        PermissionEntity createExpense = loadPermission("CREATE_EXPENSE");
-        PermissionEntity readExpense = loadPermission("READ_EXPENSE");
-        PermissionEntity updateExpense = loadPermission("UPDATE_EXPENSE");
-        PermissionEntity deleteExpense = loadPermission("VIEW_EXPENSE");
+		Set<PermissionEntity> userPermissions = new HashSet<>();
 
-        Set<PermissionEntity> userPermissions = new HashSet<>();
+		userPermissions.add(createExpenseCategory);
+		userPermissions.add(readExpenseCategory);
+		userPermissions.add(updateExpenseCategory);
+		userPermissions.add(deleteExpenseCategory);
 
-        userPermissions.add(createCurrency);
-        userPermissions.add(readCurrency);
-        userPermissions.add(updateCurrency);
-        userPermissions.add(deleteCurrency);
+		userPermissions.add(createExpense);
+		userPermissions.add(readExpense);
+		userPermissions.add(updateExpense);
+		userPermissions.add(deleteExpense);
 
-        userPermissions.add(createExpenseCategory);
-        userPermissions.add(readExpenseCategory);
-        userPermissions.add(updateExpenseCategory);
-        userPermissions.add(deleteExpenseCategory);
+		loadRole("ROLE_USER", userPermissions);
+	}
 
-        userPermissions.add(createExpense);
-        userPermissions.add(readExpense);
-        userPermissions.add(updateExpense);
-        userPermissions.add(deleteExpense);
+	private PermissionEntity loadPermission(String name) {
+		Optional<PermissionEntity> opt = permissionRepository.findByName(name);
 
-        loadRole("ROLE_USER", userPermissions);
-    }
+		return opt.isPresent() ? opt.get() : permissionRepository.save(new PermissionEntity(name));
+	}
 
-    private PermissionEntity loadPermission(String name) {
-        Optional<PermissionEntity> opt = permissionRepository.findByName(name);
+	private RoleEntity loadRole(String name, Set<PermissionEntity> permissions) {
+		Optional<RoleEntity> opt = roleRepository.findByName(name);
 
-        return opt.isPresent() ? opt.get() : permissionRepository.save(new PermissionEntity(name));
-    }
+		if (opt.isPresent()) {
+			return opt.get();
+		}
 
-    private RoleEntity loadRole(String name, Set<PermissionEntity> permissions) {
-        Optional<RoleEntity> opt = roleRepository.findByName(name);
+		RoleEntity newRole = new RoleEntity(name, permissions);
 
-        if (opt.isPresent()) {
-            return opt.get();
-        }
-
-        RoleEntity newRole = new RoleEntity(name, permissions);
-
-        return roleRepository.save(newRole);
-    }
+		return roleRepository.save(newRole);
+	}
 
 }
