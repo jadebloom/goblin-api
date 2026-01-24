@@ -4,7 +4,6 @@ required:
   - amount
   - currency_code
   - expense_category_id
-  - currency_id
 properties:
   name:
     type: string

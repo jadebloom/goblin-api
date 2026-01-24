@@ -2,8 +2,8 @@ type: object
 required:
   - name
   - amount
+  - currency_code
   - expense_category_id
-  - currency_id
 properties:
   name:
     type: string
@@ -37,6 +37,3 @@ properties:
   expense_category_id:
     type: integer
     description: The expense category ID related to an expense.
-  currency_id:
-    type: integer
-    description: The currency ID related to an expense.

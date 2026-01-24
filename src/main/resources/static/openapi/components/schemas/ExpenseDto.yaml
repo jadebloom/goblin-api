@@ -7,8 +7,6 @@ required:
   - created_at
   - expense_category_id
   - expense_category_name
-  - currency_id
-  - currency_name
   - creator_id
 properties:
   id:
@@ -53,14 +51,6 @@ properties:
   expense_category_name:
     type: string
     description: The expense category name related to an expense.
-    minLength: 1
-    maxLength: 64
-  currency_id:
-    type: integer
-    description: The currency ID related to an expense.
-  currency_name:
-    type: string
-    description: The currency name related to an expense.
     minLength: 1
     maxLength: 64
   creator_id:

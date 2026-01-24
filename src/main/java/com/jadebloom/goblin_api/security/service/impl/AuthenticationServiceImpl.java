@@ -159,7 +159,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 		UserEntity user = userRepository.findById(userId)
 				.orElseThrow(() -> {
-					String f = "User with the ID '%s' wasn't found";
+					String f = "User with ID '%s' wasn't found";
 
 					throw new UserNotFoundException(String.format(f, userId));
 				});
@@ -190,7 +190,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 		userRepository.findById(userId)
 				.orElseThrow(() -> {
-					String f = "User with the ID '%s' wasn't found";
+					String f = "User with ID '%s' wasn't found";
 
 					throw new UserNotFoundException(String.format(f, userId));
 				});

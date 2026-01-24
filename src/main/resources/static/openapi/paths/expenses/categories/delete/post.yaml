@@ -1,7 +1,7 @@
 operationId: deleteSelectedExpenseCategoriesByIds
 summary: Delete all expense categories by given IDs
 tags:
-  - Expenses
+  - Expense Categories
 security:
   - bearerAuth: []
 requestBody:
